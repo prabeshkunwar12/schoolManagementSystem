@@ -1,4 +1,5 @@
 package com.school_management.core_entities;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,20 +11,16 @@ public class Teacher {
     private String email;
     private Department department;
     private List<Course> coursesTaught;
-    private List<CourseSection> classesCurrentlyTeaching;
+    private List<CourseSection> sectionsCurrentlyTeaching;
     
-
-    public Teacher() {
-    }
-
-    public Teacher(String name, long phoneNumber, String email, Department department, List<Course> coursesTaught, List<CourseSection> classesCurrentlyTeaching) {
+    public Teacher(String name, long phoneNumber, String email, Department department) {
         setTeacherID();
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.department = department;
-        this.coursesTaught = coursesTaught;
-        this.classesCurrentlyTeaching = classesCurrentlyTeaching;
+        coursesTaught = new ArrayList<>();
+        sectionsCurrentlyTeaching = new ArrayList<>();
     }
 
     public int getTeacherID() {
@@ -80,17 +77,34 @@ public class Teacher {
         return this.coursesTaught;
     }
 
-    public void setCoursesTaught(List<Course> coursesTaught) {
+    public void setCourses(List<Course> coursesTaught) {
         this.coursesTaught = coursesTaught;
     }
 
-    public List<CourseSection> getClassesCurrentlyTeaching() {
-        return this.classesCurrentlyTeaching;
+    public void addCourse(Course courseTaught){
+        this.coursesTaught.add(courseTaught);
     }
 
-    public void setClassesCurrentlyTeaching(List<CourseSection> classesCurrentlyTeaching) {
-        this.classesCurrentlyTeaching = classesCurrentlyTeaching;
+    public void removeCourse(Course courseToRemove){
+        if(coursesTaught.contains(courseToRemove))
+            this.coursesTaught.remove(courseToRemove);
     }
+
+    public List<CourseSection> getsectionsCurrentlyTeaching() {
+        return this.sectionsCurrentlyTeaching;
+    }
+
+    public void setClasses(List<CourseSection> sectionsCurrentlyTeaching) {
+        this.sectionsCurrentlyTeaching = sectionsCurrentlyTeaching;
+    }
+
+    public void addSection(CourseSection section){
+        this.sectionsCurrentlyTeaching.add(section);
+    } 
+    public void removeSection(CourseSection section){
+        if(sectionsCurrentlyTeaching.contains(section))
+            sectionsCurrentlyTeaching.remove(section);
+    }   
 
     @Override
     public boolean equals(Object o) {
@@ -100,12 +114,12 @@ public class Teacher {
             return false;
         }
         Teacher teacher = (Teacher) o;
-        return teacherID == teacher.teacherID && Objects.equals(name, teacher.name) && phoneNumber == teacher.phoneNumber && Objects.equals(email, teacher.email) && Objects.equals(department, teacher.department) && Objects.equals(coursesTaught, teacher.coursesTaught) && Objects.equals(classesCurrentlyTeaching, teacher.classesCurrentlyTeaching);
+        return teacherID == teacher.teacherID && Objects.equals(name, teacher.name) && phoneNumber == teacher.phoneNumber && Objects.equals(email, teacher.email) && Objects.equals(department, teacher.department) && Objects.equals(coursesTaught, teacher.coursesTaught) && Objects.equals(sectionsCurrentlyTeaching, teacher.sectionsCurrentlyTeaching);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teacherID, name, phoneNumber, email, department, coursesTaught, classesCurrentlyTeaching);
+        return Objects.hash(teacherID, name, phoneNumber, email, department, coursesTaught, sectionsCurrentlyTeaching);
     }
 
     @Override
@@ -117,7 +131,7 @@ public class Teacher {
             ", email='" + getEmail() + "'" +
             ", department='" + getDepartment() + "'" +
             ", coursesTaught='" + getCoursesTaught() + "'" +
-            ", classesCurrentlyTeaching='" + getClassesCurrentlyTeaching() + "'" +
+            ", sectionsCurrentlyTeaching='" + getsectionsCurrentlyTeaching() + "'" +
             "}";
     }
     
