@@ -91,6 +91,11 @@ public class CourseSection  {
         return this;
     }
 
+    public boolean isPassed(Enrollment enrollment) {
+        enrollment.getStudent();
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
