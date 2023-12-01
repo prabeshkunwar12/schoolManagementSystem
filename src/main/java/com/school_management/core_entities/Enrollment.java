@@ -5,10 +5,13 @@ public class Enrollment {
     Student student;
     CourseSection courseSection;
 
+    //Constructor for Enrollment
     public Enrollment(Student student, CourseSection courseSection) {
         this.student = student;
         this.courseSection = courseSection;
     }
+
+    //getters and setters for Enrollment
 
     public Student getStudent() {
         return this.student;
@@ -18,6 +21,7 @@ public class Enrollment {
         return this.courseSection;
     }
 
+    //equals, hash and toString for Enrollment
     @Override
     public boolean equals(Object o) {
         if (o == this)

@@ -1,4 +1,7 @@
 package com.school_management.core_entities;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -6,25 +9,38 @@ public class CourseSection  {
     private int sectionID;
     private Course course;
     private String room;
-    private List<Student> studentsList;
+    private List<Enrollment> enrollments;
     private Teacher teacher;
     
-
-    public CourseSection() {
-    }
-
-    public CourseSection(int sectionID, Course course, String room, List<Student> studentsList, Teacher teacher) {
+    /**
+     * Constructor to initialize a CourseSection with provided parameters.
+     *
+     * @param sectionID     The unique identifier for the section.
+     * @param course        The associated Course.
+     * @param room          The room where the section is conducted.
+     * @param enrollments   List of enrollments in the section.
+     * @param teacher       The teacher assigned to the section.
+     */
+    public CourseSection(int sectionID, Course course, String room, List<Enrollment> enrollments, Teacher teacher) {
         this.sectionID = sectionID;
         this.course = course;
         this.room = room;
-        this.studentsList = studentsList;
+        this.enrollments = enrollments;
         this.teacher = teacher;
     }
 
+    /**
+     * Constructor to initialize a CourseSection with given sectionID and course.
+     *
+     * @param sectionID     The unique identifier for the section.
+     * @param course        The associated Course.
+     */
     public CourseSection(int sectionID, Course course) {
         this.sectionID = sectionID;
         this.course = course;
     }
+
+    // Getters and setters
 
     public int getSectionID() {
         return this.sectionID;
@@ -50,50 +66,87 @@ public class CourseSection  {
         this.room = room;
     }
 
-    public List<Student> getStudentsList() {
-        return this.studentsList;
+    /**
+     * Retrieves the list of enrollments for this course section.
+     *
+     * @return An unmodifiable list of enrollments.
+     */
+    public List<Enrollment> getEnrollments() {
+        return Collections.unmodifiableList(this.enrollments);
     }
 
-    public void setStudentsList(List<Student> studentsList) {
-        this.studentsList = studentsList;
+    /**
+     * Sets the enrollments for this course section.
+     *
+     * @param enrollments The list of enrollments to set.
+     * @throws IllegalArgumentException if the provided list is null.
+     */
+    public void setEnrollments(List<Enrollment> enrollments) {
+        if(enrollments != null) {
+            this.enrollments = new ArrayList<>(enrollments);
+        } else {
+            throw new IllegalArgumentException("list of enrollments cannot be null");
+        }
+    }
+
+    /**
+     * Adds an enrollment to the list of enrollments for this section.
+     *
+     * @param enrollment The enrollment to add.
+     * @throws IllegalArgumentException if enrollment is null.
+     */
+    public void addEnrollment(Enrollment enrollment) {
+        if(enrollment != null) {
+            this.enrollments.add(enrollment);
+        }
+        else {
+            throw new IllegalArgumentException("enrollment cannot be null");
+        } 
+    }
+
+    /**
+     * Removes an enrollment from the list of enrollments for this section.
+     *
+     * @param enrollment The enrollment to remove.
+     * @throws IllegalArgumentException if enrollment is not found in the list.
+     */
+    public void removeEnrollment(Enrollment enrollment) {
+        boolean removed = this.enrollments.remove(enrollment);
+        if(!removed) {
+            throw new IllegalArgumentException("enrollment not found in the list");
+        }
     }
 
     public Teacher getTeacher() {
         return this.teacher;
     }
 
+    /**
+     * Sets the teacher for this course section.
+     *
+     * @param teacher The teacher to be assigned.
+     * @throws IllegalArgumentException if the provided teacher is null.
+     */
     public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
+        if(teacher != null) {
+            this.teacher = teacher;
+        } else {
+            throw new IllegalArgumentException("teacher cannot be null");
+        }
     }
 
-    public CourseSection sectionID(int sectionID) {
-        setSectionID(sectionID);
-        return this;
-    }
-
-    public CourseSection course(Course course) {
-        setCourse(course);
-        return this;
-    }
-
-    public CourseSection room(String room) {
-        setRoom(room);
-        return this;
-    }
-
-    public CourseSection studentsList(List<Student> studentsList) {
-        setStudentsList(studentsList);
-        return this;
-    }
-
-    public CourseSection teacher(Teacher teacher) {
-        setTeacher(teacher);
-        return this;
-    }
-
+    /**
+     * Checks if the provided enrollment exists in the list.
+     *
+     * @param enrollment The enrollment to check.
+     * @return True if the enrollment is passed, false otherwise.
+     */
     public boolean isPassed(Enrollment enrollment) {
-        enrollment.getStudent();
-        return true;
+        if(this.enrollments.contains(enrollment)) {
+            return true;
+        } else {
+            throw new IllegalArgumentException("enrollment not found in the list");
+        }
     }
 
     @Override
@@ -104,12 +157,12 @@ public class CourseSection  {
             return false;
         }
         CourseSection courseSection = (CourseSection) o;
-        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(studentsList, courseSection.studentsList) && Objects.equals(teacher, courseSection.teacher);
+        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(enrollments, courseSection.enrollments) && Objects.equals(teacher, courseSection.teacher);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionID, course, room, studentsList, teacher);
+        return Objects.hash(sectionID, course, room, enrollments, teacher);
     }
 
     @Override
@@ -118,7 +171,7 @@ public class CourseSection  {
             " sectionID='" + getSectionID() + "'" +
             ", course='" + getCourse() + "'" +
             ", room='" + getRoom() + "'" +
-            ", studentsList='" + getStudentsList() + "'" +
+            ", enrollments='" + getEnrollments() + "'" +
             ", teacher='" + getTeacher() + "'" +
             "}";
     }

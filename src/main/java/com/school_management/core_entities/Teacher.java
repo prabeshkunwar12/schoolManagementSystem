@@ -1,3 +1,5 @@
+package com.school_management.core_entities;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,100 +50,145 @@ public class Teacher {
 
     // Getters and setters for teacher details
 
-    // Get teacher name
     public String getName() {
         return this.name;
     }
-
-    // Set teacher name
+    
     public void setName(String name) {
         this.name = name;
     }
-
-    // Get teacher phone number
+    
     public long getPhoneNumber() {
         return this.phoneNumber;
     }
-
-    // Set teacher phone number
+    
     public void setPhoneNumber(long phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
-    // Get teacher email
+    
     public String getEmail() {
         return this.email;
     }
-
-    // Set teacher email
+    
     public void setEmail(String email) {
         this.email = email;
     }
-
-    // Get department of the teacher
+    
     public Department getDepartment() {
         return this.department;
     }
-
-    // Set department of the teacher
+    
     public void setDepartment(Department department) {
         this.department = department;
-    }
+    }    
 
-    // Get courses taught by the teacher
+    /*
+    * Get courses taught by the teacher.
+    * 
+    * @return List<Course> - Unmodifiable view of the courses taught by the teacher.
+    * Returns a new ArrayList to prevent the modification of the original List.
+    */
     public List<Course> getCoursesTaught() {
-        return Collections.unmodifiableList(coursesTaught);
-        //returns new ArrayList to prevent the modification of original List
-    }
 
-    // Set courses taught by the teacher
+        return Collections.unmodifiableList(coursesTaught);
+    }
+    
+    /*
+    * Set courses taught by the teacher.
+    * 
+    * @param coursesTaught - List of courses to set for the teacher.
+    * Throws an IllegalArgumentException if coursesTaught is null.
+    */
     public void setCourses(List<Course> coursesTaught) {
-        if(coursesTaught != null) {
+
+        if (coursesTaught != null) {
             this.coursesTaught = new ArrayList<>(coursesTaught);
-            //assigns new ArrayList to prevent the modification of original List
+            // Assigns a new ArrayList to prevent the modification of the original List.
         } else {
             throw new IllegalArgumentException("Courses taught cannot be null");
         }
     }
-
-    // Add a course taught by the teacher
+    
+    /*
+    * Add a course taught by the teacher.
+    * 
+    * @param courseTaught - Course to be added.
+    * Throws an IllegalArgumentException if courseTaught is null.
+    */
     public void addCourse(Course courseTaught) {
-        if(courseTaught != null) {
+        
+    
+        if (courseTaught != null) {
             this.coursesTaught.add(courseTaught);
         } else {
             throw new IllegalArgumentException("Course taught cannot be null");
         }
     }
-
-    // Remove a course taught by the teacher
+    
+    /*
+    * Remove a course taught by the teacher.
+    * 
+    * @param courseToRemove - Course to be removed.
+    * Throws an IllegalArgumentException if the course is not found in the List.
+    */
     public void removeCourse(Course courseToRemove) {
         boolean removed = coursesTaught.remove(courseToRemove);
-        if(!removed){
+        if (!removed) {
             throw new IllegalArgumentException("Course not found in the List");
         }
     }
-
-    // Get sections currently taught by the teacher
+    
+    /*
+    * Get sections currently taught by the teacher.
+    * 
+    * @return List<CourseSection> - Unmodifiable view of the sections currently taught by the teacher.
+    * Returns a new ArrayList to prevent the modification of the original List.
+    */
     public List<CourseSection> getsectionsCurrentlyTeaching() {
         return Collections.unmodifiableList(sectionsCurrentlyTeaching);
-        //returns new ArrayList to prevent the modification of original List
     }
-
-    // Set sections currently taught by the teacher
+    
+    /*
+    * Set sections currently taught by the teacher.
+    * 
+    * @param sectionsCurrentlyTeaching - List of sections to set for the teacher.
+    * Throws an IllegalArgumentException if sectionsCurrentlyTeaching is null.
+    */
     public void setClasses(List<CourseSection> sectionsCurrentlyTeaching) {
-        this.sectionsCurrentlyTeaching = sectionsCurrentlyTeaching;
+        if (sectionsCurrentlyTeaching != null) {
+            this.sectionsCurrentlyTeaching = new ArrayList<>(sectionsCurrentlyTeaching);
+        } else {
+            throw new IllegalArgumentException("List of sections cannot be null");
+        }
     }
-
-    // Add a section currently taught by the teacher
+    
+    /*
+    * Add a section currently taught by the teacher.
+    * 
+    * @param section - Section to be added.
+    * Throws an IllegalArgumentException if section is null.
+    */
     public void addSection(CourseSection section) {
-        this.sectionsCurrentlyTeaching.add(section);
-    } 
-
-    // Remove a section currently taught by the teacher
+        if (section != null) {
+            sectionsCurrentlyTeaching.add(section);
+        } else {
+            throw new IllegalArgumentException("Section cannot be null");
+        }
+    }
+    
+    /*
+    * Remove a section currently taught by the teacher.
+    * 
+    * @param section - Section to be removed.
+    * Throws an IllegalArgumentException if the section is not found in the List.
+    */
     public void removeSection(CourseSection section) {
-        if (sectionsCurrentlyTeaching.contains(section))
-            sectionsCurrentlyTeaching.remove(section);
-    }   
+        boolean removed = this.sectionsCurrentlyTeaching.remove(section);
+        if (!removed) {
+            throw new IllegalArgumentException("Cannot find the section in the list");
+        }
+    }
+      
 
     // Overridden equals, hashCode, and toString methods
     @Override
