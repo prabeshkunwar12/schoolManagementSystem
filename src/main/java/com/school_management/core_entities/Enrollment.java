@@ -1,9 +1,13 @@
 package com.school_management.core_entities;
+import java.util.List;
 import java.util.Objects;
+
+import com.school_management.support_entities.Assessment;
 
 public class Enrollment {
     Student student;
     CourseSection courseSection;
+    List<Assessment> assessments;
 
     //Constructor for Enrollment
     public Enrollment(Student student, CourseSection courseSection) {

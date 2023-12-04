@@ -1,9 +1,12 @@
 package com.school_management.core_entities;
 
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import com.school_management.support_entities.Session;
 
 public class CourseSection  {
     private int sectionID;
@@ -11,6 +14,9 @@ public class CourseSection  {
     private String room;
     private List<Enrollment> enrollments;
     private Teacher teacher;
+    private Year year;
+    private Session session;
+
     
     /**
      * Constructor to initialize a CourseSection with provided parameters.
@@ -20,13 +26,17 @@ public class CourseSection  {
      * @param room          The room where the section is conducted.
      * @param enrollments   List of enrollments in the section.
      * @param teacher       The teacher assigned to the section.
+     * @param year          The year when this course is/was available
+     * @param session       The session when this course is/was available
      */
-    public CourseSection(int sectionID, Course course, String room, List<Enrollment> enrollments, Teacher teacher) {
+    public CourseSection(int sectionID, Course course, String room, List<Enrollment> enrollments, Teacher teacher, Year year, Session session) {
         this.sectionID = sectionID;
         this.course = course;
         this.room = room;
         this.enrollments = enrollments;
         this.teacher = teacher;
+        this.year = year;
+        this.session = session;
     }
 
     /**
@@ -34,10 +44,14 @@ public class CourseSection  {
      *
      * @param sectionID     The unique identifier for the section.
      * @param course        The associated Course.
+     * @param year          The year when this course is/was available
+     * @param session       The session when this course is/was available
      */
-    public CourseSection(int sectionID, Course course) {
+    public CourseSection(int sectionID, Course course, Year year, Session session) {
         this.sectionID = sectionID;
         this.course = course;
+        this.year = year;
+        this.session = session;
     }
 
     // Getters and setters
@@ -64,6 +78,23 @@ public class CourseSection  {
 
     public void setRoom(String room) {
         this.room = room;
+    }
+
+
+    public Year getYear() {
+        return this.year;
+    }
+
+    public void setYear(Year year) {
+        this.year = year;
+    }
+
+    public Session getSession() {
+        return this.session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     /**
@@ -149,6 +180,7 @@ public class CourseSection  {
         }
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -157,13 +189,14 @@ public class CourseSection  {
             return false;
         }
         CourseSection courseSection = (CourseSection) o;
-        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(enrollments, courseSection.enrollments) && Objects.equals(teacher, courseSection.teacher);
+        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(enrollments, courseSection.enrollments) && Objects.equals(teacher, courseSection.teacher) && Objects.equals(year, courseSection.year) && Objects.equals(session, courseSection.session);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionID, course, room, enrollments, teacher);
+        return Objects.hash(sectionID, course, room, enrollments, teacher, year, session);
     }
+    
 
     @Override
     public String toString() {
@@ -173,6 +206,8 @@ public class CourseSection  {
             ", room='" + getRoom() + "'" +
             ", enrollments='" + getEnrollments() + "'" +
             ", teacher='" + getTeacher() + "'" +
+            ", year='" + getYear() + "'" +
+            ", session='" + getSession() + "'" +
             "}";
     }
     
