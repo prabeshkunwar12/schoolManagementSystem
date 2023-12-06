@@ -3,21 +3,27 @@ package com.school_management.support_entities;
 import java.util.Objects;
 
 public abstract class Grades {
-    private float scoredGrade = 0;
+    private float scoredGrade;
     private float totalGrade;
+    private float passingGrade;
 
-    // Constructor for Grades
+    /**
+     * Constructor for Grades.
+     *
+     * @param totalGrade The total grade for the assessment.
+     * @throws IllegalArgumentException if the totalGrade is less than 0.
+     */
     protected Grades(float totalGrade) {
+        if (totalGrade < 0) {
+            throw new IllegalArgumentException("total grade should be greater than 0");
+        }
         this.totalGrade = totalGrade;
+        this.scoredGrade = 0;
+        this.passingGrade = 0;
     }
 
     // Getters and setters for scoredGrade and totalGrade
 
-    /**
-     * Retrieves the scored grade.
-     *
-     * @return The scored grade.
-     */
     public float getScoredGrade() {
         return this.scoredGrade;
     }
@@ -26,16 +32,15 @@ public abstract class Grades {
      * Sets the scored grade.
      *
      * @param scoredGrade The scored grade to set.
+     * @throws IllegalArgumentException if scoredGrade is less than 0 or exceeds totalGrade.
      */
     public void setScoredGrade(float scoredGrade) {
+        if(scoredGrade > getTotalGrade() && scoredGrade < 0) {
+            throw new IllegalArgumentException("scored grade should be in between 0 and total grade (" + getTotalGrade() + ")");
+        } 
         this.scoredGrade = scoredGrade;
     }
 
-    /**
-     * Retrieves the total grade.
-     *
-     * @return The total grade.
-     */
     public float getTotalGrade() {
         return this.totalGrade;
     }
@@ -44,12 +49,44 @@ public abstract class Grades {
      * Sets the total grade.
      *
      * @param totalGrade The total grade to set.
+     * @throws IllegalArgumentException if totalGrade is less than 0.
      */
     public void setTotalGrade(float totalGrade) {
+        if (totalGrade<0) {
+            throw new IllegalArgumentException("total grade should be greater than 0");
+        }
         this.totalGrade = totalGrade;
     }
 
+    public float getPassingGrade() {
+        return this.passingGrade;
+    }
+
+    /**
+     * Sets the passing grade.
+     *
+     * @param passingGrade The passing grade to set.
+     * @throws IllegalArgumentException if passingGrade is less than 0 or exceeds totalGrade.
+     */
+    public void setPassingGrade(float passingGrade) {
+        if(passingGrade>getTotalGrade() && passingGrade<0) {
+            throw new IllegalArgumentException("passing grade should be in between 0 and total grade (" + getTotalGrade() + ")");
+        } 
+        this.passingGrade = passingGrade;
+    }
+
     // Overridden equals, hashCode, and toString methods for Grades
+
+
+    @Override
+    public String toString() {
+        return "{" +
+            " scoredGrade='" + getScoredGrade() + "'" +
+            ", totalGrade='" + getTotalGrade() + "'" +
+            ", passingGrade='" + getPassingGrade() + "'" +
+            "}";
+    }  
+    
 
     @Override
     public boolean equals(Object o) {
@@ -59,19 +96,12 @@ public abstract class Grades {
             return false;
         }
         Grades grades = (Grades) o;
-        return scoredGrade == grades.scoredGrade && totalGrade == grades.totalGrade;
+        return scoredGrade == grades.scoredGrade && totalGrade == grades.totalGrade && passingGrade == grades.passingGrade;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(scoredGrade, totalGrade);
+        return Objects.hash(scoredGrade, totalGrade, passingGrade);
     }
-
-    @Override
-    public String toString() {
-        return "{" +
-            " scoredGrade='" + getScoredGrade() + "'" +
-            ", totalGrade='" + getTotalGrade() + "'" +
-            "}";
-    }
+    
 }

@@ -2,7 +2,7 @@ package com.school_management.support_entities;
 
 import java.util.Objects;
 
-public class AssessmentGrade extends Grades{
+public class AssessmentGrade extends Grades {
     Assessment assessment;
 
     /**
@@ -40,8 +40,17 @@ public class AssessmentGrade extends Grades{
      *
      * @return The final grade contribution.
      */
-    public float finalGradeContibution() {
-        return (super.getScoredGrade()/super.getTotalGrade())*getWeightage();
+    public float getFinalGradeContibution() {
+        return (super.getScoredGrade() / super.getTotalGrade()) * getWeightage();
+    }
+
+    /**
+     * Checks if the assessment grade meets the passing criteria.
+     *
+     * @return True if passed, false otherwise.
+     */
+    public boolean isPassed() {
+        return !(getAssessment().getAssessmentType() == AssessmentType.MANDATORY_PASS && super.getScoredGrade()<super.getPassingGrade());
     }
 
     // Overridden equals, hashCode, and toString methods for AssessmentGrade
@@ -68,9 +77,8 @@ public class AssessmentGrade extends Grades{
     @Override
     public String toString() {
         return "{" +
-            super.toString() +
-            " assessment='" + getAssessment() + "'" +
-            "}";
+                super.toString() +
+                " assessment='" + getAssessment() + "'" +
+                "}";
     }
-    
 }

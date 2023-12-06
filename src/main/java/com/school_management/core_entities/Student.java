@@ -252,7 +252,7 @@ public class Student {
      */
     public boolean setCourseAsComplete(Enrollment enrollment) {
         if(enrollment != null) {
-            if(enrollment.getCourseSection().isPassed(enrollment)) {
+            if(enrollment.isPassed()) {
                 this.completedCourses.add(enrollment);
                 this.removeCourse(enrollment);
                 return true;

@@ -6,9 +6,8 @@ public class FinalCourseGrade extends Grades {
      *
      * @param scoredGrade The scored grade for the final course grade.
      */
-    public FinalCourseGrade(float scoredGrade) {
+    public FinalCourseGrade() {
         super(100); // Calls the constructor of Grades with a fixed total grade of 100
-        super.setScoredGrade(scoredGrade); // Sets the scored grade
     }  
     
     /**

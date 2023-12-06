@@ -16,6 +16,7 @@ public class CourseSection  {
     private Teacher teacher;
     private Year year;
     private Session session;
+    private float passingGrade;
 
     
     /**
@@ -33,10 +34,11 @@ public class CourseSection  {
         this.sectionID = sectionID;
         this.course = course;
         this.room = room;
-        this.enrollments = enrollments;
+        this.enrollments = new ArrayList<>(enrollments);
         this.teacher = teacher;
         this.year = year;
         this.session = session;
+        this.passingGrade = 0;
     }
 
     /**
@@ -52,6 +54,10 @@ public class CourseSection  {
         this.course = course;
         this.year = year;
         this.session = session;
+        this.room = null;
+        this.enrollments = new ArrayList<>();
+        this.teacher = null;
+        this.passingGrade = 0;
     }
 
     // Getters and setters
@@ -166,6 +172,19 @@ public class CourseSection  {
         }
     }
 
+
+    public float getPassingGrade() {
+        return this.passingGrade;
+    }
+
+    public void setPassingGrade(float passingGrade) {
+        if(passingGrade<0 || passingGrade>100) {
+            throw new IllegalArgumentException("passing grade should not be in between 0 and 100.");
+        }
+        this.passingGrade = passingGrade;
+    }
+
+
     /**
      * Checks if the provided enrollment exists in the list.
      *
@@ -174,11 +193,13 @@ public class CourseSection  {
      */
     public boolean isPassed(Enrollment enrollment) {
         if(this.enrollments.contains(enrollment)) {
-            return true;
+            return enrollment.isPassed();
         } else {
             throw new IllegalArgumentException("enrollment not found in the list");
         }
     }
+
+    //hash, equals and toString
 
 
     @Override
@@ -189,14 +210,14 @@ public class CourseSection  {
             return false;
         }
         CourseSection courseSection = (CourseSection) o;
-        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(enrollments, courseSection.enrollments) && Objects.equals(teacher, courseSection.teacher) && Objects.equals(year, courseSection.year) && Objects.equals(session, courseSection.session);
+        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(enrollments, courseSection.enrollments) && Objects.equals(teacher, courseSection.teacher) && Objects.equals(year, courseSection.year) && Objects.equals(session, courseSection.session) && passingGrade == courseSection.passingGrade;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionID, course, room, enrollments, teacher, year, session);
+        return Objects.hash(sectionID, course, room, enrollments, teacher, year, session, passingGrade);
     }
-    
+
 
     @Override
     public String toString() {
@@ -208,7 +229,9 @@ public class CourseSection  {
             ", teacher='" + getTeacher() + "'" +
             ", year='" + getYear() + "'" +
             ", session='" + getSession() + "'" +
+            ", passingGrade='" + getPassingGrade() + "'" +
             "}";
     }
+
     
 }

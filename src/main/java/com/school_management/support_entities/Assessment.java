@@ -11,10 +11,16 @@ public class Assessment {
     private int durationMinutes;
     private float weightage;
 
-
-    public Assessment() {
-    }
-
+    /**
+     * Constructs an Assessment object.
+     *
+     * @param assessmentType  The type of assessment.
+     * @param description     The description of the assessment.
+     * @param startDate       The start date of the assessment.
+     * @param endDate         The end date of the assessment.
+     * @param durationMinutes The duration of the assessment in minutes.
+     * @param weightage       The weightage of the assessment.
+     */
     public Assessment(AssessmentType assessmentType, String description, LocalDateTime startDate, LocalDateTime endDate, int durationMinutes, float weightage) {
         this.assessmentType = assessmentType;
         this.description = description;
@@ -23,6 +29,9 @@ public class Assessment {
         this.durationMinutes = durationMinutes;
         this.weightage = weightage;
     }
+
+    // Getters and setters for Assessment
+
 
     public AssessmentType getAssessmentType() {
         return this.assessmentType;
@@ -73,6 +82,18 @@ public class Assessment {
     }
 
     @Override
+    public String toString() {
+        return "{" +
+            " assessmentType='" + getAssessmentType() + "'" +
+            ", description='" + getDescription() + "'" +
+            ", startDate='" + getStartDate() + "'" +
+            ", endDate='" + getEndDate() + "'" +
+            ", durationMinutes='" + getDurationMinutes() + "'" +
+            ", weightage='" + getWeightage() + "'" +
+            "}";
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
@@ -88,16 +109,5 @@ public class Assessment {
         return Objects.hash(assessmentType, description, startDate, endDate, durationMinutes, weightage);
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-            " assessmentType='" + getAssessmentType() + "'" +
-            ", description='" + getDescription() + "'" +
-            ", startDate='" + getStartDate() + "'" +
-            ", endDate='" + getEndDate() + "'" +
-            ", durationMinutes='" + getDurationMinutes() + "'" +
-            ", weightage='" + getWeightage() + "'" +
-            "}";
-    }
-    
+
 }
