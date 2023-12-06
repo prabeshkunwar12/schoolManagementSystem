@@ -9,13 +9,13 @@ public class Assessment {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private int durationMinutes;
-    private int weightage;
+    private float weightage;
 
 
     public Assessment() {
     }
 
-    public Assessment(AssessmentType assessmentType, String description, LocalDateTime startDate, LocalDateTime endDate, int durationMinutes, int weightage) {
+    public Assessment(AssessmentType assessmentType, String description, LocalDateTime startDate, LocalDateTime endDate, int durationMinutes, float weightage) {
         this.assessmentType = assessmentType;
         this.description = description;
         this.startDate = startDate;
@@ -64,11 +64,11 @@ public class Assessment {
         this.durationMinutes = durationMinutes;
     }
 
-    public int getWeightage() {
+    public float getWeightage() {
         return this.weightage;
     }
 
-    public void setWeightage(int weightage) {
+    public void setWeightage(float weightage) {
         this.weightage = weightage;
     }
 
