@@ -1,73 +1,59 @@
-/**
- * Represents the attendance for a specific enrollment within a course.
- *
- * @param enrollment The enrollment for which the attendance is being recorded.
- * @throws IllegalArgumentException if the enrollment provided is null.
- * @return An instance of Attendance.
- */
 package com.school_management.support_entities;
 
-import com.school_management.core_entities.Enrollment;
-
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class Attendance {
-    private Enrollment enrollment;
+    private CourseSectionSchedule schedule;
     private Map<ZonedDateTime, AttendanceStatus> attendanceList;
 
-    /**
-     * Constructs an Attendance object for a specific enrollment.
-     *
-     * @param enrollment The enrollment for which the attendance is being recorded.
-     * @throws IllegalArgumentException if the enrollment provided is null.
-     */
-    public Attendance(Enrollment enrollment) {
-        if(enrollment!=null) {
-            this.enrollment = enrollment;
-            initializeAttendanceList();
+    
+    public Attendance(CourseSectionSchedule schedule) {
+        if(schedule == null) {
+            throw new IllegalArgumentException("enrollment cannot be null");
         }
-        throw new IllegalArgumentException("enrollment cannot be null");
+        this.schedule = schedule;
+        initializeAttendanceList();
     }
 
-    public Enrollment getEnrollment() {
-        return this.enrollment;
+    public CourseSectionSchedule getSchedule() {
+        return this.schedule;
     }
 
-    public void setEnrollment(Enrollment enrollment) {
-        this.enrollment = enrollment;
+    public void setSchedule(CourseSectionSchedule schedule) {
+        if(schedule == null) {
+            throw new IllegalArgumentException("enrollment cannot be null");
+        }
+        this.schedule = schedule;
+        initializeAttendanceList();
     }
 
-    /**
-     * Initializes the attendance list based on the schedule of the associated enrollment.
-     */
+    public Map<ZonedDateTime, AttendanceStatus> getAttendanceList() {
+        return Collections.unmodifiableMap(attendanceList);
+    }
+
     private void initializeAttendanceList() {
         attendanceList = new HashMap<>();
-        List<ZonedDateTime> dates = enrollment.getCourseSection().getSchedule().getListOfDates();
+        List<ZonedDateTime> dates = getSchedule().getDateList();
 
         for(ZonedDateTime date:dates) {
             attendanceList.put(date, AttendanceStatus.NA);
         }
     }
 
-    /**
-     * Assigns an attendance status for a specific date.
-     *
-     * @param date             The date for which the attendance status needs to be assigned.
-     * @param attendanceStatus The status to be assigned (e.g., present, absent).
-     * @throws IllegalArgumentException if the date provided is not found in the attendance list.
-     */
+    
     public void assignStatus(ZonedDateTime date, AttendanceStatus attendanceStatus) {
-        if(attendanceList.containsKey(date)) {
-            attendanceList.put(date, attendanceStatus);
+        if(attendanceList.computeIfPresent(date, (key, oldValue)->attendanceStatus) == null) {
+            throw new IllegalArgumentException("Date not found in the list");
         }
-        throw new IllegalArgumentException("Date not found in the list");
     }
 
     // Override methods for equals, hashCode, and toString
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -76,21 +62,19 @@ public class Attendance {
             return false;
         }
         Attendance attendance = (Attendance) o;
-        return Objects.equals(enrollment, attendance.enrollment) && Objects.equals(attendanceList, attendance.attendanceList);
+        return Objects.equals(schedule, attendance.schedule) && Objects.equals(attendanceList, attendance.attendanceList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(enrollment, attendanceList);
+        return Objects.hash(schedule, attendanceList);
     }
 
     @Override
     public String toString() {
         return "{" +
-            " enrollment='" + getEnrollment() + "'" +
-            " attendanceList='" + attendanceList + "'" +
+            " schedule='" + getSchedule() + "'" +
+            ", attendanceList='" + getAttendanceList() + "'" +
             "}";
     }
-    
-    
 }

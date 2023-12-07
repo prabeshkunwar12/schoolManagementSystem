@@ -5,13 +5,13 @@ public class Room {
     int roomID;
     RoomType roomType;
     int studentCapacity;
-    Schedule schedule;
+    RoomSchedule schedule;
 
 
     public Room() {
     }
 
-    public Room(int roomID, RoomType roomType, int studentCapacity, Schedule schedule) {
+    public Room(int roomID, RoomType roomType, int studentCapacity, RoomSchedule schedule) {
         this.roomID = roomID;
         this.roomType = roomType;
         this.studentCapacity = studentCapacity;
@@ -42,32 +42,12 @@ public class Room {
         this.studentCapacity = studentCapacity;
     }
 
-    public Schedule getSchedule() {
+    public RoomSchedule getSchedule() {
         return this.schedule;
     }
 
-    public void setSchedule(Schedule schedule) {
+    public void setSchedule(RoomSchedule schedule) {
         this.schedule = schedule;
-    }
-
-    public Room roomID(int roomID) {
-        setRoomID(roomID);
-        return this;
-    }
-
-    public Room roomType(RoomType roomType) {
-        setRoomType(roomType);
-        return this;
-    }
-
-    public Room studentCapacity(int studentCapacity) {
-        setStudentCapacity(studentCapacity);
-        return this;
-    }
-
-    public Room schedule(Schedule schedule) {
-        setSchedule(schedule);
-        return this;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.school_management.support_entities;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -10,46 +11,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class Schedule {
+public class CourseSectionSchedule{
     private EnumMap<DayOfWeek, LocalTime> weeklySchedule;
+    private Duration duration;
     private ZonedDateTime startDate;
     private ZonedDateTime endDate;
     private List<ZonedDateTime> dateList;
-
-    /**
-     * Constructor to initialize with a provided weekly schedule and date range.
-     *
-     * @param weeklySchedule A map containing days of the week and their corresponding times.
-     * @param startDate      The start date of the schedule.
-     * @param endDate        The end date of the schedule.
-     * @throws IllegalArgumentException if parameters are null.
-     */
-    public Schedule(Map<DayOfWeek, LocalTime> weeklySchedule, ZonedDateTime startDate, ZonedDateTime endDate) {
-        if(weeklySchedule == null || startDate ==null || endDate== null) {
-            throw new IllegalArgumentException("paramenteres cannot be null!");
-        }
-        this.weeklySchedule = new EnumMap<>(weeklySchedule);
-        this.startDate = startDate;
-        this.endDate = endDate;
-        dateList = new ArrayList<>();
-        dateGenerator();
-    }
-
-    /**
-     * Constructor to initialize with an empty weekly schedule and date range.
-     *
-     * @param startDate The start date of the schedule.
-     * @param endDate   The end date of the schedule.
-     * @throws IllegalArgumentException if parameters are null.
-     */
-    public Schedule(ZonedDateTime startDate, ZonedDateTime endDate) {
-        if(startDate ==null || endDate== null) {
-            throw new IllegalArgumentException("paramenteres cannot be null.");
-        }
-        this.weeklySchedule = new EnumMap<>(DayOfWeek.class);
-        this.startDate = startDate;
-        this.endDate = endDate;
-        dateList = new ArrayList<>();
+    
+    public CourseSectionSchedule(Map<DayOfWeek, LocalTime> weeklySchedule, Duration duration, ZonedDateTime startDate, ZonedDateTime endDate) {
+        super();
+        if(weeklySchedule == null || duration==null || startDate ==null || endDate == null) {
+            throw new IllegalArgumentException("paramenteres cannot be null!");   
+        } else {
+            this.weeklySchedule = new EnumMap<>(weeklySchedule);
+            this.startDate = startDate;
+            this.endDate = endDate;
+            dateGenerator(); 
+        }   
     }
 
     public Map<DayOfWeek,LocalTime> getWeeklySchedule() {
@@ -87,14 +65,7 @@ public class Schedule {
         this.endDate = endDate;
         dateGenerator();
     }
-
-    /**
-     * Adds a day with the specified day of the week and time to the schedule.
-     *
-     * @param dayOfWeek The day of the week to add.
-     * @param time      The time for the specified day.
-     * @throws IllegalArgumentException if parameters are null.
-     */
+  
     public void addDay(DayOfWeek dayOfWeek, LocalTime time) {
         if(dayOfWeek==null || time==null) {
             throw new IllegalArgumentException("paramenteres cannot be null");
@@ -103,13 +74,7 @@ public class Schedule {
         dateGenerator();
     }
 
-    /**
-     * Removes a day with the specified day of the week and time from the schedule.
-     *
-     * @param dayOfWeek The day of the week to remove.
-     * @param time      The time for the specified day.
-     * @throws IllegalArgumentException if the specified day and time are not found in the schedule.
-     */
+    
     public void removeDay(DayOfWeek dayOfWeek, LocalTime time) {
         boolean removed = weeklySchedule.remove(dayOfWeek, time);
         if(!removed) {
@@ -118,10 +83,25 @@ public class Schedule {
         dateGenerator();
     }
 
-    /**
-     * Generates a list of dates based on the schedule within the specified date range.
-     * Dates are included if they match the days of the week defined in the schedule.
-     */
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public List<ZonedDateTime> getDateList() {
+        return Collections.unmodifiableList(this.dateList);
+    }
+
+    public void setDateList(List<ZonedDateTime> dateList) {
+        if(dateList != null) {
+            this.dateList = new ArrayList<>(dateList);
+        }
+        throw new IllegalArgumentException("dateList cannot be null");
+    }
+
     private void dateGenerator() {
         dateList = new ArrayList<>();
         ZonedDateTime date = startDate;
@@ -133,33 +113,33 @@ public class Schedule {
         }
     }
 
-    public List<ZonedDateTime> getListOfDates() {
-        return Collections.unmodifiableList(dateList);
-    }
 
     @Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof Schedule)) {
+        if (!(o instanceof CourseSectionSchedule)) {
             return false;
         }
-        Schedule schedule = (Schedule) o;
-        return Objects.equals(weeklySchedule, schedule.weeklySchedule) && Objects.equals(startDate, schedule.startDate) && Objects.equals(endDate, schedule.endDate);
+        CourseSectionSchedule courseSectionSchedule = (CourseSectionSchedule) o;
+        return Objects.equals(weeklySchedule, courseSectionSchedule.weeklySchedule) && Objects.equals(duration, courseSectionSchedule.duration) && Objects.equals(startDate, courseSectionSchedule.startDate) && Objects.equals(endDate, courseSectionSchedule.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(weeklySchedule, startDate, endDate);
+        return Objects.hash(weeklySchedule, duration, startDate, endDate);
     }
+
 
     @Override
     public String toString() {
         return "{" +
             " weeklySchedule='" + getWeeklySchedule() + "'" +
+            ", duration='" + getDuration() + "'" +
             ", startDate='" + getStartDate() + "'" +
             ", endDate='" + getEndDate() + "'" +
             "}";
     }
     
 }
+

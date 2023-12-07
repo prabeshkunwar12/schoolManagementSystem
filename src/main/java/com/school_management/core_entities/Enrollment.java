@@ -8,22 +8,28 @@ import org.slf4j.LoggerFactory;
 
 import com.school_management.support_entities.AssessmentGrade;
 import com.school_management.support_entities.AssessmentType;
+import com.school_management.support_entities.Attendance;
+import com.school_management.support_entities.EnrollmentStatus;
 import com.school_management.support_entities.FinalCourseGrade;
 import com.school_management.support_entities.Grades;
 
 public class Enrollment {
     Student student;
     CourseSection courseSection;
+    EnrollmentStatus enrollmentStatus;
     List<AssessmentGrade> assessmentGrades;
+    Attendance attendance;
     Grades finalGrade;
 
     // Logger for logging messages related to the Enrollment class
     private static final Logger logger = LoggerFactory.getLogger(Enrollment.class);
 
     //Constructor for Enrollment
-    public Enrollment(Student student, CourseSection courseSection) {
+    public Enrollment(Student student, CourseSection courseSection, Attendance attendance) {
         this.student = student;
         this.courseSection = courseSection;
+        this.enrollmentStatus = EnrollmentStatus.PLANNED;
+        this.attendance = attendance;
         this.assessmentGrades = new ArrayList<>();
         this.finalGrade = new FinalCourseGrade();
         this.finalGrade.setPassingGrade(getCourseSection().getPassingGrade());
@@ -37,6 +43,10 @@ public class Enrollment {
 
     public CourseSection getCourseSection() {
         return this.courseSection;
+    }
+
+    public Attendance getAttendance() {
+        return this.attendance;
     }
 
     /**
