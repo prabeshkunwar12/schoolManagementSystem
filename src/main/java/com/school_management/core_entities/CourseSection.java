@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.school_management.support_entities.Schedule;
 import com.school_management.support_entities.Session;
 
 public class CourseSection  {
@@ -17,6 +18,7 @@ public class CourseSection  {
     private Year year;
     private Session session;
     private float passingGrade;
+    private Schedule schedule;
 
     
     /**
@@ -198,6 +200,16 @@ public class CourseSection  {
             throw new IllegalArgumentException("enrollment not found in the list");
         }
     }
+
+
+    public Schedule getSchedule() {
+        return this.schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
 
     //hash, equals and toString
 

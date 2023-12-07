@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
+import com.school_management.support_entities.Schedule;
 import com.school_management.support_entities.Session;
 
 public class Course {
@@ -106,9 +107,10 @@ public class Course {
      * @param teacher          The teacher for the section.
      * @param year             The Year when this course is/was available.
      * @param session          The Session when this course is/was available.
+     * @param schedule         The weeklySchedule of the section
      * @throws IllegalArgumentException if any parameter is null.
      */
-    public void addSection(String room, List<Enrollment> enrollemntsList, Teacher teacher, Year year, Session session) {
+    public void addSection(String room, List<Enrollment> enrollemntsList, Teacher teacher, Year year, Session session, Schedule schedule) {
         if (room != null && enrollemntsList != null && teacher != null && year != null && session != null) {
             if (!sections.containsKey(year)) {
                 addYear(year);
@@ -119,6 +121,7 @@ public class Course {
 
             int sectionID = sectionIdGenerator(year, session);
             CourseSection section = new CourseSection(sectionID, this, room, enrollemntsList, teacher, year, session);
+            section.setSchedule(schedule);
             sections.get(year).get(session).push(section);
 
         } else {
@@ -129,11 +132,12 @@ public class Course {
     /**
      * Adds a new section to the course with the provided Year and Session.
      *
-     * @param year    The Year when this course is/was available.
-     * @param session The Session when this course is/was available.
+     * @param year          The Year when this course is/was available.
+     * @param session       The Session when this course is/was available.
+     * @param schedule      The weeklySchedule of the section
      * @throws IllegalArgumentException if any parameter is null.
      */
-    public void addSection(Year year, Session session) {
+    public void addSection(Year year, Session session, Schedule schedule) {
         if (year != null && session != null) {
             if (!sections.containsKey(year)) {
                 addYear(year);
@@ -144,6 +148,7 @@ public class Course {
 
             int sectionID = sectionIdGenerator(year, session);
             CourseSection section = new CourseSection(sectionID, this, year, session);
+            section.setSchedule(schedule);
             sections.get(year).get(session).push(section);
 
         } else {

@@ -1,13 +1,13 @@
 package com.school_management.support_entities;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class Assessment {
     private AssessmentType assessmentType;
     private String description;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private ZonedDateTime startDate;
+    private ZonedDateTime endDate;
     private int durationMinutes;
     private float weightage;
 
@@ -21,7 +21,7 @@ public class Assessment {
      * @param durationMinutes The duration of the assessment in minutes.
      * @param weightage       The weightage of the assessment.
      */
-    public Assessment(AssessmentType assessmentType, String description, LocalDateTime startDate, LocalDateTime endDate, int durationMinutes, float weightage) {
+    public Assessment(AssessmentType assessmentType, String description, ZonedDateTime startDate, ZonedDateTime endDate, int durationMinutes, float weightage) {
         this.assessmentType = assessmentType;
         this.description = description;
         this.startDate = startDate;
@@ -49,19 +49,19 @@ public class Assessment {
         this.description = description;
     }
 
-    public LocalDateTime getStartDate() {
+    public ZonedDateTime getStartDate() {
         return this.startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(ZonedDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDate() {
+    public ZonedDateTime getEndDate() {
         return this.endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(ZonedDateTime endDate) {
         this.endDate = endDate;
     }
 
