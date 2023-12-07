@@ -133,6 +133,10 @@ public class Schedule {
         }
     }
 
+    public List<ZonedDateTime> getListOfDates() {
+        return Collections.unmodifiableList(dateList);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)

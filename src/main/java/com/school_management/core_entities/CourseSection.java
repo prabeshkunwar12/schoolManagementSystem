@@ -3,9 +3,11 @@ package com.school_management.core_entities;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import com.school_management.support_entities.Attendance;
 import com.school_management.support_entities.Schedule;
 import com.school_management.support_entities.Session;
 
@@ -19,6 +21,7 @@ public class CourseSection  {
     private Session session;
     private float passingGrade;
     private Schedule schedule;
+    private List<Attendance> attendanceList;
 
     
     /**
@@ -41,6 +44,7 @@ public class CourseSection  {
         this.year = year;
         this.session = session;
         this.passingGrade = 0;
+        initializeAttendanceList();
     }
 
     /**
@@ -123,6 +127,7 @@ public class CourseSection  {
     public void setEnrollments(List<Enrollment> enrollments) {
         if(enrollments != null) {
             this.enrollments = new ArrayList<>(enrollments);
+            initializeAttendanceList();
         } else {
             throw new IllegalArgumentException("list of enrollments cannot be null");
         }
@@ -137,6 +142,7 @@ public class CourseSection  {
     public void addEnrollment(Enrollment enrollment) {
         if(enrollment != null) {
             this.enrollments.add(enrollment);
+            this.attendanceList.add(new Attendance(enrollment));
         }
         else {
             throw new IllegalArgumentException("enrollment cannot be null");
@@ -150,8 +156,9 @@ public class CourseSection  {
      * @throws IllegalArgumentException if enrollment is not found in the list.
      */
     public void removeEnrollment(Enrollment enrollment) {
-        boolean removed = this.enrollments.remove(enrollment);
-        if(!removed) {
+        boolean removedEnrollment = this.enrollments.remove(enrollment);
+        boolean removedAttendance = removeAttendance(enrollment);
+        if(!(removedEnrollment && removedAttendance)) {
             throw new IllegalArgumentException("enrollment not found in the list");
         }
     }
@@ -208,6 +215,36 @@ public class CourseSection  {
 
     public void setSchedule(Schedule schedule) {
         this.schedule = schedule;
+    }
+
+    /**
+     * Initializes the attendance list based on enrollments.
+     * 
+     * @throws NullPointerException if enrollments are null
+     */
+    private void initializeAttendanceList() {
+        attendanceList = new ArrayList<>();
+        for (Enrollment enrollment : enrollments) {
+            attendanceList.add(new Attendance(enrollment));
+        }
+    }
+    
+    /**
+     * Removes the attendance for a specific enrollment.
+     * 
+     * @param enrollment The enrollment to remove attendance for.
+     * @return true if the attendance is successfully removed, false otherwise.
+     */
+    private boolean removeAttendance(Enrollment enrollment) {
+        Iterator<Attendance> iterator = attendanceList.iterator();
+        while (iterator.hasNext()) {
+            Attendance attendance = iterator.next();
+            if (attendance.getEnrollment().equals(enrollment)) {
+                iterator.remove(); // Safely remove using Iterator
+                return true;
+            }
+        }
+        return false;
     }
 
 
