@@ -1,6 +1,6 @@
 package com.school_management.support_entities;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class Attendance {
     private CourseSectionSchedule schedule;
-    private Map<ZonedDateTime, AttendanceStatus> attendanceList;
+    private Map<LocalDate, AttendanceStatus> attendanceList;
 
     
     public Attendance(CourseSectionSchedule schedule) {
@@ -32,21 +32,21 @@ public class Attendance {
         initializeAttendanceList();
     }
 
-    public Map<ZonedDateTime, AttendanceStatus> getAttendanceList() {
+    public Map<LocalDate, AttendanceStatus> getAttendanceList() {
         return Collections.unmodifiableMap(attendanceList);
     }
 
     private void initializeAttendanceList() {
         attendanceList = new HashMap<>();
-        List<ZonedDateTime> dates = getSchedule().getDateList();
+        List<LocalDate> dates = getSchedule().getDateList();
 
-        for(ZonedDateTime date:dates) {
+        for(LocalDate date:dates) {
             attendanceList.put(date, AttendanceStatus.NA);
         }
     }
 
     
-    public void assignStatus(ZonedDateTime date, AttendanceStatus attendanceStatus) {
+    public void assignStatus(LocalDate date, AttendanceStatus attendanceStatus) {
         if(attendanceList.computeIfPresent(date, (key, oldValue)->attendanceStatus) == null) {
             throw new IllegalArgumentException("Date not found in the list");
         }

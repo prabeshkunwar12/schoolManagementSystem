@@ -25,11 +25,11 @@ public class Enrollment {
     private static final Logger logger = LoggerFactory.getLogger(Enrollment.class);
 
     //Constructor for Enrollment
-    public Enrollment(Student student, CourseSection courseSection, Attendance attendance) {
+    public Enrollment(Student student, CourseSection courseSection) {
         this.student = student;
         this.courseSection = courseSection;
         this.enrollmentStatus = EnrollmentStatus.PLANNED;
-        this.attendance = attendance;
+        this.attendance = new Attendance(courseSection.getSchedule());
         this.assessmentGrades = new ArrayList<>();
         this.finalGrade = new FinalCourseGrade();
         this.finalGrade.setPassingGrade(getCourseSection().getPassingGrade());

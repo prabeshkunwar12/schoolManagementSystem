@@ -3,7 +3,7 @@ package com.school_management.support_entities;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -14,11 +14,11 @@ import java.util.Objects;
 public class CourseSectionSchedule{
     private EnumMap<DayOfWeek, LocalTime> weeklySchedule;
     private Duration duration;
-    private ZonedDateTime startDate;
-    private ZonedDateTime endDate;
-    private List<ZonedDateTime> dateList;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private List<LocalDate> dateList;
     
-    public CourseSectionSchedule(Map<DayOfWeek, LocalTime> weeklySchedule, Duration duration, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public CourseSectionSchedule(Map<DayOfWeek, LocalTime> weeklySchedule, Duration duration, LocalDate startDate, LocalDate endDate) {
         super();
         if(weeklySchedule == null || duration==null || startDate ==null || endDate == null) {
             throw new IllegalArgumentException("paramenteres cannot be null!");   
@@ -42,11 +42,11 @@ public class CourseSectionSchedule{
         dateGenerator();
     }
 
-    public ZonedDateTime getStartDate() {
+    public LocalDate getStartDate() {
         return this.startDate;
     }
 
-    public void setStartDate(ZonedDateTime startDate) {
+    public void setStartDate(LocalDate startDate) {
         if(startDate ==null) {
             throw new IllegalArgumentException("start date cannot be null");
         }
@@ -54,11 +54,11 @@ public class CourseSectionSchedule{
         dateGenerator();
     }
 
-    public ZonedDateTime getEndDate() {
+    public LocalDate getEndDate() {
         return this.endDate;
     }
 
-    public void setEndDate(ZonedDateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         if(endDate== null) {
             throw new IllegalArgumentException("end date cannot be null");
         }
@@ -91,20 +91,42 @@ public class CourseSectionSchedule{
         this.duration = duration;
     }
 
-    public List<ZonedDateTime> getDateList() {
+    public List<LocalDate> getDateList() {
         return Collections.unmodifiableList(this.dateList);
     }
 
-    public void setDateList(List<ZonedDateTime> dateList) {
+    public void setDateList(List<LocalDate> dateList) {
         if(dateList != null) {
             this.dateList = new ArrayList<>(dateList);
         }
         throw new IllegalArgumentException("dateList cannot be null");
     }
 
+    public boolean hasConflict(CourseSectionSchedule schedule) {
+        Map<DayOfWeek, LocalTime> ws1 = schedule.getWeeklySchedule();
+        Map<DayOfWeek, LocalTime> ws2 = getWeeklySchedule();
+        Duration d1 = schedule.getDuration();
+        Duration d2 = getDuration();
+    
+        for (Map.Entry<DayOfWeek, LocalTime> entry : ws1.entrySet()) {
+            DayOfWeek key = entry.getKey();
+            LocalTime value = entry.getValue();
+    
+            if (ws2.containsKey(key) && hasConflict(value, d1, ws2.get(key), d2)) {
+                return true;
+            }
+        }
+    
+        return false; // No conflict found
+    }
+
+    public boolean hasConflict(LocalTime startTime1, Duration d1, LocalTime startTime2, Duration d2) {
+        return (!startTime1.plus(d1).isBefore(startTime2) && !startTime2.plus(d2).isBefore(startTime1));
+    }
+
     private void dateGenerator() {
         dateList = new ArrayList<>();
-        ZonedDateTime date = startDate;
+        LocalDate date = startDate;
         while (!date.isAfter(endDate)) {
             if(weeklySchedule.containsKey(date.getDayOfWeek())) {
                 dateList.add(date);
