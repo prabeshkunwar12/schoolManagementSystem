@@ -1,16 +1,23 @@
 package com.school_management.core_entities;
 
-import java.util.ArrayList;
+import java.time.Year;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Stack;
+
+import com.school_management.support_entities.Schedule;
+import com.school_management.support_entities.Session;
 
 public class Course {
     private int courseID;
     private String courseName;
     private String description;
     private int credits;
-    private List<CourseSection> sections;
+    private Map<Year, Map<Session, Stack<CourseSection>>> sections; //each year can have multiple sessions and each sessions can have multiple sections available
     
     /**
      * Constructor to initialize a Course with given parameters.
@@ -19,15 +26,14 @@ public class Course {
      * @param courseName     The name of the course.
      * @param description    The description of the course.
      * @param credits        The number of credits for the course.
-     * @param numberOfSections The number of sections for the course.
      * @throws IllegalArgumentException if the number of sections is 0.
      */
-    public Course(int courseID, String courseName, String description, int credits, int numberOfSections) {
+    public Course(int courseID, String courseName, String description, int credits) {
         this.courseID = courseID;
         this.courseName = courseName;
         this.description = description;
         this.credits = credits;
-        setSections(numberOfSections);
+        sections = new HashMap<>();
     }
 
     // getters and setters
@@ -64,51 +70,106 @@ public class Course {
         this.credits = credits;
     }
 
-    public List<CourseSection> getSections() {
-        return Collections.unmodifiableList(sections);
+    /**
+     * Retrieves the sections mapped by Year and Session.
+     *
+     * @return An unmodifiable map of sections mapped by Year and Session.
+     */
+    public Map<Year, Map<Session, Stack<CourseSection>>> getSections() {
+        return Collections.unmodifiableMap(this.sections);
     }
 
     /**
-     * Sets the number of sections for the course and initializes sections accordingly.
+     * Adds a new Year to the sections map.
      *
-     * @param numberOfSections The number of sections to set.
-     * @throws IllegalArgumentException if the number of sections is 0.
+     * @param year The Year to be added.
      */
-    public void setSections(int numberOfSections){
-        if(numberOfSections != 0) {
-            this.sections = new ArrayList<>();
-            for(int i=1; i<=numberOfSections;i++){
-                sections.add(new CourseSection(i, this));
-            }
-        } else {
-            throw new IllegalArgumentException("number of sections cannot be 0");
-        }
+    private void addYear(Year year) {
+        EnumMap<Session, Stack<CourseSection>> sessionMap = new EnumMap<>(Session.class);
+        sections.put(year, sessionMap);
     }
 
-     /**
-     * Adds a new section to the course with provided parameters.
+    /**
+     * Adds a new Session to the sections map for the provided Year.
+     *
+     * @param year    The Year to which the Session is added.
+     * @param session The Session to be added.
+     */
+    private void addSession(Year year, Session session) {
+        sections.get(year).put(session, new Stack<>());
+    }
+
+    /**
+     * Adds a new section to the course with the provided parameters.
      *
      * @param room             The room for the new section.
      * @param enrollemntsList  The list of enrollments for the section.
      * @param teacher          The teacher for the section.
+     * @param year             The Year when this course is/was available.
+     * @param session          The Session when this course is/was available.
+     * @param schedule         The weeklySchedule of the section
      * @throws IllegalArgumentException if any parameter is null.
      */
-    public void addSection(String room, List<Enrollment> enrollemntsList, Teacher teacher) {
-        if(room != null && enrollemntsList != null && teacher != null) {
-            int sectionID = sections.size()+1;
-            sections.add(new CourseSection(sectionID, this, room, enrollemntsList, teacher));
+    public void addSection(String room, List<Enrollment> enrollemntsList, Teacher teacher, Year year, Session session, Schedule schedule) {
+        if (room != null && enrollemntsList != null && teacher != null && year != null && session != null) {
+            if (!sections.containsKey(year)) {
+                addYear(year);
+            }
+            if (!sections.get(year).containsKey(session)) {
+                addSession(year, session);
+            }
+
+            int sectionID = sectionIdGenerator(year, session);
+            CourseSection section = new CourseSection(sectionID, this, room, enrollemntsList, teacher, year, session);
+            section.setSchedule(schedule);
+            sections.get(year).get(session).push(section);
+
         } else {
             throw new IllegalArgumentException("Parameters cannot be null");
         }
     }
 
     /**
-     * Adds a new section to the course.
-     * Automatically assigns the next section ID.
+     * Adds a new section to the course with the provided Year and Session.
+     *
+     * @param year          The Year when this course is/was available.
+     * @param session       The Session when this course is/was available.
+     * @param schedule      The weeklySchedule of the section
+     * @throws IllegalArgumentException if any parameter is null.
      */
-    public void addSection(){
-        int sectionID = sections.size()+1;
-        sections.add(new CourseSection(sectionID, this));
+    public void addSection(Year year, Session session, Schedule schedule) {
+        if (year != null && session != null) {
+            if (!sections.containsKey(year)) {
+                addYear(year);
+            }
+            if (!sections.get(year).containsKey(session)) {
+                addSession(year, session);
+            }
+
+            int sectionID = sectionIdGenerator(year, session);
+            CourseSection section = new CourseSection(sectionID, this, year, session);
+            section.setSchedule(schedule);
+            sections.get(year).get(session).push(section);
+
+        } else {
+            throw new IllegalArgumentException("Parameters cannot be null");
+        }
+    }
+
+    /**
+     * Generates a unique section ID for the provided Year and Session combination.
+     *
+     * @param year    The Year for the section.
+     * @param session The Session for the section.
+     * @return A unique section ID.
+     */
+    public int sectionIdGenerator(Year year, Session session) {
+        CourseSection courseSection = sections.get(year).get(session).peek();
+        if (courseSection == null) {
+            return 1;
+        } else {
+            return courseSection.getSectionID() + 1;
+        }
     }
 
     @Override

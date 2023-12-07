@@ -8,7 +8,6 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.school_management.support_entities.YearStanding;
 
 public class Student {
@@ -42,9 +41,6 @@ public class Student {
     // List of courses completed by the student
     private List<Enrollment> completedCourses;
 
-    // Default constructor
-    public Student() {
-    }
 
     // Constructor to initialize mandatory personal details of the student
     public Student(String name, String address, Date dateOfBirth, String email) {
@@ -252,7 +248,7 @@ public class Student {
      */
     public boolean setCourseAsComplete(Enrollment enrollment) {
         if(enrollment != null) {
-            if(enrollment.getCourseSection().isPassed(enrollment)) {
+            if(enrollment.isPassed()) {
                 this.completedCourses.add(enrollment);
                 this.removeCourse(enrollment);
                 return true;
