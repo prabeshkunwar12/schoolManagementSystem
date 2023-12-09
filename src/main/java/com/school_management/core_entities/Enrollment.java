@@ -6,12 +6,11 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.school_management.support_entities.AssessmentGrade;
-import com.school_management.support_entities.AssessmentType;
-import com.school_management.support_entities.Attendance;
-import com.school_management.support_entities.EnrollmentStatus;
-import com.school_management.support_entities.FinalCourseGrade;
-import com.school_management.support_entities.Grades;
+import com.school_management.support_entities.assessment.AssessmentType;
+import com.school_management.support_entities.attendance.Attendance;
+import com.school_management.support_entities.grade.AssessmentGrade;
+import com.school_management.support_entities.grade.FinalCourseGrade;
+import com.school_management.support_entities.grade.Grades;
 
 public class Enrollment {
     Student student;

@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.school_management.support_entities.CourseSectionSchedule;
 import com.school_management.support_entities.Room;
+import com.school_management.support_entities.schedule.CourseSectionSchedule;
 
 public class CourseSection  {
     private int sectionID;

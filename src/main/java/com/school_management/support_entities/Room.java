@@ -1,6 +1,8 @@
 package com.school_management.support_entities;
 import java.util.Objects;
 
+import com.school_management.support_entities.schedule.RoomSchedule;
+
 public class Room {
     int roomID;
     RoomType roomType;

@@ -1,4 +1,4 @@
-package com.school_management.support_entities;
+package com.school_management.support_entities.assessment;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;

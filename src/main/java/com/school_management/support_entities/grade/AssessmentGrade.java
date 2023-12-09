@@ -1,6 +1,9 @@
-package com.school_management.support_entities;
+package com.school_management.support_entities.grade;
 
 import java.util.Objects;
+
+import com.school_management.support_entities.assessment.Assessment;
+import com.school_management.support_entities.assessment.AssessmentType;
 
 public class AssessmentGrade extends Grades {
     Assessment assessment;

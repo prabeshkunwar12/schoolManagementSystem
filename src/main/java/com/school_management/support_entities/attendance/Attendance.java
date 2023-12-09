@@ -1,4 +1,4 @@
-package com.school_management.support_entities;
+package com.school_management.support_entities.attendance;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import com.school_management.support_entities.schedule.CourseSectionSchedule;
 
 public class Attendance {
     private CourseSectionSchedule schedule;

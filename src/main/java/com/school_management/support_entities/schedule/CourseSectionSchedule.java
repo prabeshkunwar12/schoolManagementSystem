@@ -1,4 +1,4 @@
-package com.school_management.support_entities;
+package com.school_management.support_entities.schedule;
 
 import java.time.DayOfWeek;
 import java.time.Duration;

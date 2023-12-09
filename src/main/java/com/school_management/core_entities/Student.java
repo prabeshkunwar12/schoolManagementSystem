@@ -8,8 +8,8 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.school_management.support_entities.StudentSchedule;
 import com.school_management.support_entities.YearStanding;
+import com.school_management.support_entities.schedule.StudentSchedule;
 
 public class Student {
     // Logger for logging messages related to the Student class
