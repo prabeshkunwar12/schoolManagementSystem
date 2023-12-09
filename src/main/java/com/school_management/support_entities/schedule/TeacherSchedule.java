@@ -1,8 +1,7 @@
 package com.school_management.support_entities.schedule;
 
-public class RoomSchedule extends Schedule{
-    
-    public RoomSchedule() {
+public class TeacherSchedule extends Schedule{
+    public TeacherSchedule() {
         super();
     }
 
