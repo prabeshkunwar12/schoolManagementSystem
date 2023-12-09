@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.school_management.support_entities.StudentSchedule;
 import com.school_management.support_entities.YearStanding;
 
 public class Student {
@@ -41,6 +42,8 @@ public class Student {
     // List of courses completed by the student
     private List<Enrollment> completedCourses;
 
+    private StudentSchedule schedule;
+
 
     // Constructor to initialize mandatory personal details of the student
     public Student(String name, String address, Date dateOfBirth, String email) {
@@ -63,6 +66,7 @@ public class Student {
         // Initialize lists for enrolled and completed courses
         this.enrolledCourses = new ArrayList<>();
         this.completedCourses = new ArrayList<>();
+        this.schedule = new StudentSchedule();
     }
 
     // Getters and setters 
@@ -165,20 +169,6 @@ public class Student {
     }
 
     /**
-     * Sets the list of courses in which the student is enrolled.
-     *
-     * @param enrolledCourses List of enrolled courses
-     * @throws IllegalArgumentException if enrolledCourses is null
-     */
-    public void setEnrolledCourses(List<Enrollment> enrolledCourses) {
-        if(enrolledCourses != null) {
-            this.enrolledCourses = new ArrayList<>(enrolledCourses);
-        } else {
-            throw new IllegalArgumentException("Enrolled courses cannot be null");
-        }
-    }
-
-    /**
      * Adds an enrollment to the list of courses in which the student is enrolled.
      *
      * @param enrollment The enrollment to be added
@@ -186,7 +176,8 @@ public class Student {
      */
     public void addCourse(Enrollment enrollment) {
         if(enrollment != null) {
-            this.enrolledCourses.add(enrollment);
+            schedule.addCourseSectionSchedule(enrollment.getCourseSection().getSchedule());
+            enrolledCourses.add(enrollment);
         } else {
             throw new IllegalArgumentException("Enrollment cannot be null");
         }
@@ -200,6 +191,7 @@ public class Student {
      */
     public void addCourse(CourseSection courseSection) {
         if(courseSection != null) {
+            schedule.addCourseSectionSchedule(courseSection.getSchedule());
             Enrollment enrollment = new Enrollment(this, courseSection);
             addCourse(enrollment);
         } else {
@@ -214,9 +206,9 @@ public class Student {
      * @throws IllegalArgumentException if enrollment is not found in the list
      */
     public void removeCourse(Enrollment enrollment) {
-        boolean removed = this.enrolledCourses.remove(enrollment);
+        boolean removed = this.enrolledCourses.remove(enrollment) && this.schedule.removeCourseSectionSchedule(enrollment.getCourseSection().getSchedule());
         if(!removed) {
-            throw new IllegalArgumentException("Course Section not found in the list");
+            throw new IllegalArgumentException("enrollment not found in the list");
         }
     }
 
@@ -226,8 +218,15 @@ public class Student {
      * @param courseSection The course section to be removed
      */
     public void removeCourse(CourseSection courseSection) {
-        Enrollment enrollment = new Enrollment(this, courseSection);
-        removeCourse(enrollment);
+        boolean removed = false;
+        for(Enrollment enrollment: enrolledCourses) {
+            if(enrollment.getCourseSection() == courseSection) {
+                removed = this.enrolledCourses.remove(enrollment) && this.schedule.removeCourseSectionSchedule(enrollment.getCourseSection().getSchedule());
+            }
+        }
+        if(!removed) {
+            throw new IllegalArgumentException("Course Section not found in the list");
+        }
     }
 
     /**

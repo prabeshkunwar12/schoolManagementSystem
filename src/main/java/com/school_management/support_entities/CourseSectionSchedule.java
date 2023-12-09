@@ -103,6 +103,10 @@ public class CourseSectionSchedule{
     }
 
     public boolean hasConflict(CourseSectionSchedule schedule) {
+        if(this.endDate.isBefore(schedule.getStartDate()) || schedule.getEndDate().isBefore(this.startDate)) {
+            return false;
+        }
+
         Map<DayOfWeek, LocalTime> ws1 = schedule.getWeeklySchedule();
         Map<DayOfWeek, LocalTime> ws2 = getWeeklySchedule();
         Duration d1 = schedule.getDuration();

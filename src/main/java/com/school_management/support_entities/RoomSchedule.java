@@ -1,12 +1,8 @@
 package com.school_management.support_entities;
 
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class RoomSchedule {
@@ -17,7 +13,7 @@ public class RoomSchedule {
         this.weeklySchedules = new ArrayList<>();
     }
 
-    public List<CourseSectionSchedule> getWeeklySchedule() {
+    public List<CourseSectionSchedule> getWeeklySchedules() {
         return Collections.unmodifiableList(weeklySchedules);
     }
 
@@ -33,4 +29,30 @@ public class RoomSchedule {
     public boolean removeCourseSectionSchedule(CourseSectionSchedule schedule) {
         return weeklySchedules.remove(schedule);
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof RoomSchedule)) {
+            return false;
+        }
+        RoomSchedule roomSchedule = (RoomSchedule) o;
+        return Objects.equals(weeklySchedules, roomSchedule.weeklySchedules);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(weeklySchedules);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+            " weeklySchedules='" + getWeeklySchedules() + "'" +
+            "}";
+    }
+
+
 }

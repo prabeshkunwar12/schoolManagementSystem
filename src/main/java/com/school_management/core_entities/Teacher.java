@@ -12,18 +12,17 @@ public class Teacher {
     private long phoneNumber;
     private String email;
     private Department department;
-    private List<Course> coursesTaught;
-    private List<CourseSection> sectionsCurrentlyTeaching;
+    private List<CourseSection> sectionsTaughtList;
+    private List<CourseSection> sectionsCurrentlyTeachingList;
     
     // Constructor for Teacher
-    public Teacher(String name, long phoneNumber, String email, Department department) {
+    public Teacher(String name, long phoneNumber, String email) {
         setTeacherID();
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.department = department;
-        coursesTaught = new ArrayList<>();
-        sectionsCurrentlyTeaching = new ArrayList<>();
+        sectionsTaughtList = new ArrayList<>();
+        sectionsCurrentlyTeachingList = new ArrayList<>();
     }
 
     // Getter for teacher ID
@@ -72,71 +71,34 @@ public class Teacher {
     
     public void setEmail(String email) {
         this.email = email;
-    }
-    
+    }   
+
+
     public Department getDepartment() {
         return this.department;
     }
-    
+
     public void setDepartment(Department department) {
+        if(department == null) {
+            throw new IllegalArgumentException("department cannot be null");
+        }
+        this.department.removeTeacher(this);
+        department.addTeacher(this);
         this.department = department;
-    }    
+    }
+
 
     /*
     * Get courses taught by the teacher.
     * 
-    * @return List<Course> - Unmodifiable view of the courses taught by the teacher.
+    * @return List<CourseSection> - Unmodifiable view of the courses taught by the teacher.
     * Returns a new ArrayList to prevent the modification of the original List.
     */
-    public List<Course> getCoursesTaught() {
+    public List<CourseSection> getCourseSectionTaught() {
 
-        return Collections.unmodifiableList(coursesTaught);
+        return Collections.unmodifiableList(sectionsTaughtList);
     }
     
-    /*
-    * Set courses taught by the teacher.
-    * 
-    * @param coursesTaught - List of courses to set for the teacher.
-    * Throws an IllegalArgumentException if coursesTaught is null.
-    */
-    public void setCourses(List<Course> coursesTaught) {
-
-        if (coursesTaught != null) {
-            this.coursesTaught = new ArrayList<>(coursesTaught);
-            // Assigns a new ArrayList to prevent the modification of the original List.
-        } else {
-            throw new IllegalArgumentException("Courses taught cannot be null");
-        }
-    }
-    
-    /*
-    * Add a course taught by the teacher.
-    * 
-    * @param courseTaught - Course to be added.
-    * Throws an IllegalArgumentException if courseTaught is null.
-    */
-    public void addCourse(Course courseTaught) {
-        
-    
-        if (courseTaught != null) {
-            this.coursesTaught.add(courseTaught);
-        } else {
-            throw new IllegalArgumentException("Course taught cannot be null");
-        }
-    }
-    
-    /*
-    * Remove a course taught by the teacher.
-    * 
-    * @param courseToRemove - Course to be removed.
-    * Throws an IllegalArgumentException if the course is not found in the List.
-    */
-    public void removeCourse(Course courseToRemove) {
-        boolean removed = coursesTaught.remove(courseToRemove);
-        if (!removed) {
-            throw new IllegalArgumentException("Course not found in the List");
-        }
-    }
     
     /*
     * Get sections currently taught by the teacher.
@@ -144,49 +106,8 @@ public class Teacher {
     * @return List<CourseSection> - Unmodifiable view of the sections currently taught by the teacher.
     * Returns a new ArrayList to prevent the modification of the original List.
     */
-    public List<CourseSection> getsectionsCurrentlyTeaching() {
-        return Collections.unmodifiableList(sectionsCurrentlyTeaching);
-    }
-    
-    /*
-    * Set sections currently taught by the teacher.
-    * 
-    * @param sectionsCurrentlyTeaching - List of sections to set for the teacher.
-    * Throws an IllegalArgumentException if sectionsCurrentlyTeaching is null.
-    */
-    public void setClasses(List<CourseSection> sectionsCurrentlyTeaching) {
-        if (sectionsCurrentlyTeaching != null) {
-            this.sectionsCurrentlyTeaching = new ArrayList<>(sectionsCurrentlyTeaching);
-        } else {
-            throw new IllegalArgumentException("List of sections cannot be null");
-        }
-    }
-    
-    /*
-    * Add a section currently taught by the teacher.
-    * 
-    * @param section - Section to be added.
-    * Throws an IllegalArgumentException if section is null.
-    */
-    public void addSection(CourseSection section) {
-        if (section != null) {
-            sectionsCurrentlyTeaching.add(section);
-        } else {
-            throw new IllegalArgumentException("Section cannot be null");
-        }
-    }
-    
-    /*
-    * Remove a section currently taught by the teacher.
-    * 
-    * @param section - Section to be removed.
-    * Throws an IllegalArgumentException if the section is not found in the List.
-    */
-    public void removeSection(CourseSection section) {
-        boolean removed = this.sectionsCurrentlyTeaching.remove(section);
-        if (!removed) {
-            throw new IllegalArgumentException("Cannot find the section in the list");
-        }
+    public List<CourseSection> getsectionsCurrentlyTeachingList() {
+        return Collections.unmodifiableList(sectionsCurrentlyTeachingList);
     }
       
 
@@ -199,12 +120,12 @@ public class Teacher {
             return false;
         }
         Teacher teacher = (Teacher) o;
-        return teacherID == teacher.teacherID && Objects.equals(name, teacher.name) && phoneNumber == teacher.phoneNumber && Objects.equals(email, teacher.email) && Objects.equals(department, teacher.department) && Objects.equals(coursesTaught, teacher.coursesTaught) && Objects.equals(sectionsCurrentlyTeaching, teacher.sectionsCurrentlyTeaching);
+        return teacherID == teacher.teacherID && Objects.equals(name, teacher.name) && phoneNumber == teacher.phoneNumber && Objects.equals(email, teacher.email) && Objects.equals(department, teacher.department) && Objects.equals(sectionsTaughtList, teacher.sectionsTaughtList) && Objects.equals(sectionsCurrentlyTeachingList, teacher.sectionsCurrentlyTeachingList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teacherID, name, phoneNumber, email, department, coursesTaught, sectionsCurrentlyTeaching);
+        return Objects.hash(teacherID, name, phoneNumber, email, department, sectionsTaughtList, sectionsCurrentlyTeachingList);
     }
 
     @Override
@@ -215,8 +136,8 @@ public class Teacher {
             ", phoneNumber='" + getPhoneNumber() + "'" +
             ", email='" + getEmail() + "'" +
             ", department='" + getDepartment() + "'" +
-            ", coursesTaught='" + getCoursesTaught() + "'" +
-            ", sectionsCurrentlyTeaching='" + getsectionsCurrentlyTeaching() + "'" +
+            ", sectionsTaughtList='" + getCourseSectionTaught() + "'" +
+            ", sectionsCurrentlyTeachingList='" + getsectionsCurrentlyTeachingList() + "'" +
             "}";
     }
 }
