@@ -26,12 +26,20 @@ import java.util.List;
 import com.school_management.support_entities.SchoolYear;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Course {
     private int courseID;
     private String courseName;
     private String description;
     private int credits;
+    private Department department;
     private List<SchoolYear> schoolYearList;
+
+    // Logger for logging messages related to the Student class
+    private static final Logger logger = LoggerFactory.getLogger(Course.class);
+
     /**
      * Constructor to initialize a Course with given parameters.
      *
@@ -83,6 +91,19 @@ public class Course {
         this.credits = credits;
     }
 
+    public Department getDepartment() {
+        return this.department;
+    }
+
+    public void setDepartment(Department department) {
+        if(department == null) {
+            logger.error("Department cannot be null", new IllegalArgumentException("Department cannot be null"));
+        }
+        this.department.removeCourse(this);
+        department.addCourse(this);
+        this.department = department;
+    }
+
     /**
      * Retrieves an unmodifiable view of the list of school years associated with this course.
      *
@@ -100,9 +121,9 @@ public class Course {
      */
     public void addSchoolYear(SchoolYear schoolYear) {
         if (schoolYear == null) {
-            throw new IllegalArgumentException("School year cannot be null");
+            logger.error("School year cannot be null", new IllegalArgumentException("School year cannot be null"));
         } else if (containsYear(schoolYear.getYear())) {
-            throw new IllegalArgumentException("This course already contains this school year.");
+            logger.error("This course already contains this school year", new IllegalArgumentException("This course already contains this school year"));
         } else {
             schoolYearList.add(schoolYear);
         }
@@ -142,13 +163,15 @@ public class Course {
      */
     public SchoolYear getSchoolYear(int index) {
         if (index < 0 || index >= schoolYearList.size()) {
-            throw new IndexOutOfBoundsException("Index out of bounds for school years list");
+            logger.error("Index out of bounds for school years list", new IndexOutOfBoundsException("Index out of bounds for school years list"));
         }
         return schoolYearList.get(index);
     }
 
 
     // Overridden equals, hashCode, and toString methods
+
+    
 
     @Override
     public boolean equals(Object o) {
@@ -158,12 +181,12 @@ public class Course {
             return false;
         }
         Course course = (Course) o;
-        return courseID == course.courseID && Objects.equals(courseName, course.courseName) && Objects.equals(description, course.description) && credits == course.credits && Objects.equals(schoolYearList, course.schoolYearList);
+        return courseID == course.courseID && Objects.equals(courseName, course.courseName) && Objects.equals(description, course.description) && credits == course.credits && Objects.equals(department, course.department) && Objects.equals(schoolYearList, course.schoolYearList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(courseID, courseName, description, credits, schoolYearList);
+        return Objects.hash(courseID, courseName, description, credits, department, schoolYearList);
     }
 
 
@@ -174,8 +197,9 @@ public class Course {
             ", courseName='" + getCourseName() + "'" +
             ", description='" + getDescription() + "'" +
             ", credits='" + getCredits() + "'" +
+            ", department='" + getDepartment() + "'" +
             ", schoolYearList='" + getSchoolYearList() + "'" +
             "}";
     }
-   
+    
 }

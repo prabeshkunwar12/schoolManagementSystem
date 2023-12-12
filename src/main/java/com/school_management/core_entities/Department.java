@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Department {
     // Member variables for department details
@@ -32,6 +34,9 @@ public class Department {
     private String description;
     private List<Teacher> teachersList;
     private List<Course> coursesOffered;
+
+    // Logger for logging messages related to the Student class
+    private static final Logger logger = LoggerFactory.getLogger(Department.class);
 
     /**
      * Constructor to initialize department details.
@@ -43,7 +48,7 @@ public class Department {
      */
     public Department(int departmentID, String departmentName, String description) {
         if (departmentName == null || description == null) {
-            throw new IllegalArgumentException("Department name or description cannot be null");
+            logger.error("Department name and description cannot be null", new IllegalArgumentException("Department name and description cannot be null"));
         }
         this.departmentID = departmentID;
         this.departmentName = departmentName;
@@ -51,6 +56,7 @@ public class Department {
         this.description = description;
         this.teachersList = new ArrayList<>(); // Initialize an empty list of teachers
         this.coursesOffered = new ArrayList<>(); // Initialize an empty list of courses
+        logger.info("New Department created");
     }
 
     // Getters and setters for department details
@@ -75,7 +81,7 @@ public class Department {
      */
     public void setDepartmentName(String departmentName) {
         if (departmentName == null) {
-            throw new IllegalArgumentException("Department name cannot be null");
+            logger.error("Department name cannot be null",  new IllegalArgumentException("Department name cannot be null"));
         }
         this.departmentName = departmentName;
     }
@@ -92,10 +98,10 @@ public class Department {
      */
     public void setHeadOfDepartment(Teacher headOfDepartment) {
         if (headOfDepartment == null) {
-            throw new IllegalArgumentException("Head of Department cannot be null");
+            logger.error("Head of department is null", new IllegalArgumentException("Head of Department cannot be null"));
         }
         if (!isInDepartment(headOfDepartment)) {
-            throw new IllegalArgumentException("teacher is not in the teacher's list of department");
+            logger.error("teacher is not in the teacher's list of department", new IllegalArgumentException("teacher is not in the teacher's list of department"));
         }
         this.headOfDepartment = headOfDepartment;
     }
@@ -113,7 +119,7 @@ public class Department {
      */
     public void setDescription(String description) {
         if (description == null) {
-            throw new IllegalArgumentException("Description cannot be null");
+            logger.error("Department description cannot be null", new IllegalArgumentException("Department description cannot be null"));
         }
         this.description = description;
     }
@@ -137,7 +143,7 @@ public class Department {
      */
     public void setTeachersList(List<Teacher> teachersList) {
         if (teachersList == null) {
-            throw new IllegalArgumentException("Teachers list cannot be null");
+            logger.error("Teacher's list cannot be null", new IllegalArgumentException("Teachers list cannot be null"));
         }
         this.teachersList = new ArrayList<>(teachersList);
     }
@@ -152,7 +158,7 @@ public class Department {
         if (teacher != null) {
             teachersList.add(teacher);
         } else {
-            throw new IllegalArgumentException("Teacher cannot be null");
+            logger.error("Teacher cannot be null",  new IllegalArgumentException("Teacher cannot be null"));
         }
     }
 
@@ -164,7 +170,7 @@ public class Department {
      */
     public void removeTeacher(Teacher teacher) {
         if (!teachersList.remove(teacher)) {
-            throw new IllegalArgumentException("Teacher not found in the list");
+            logger.error("TEacher not found in the list", new IllegalArgumentException("Teacher not found in the list"));
         }
     }
 
@@ -207,7 +213,7 @@ public class Department {
      */
     public void setCoursesOffered(List<Course> coursesOffered) {
         if(coursesOffered == null){
-            throw new IllegalArgumentException("Courses offered cannot be null");
+            logger.error("Courses offered cannot be null", new IllegalArgumentException("Courses offered cannot be null"));
         }
         this.coursesOffered = new ArrayList<>(coursesOffered);
     }
@@ -222,7 +228,7 @@ public class Department {
         if (course != null) {
             coursesOffered.add(course);
         } else {
-            throw new IllegalArgumentException("Course cannot be null");
+            logger.error("Course cannot be null", new IllegalArgumentException("Course cannot be null"));
         }
     }
 
@@ -234,7 +240,7 @@ public class Department {
      */
     public void removeCourse(Course course) {
         if (!coursesOffered.remove(course)) {
-            throw new IllegalArgumentException("Course not found in the list");
+            logger.error("Course not found in the list", new IllegalArgumentException("Course not found in the list"));
         }
     }
 
