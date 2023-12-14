@@ -1,4 +1,4 @@
-package com.school_management.support_entities;
+package com.school_management.support_entities.time_frame;
 
 import java.util.Date;
 import java.util.Objects;

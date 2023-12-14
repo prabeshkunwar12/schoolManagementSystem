@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.school_management.support_entities.Room;
 import com.school_management.support_entities.schedule.CourseSectionSchedule;
+import com.school_management.support_entities.school.Room;
 
 public class CourseSection  {
     private int sectionID;
@@ -126,7 +126,9 @@ public class CourseSection  {
      */
     public void setTeacher(Teacher teacher) {
         if(teacher != null) {
-            this.teacher = teacher;
+            if(teacher.addCourseSectionCurrentlyTeaching(this)) {
+                this.teacher.removeCourseSectionCurrentlyTeaching(this);
+            }
         } else {
             throw new IllegalArgumentException("teacher cannot be null");
         }

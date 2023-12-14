@@ -22,12 +22,12 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.school_management.support_entities.SchoolYear;
 import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.school_management.support_entities.time_frame.SchoolYear;
 
 public class Course {
     private int courseID;
@@ -97,11 +97,12 @@ public class Course {
 
     public void setDepartment(Department department) {
         if(department == null) {
-            logger.error("Department cannot be null", new IllegalArgumentException("Department cannot be null"));
-        }
-        this.department.removeCourse(this);
-        department.addCourse(this);
-        this.department = department;
+            logger.error("Department cannot be null", new IllegalArgumentException());
+        } else {
+            this.department.removeCourse(this);
+            department.addCourse(this);
+            this.department = department;
+        }     
     }
 
     /**
@@ -121,9 +122,9 @@ public class Course {
      */
     public void addSchoolYear(SchoolYear schoolYear) {
         if (schoolYear == null) {
-            logger.error("School year cannot be null", new IllegalArgumentException("School year cannot be null"));
+            logger.error("School year cannot be null", new IllegalArgumentException());
         } else if (containsYear(schoolYear.getYear())) {
-            logger.error("This course already contains this school year", new IllegalArgumentException("This course already contains this school year"));
+            logger.error("This course already contains this school year", new IllegalArgumentException());
         } else {
             schoolYearList.add(schoolYear);
         }
@@ -163,7 +164,7 @@ public class Course {
      */
     public SchoolYear getSchoolYear(int index) {
         if (index < 0 || index >= schoolYearList.size()) {
-            logger.error("Index out of bounds for school years list", new IndexOutOfBoundsException("Index out of bounds for school years list"));
+            logger.error("Index out of bounds for school years list", new IndexOutOfBoundsException());
         }
         return schoolYearList.get(index);
     }

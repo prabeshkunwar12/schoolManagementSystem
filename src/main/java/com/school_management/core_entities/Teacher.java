@@ -37,6 +37,10 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.school_management.support_entities.schedule.CourseSectionSchedule;
+import com.school_management.support_entities.schedule.Schedule;
+import com.school_management.support_entities.schedule.TeacherSchedule;
+
 public class Teacher {
     private int teacherID;
     private boolean teacherIDGenerated;
@@ -46,6 +50,7 @@ public class Teacher {
     private Department department;
     private List<CourseSection> sectionsTaughtList;
     private List<CourseSection> sectionsCurrentlyTeachingList;
+    private Schedule schedule;
 
     // Logger for logging messages related to the Teacher class
     private static final Logger logger = LoggerFactory.getLogger(Teacher.class);
@@ -58,6 +63,7 @@ public class Teacher {
         this.email = email;
         sectionsTaughtList = new ArrayList<>();
         sectionsCurrentlyTeachingList = new ArrayList<>();
+        schedule = new TeacherSchedule();
     }
 
     // Getter for teacher ID
@@ -154,7 +160,7 @@ public class Teacher {
             this.sectionsCurrentlyTeachingList.remove(courseSection);
             logger.info("CourseSection moved from sectionsCurrentlyTeachingList to sectionsTaughtList.");
         } else {
-            logger.error("CourseSection not found in sectionCurrentlyTeachingList", new IllegalArgumentException());
+            logger.error("CourseSection not found in sectionCurrentlyTeachingList", new IllegalArgumentException("CourseSection not found in sectionCurrentlyTeachingList"));
         }
     }
     
@@ -179,32 +185,86 @@ public class Teacher {
      * @return True if the course section is successfully added; otherwise, false.
      */
     public boolean addCourseSectionCurrentlyTeaching(CourseSection courseSection) {
-        if(this.getDepartment().equals(courseSection.getCourse().getDepartment())) {
-            sectionsCurrentlyTeachingList.add(courseSection);
-            logger.info("CourseSection added to sectionsCurrentlyTeachingList;");
-            return true;
-        } 
-        logger.error("Course section is from a different department.", new IllegalArgumentException());
+        if (courseSection != null) {
+            if (this.getDepartment().equals(courseSection.getCourse().getDepartment()) && this.addSchedule(courseSection.getSchedule())) {
+                sectionsCurrentlyTeachingList.add(courseSection);
+                logger.info("CourseSection added to sectionsCurrentlyTeachingList;");
+                return true;
+            } else {
+                logger.error("Course section is from a different department.", new IllegalArgumentException());
+            }
+        } else {
+            logger.error("Course section cannot be null", new IllegalArgumentException());
+        }
         return false;
     }
+    
 
-     /**
-     * Removes a course section from the list of sections currently taught by the teacher.
-     *
-     * @param courseSection The course section to be removed (must not be null).
-     * Removes the course section from sectionsCurrentlyTeachingList.
-     * Logs an info message if the course section is successfully removed.
-     * Logs an error message if the course section is not found in sectionsCurrentlyTeachingList.
-     * @return True if the course section is successfully removed; otherwise, false.
-     */
+    /**
+    * Removes a course section from the list of sections currently taught by the teacher.
+    *
+    * @param courseSection The course section to be removed (must not be null).
+    * Removes the course section from sectionsCurrentlyTeachingList.
+    * Logs an info message if the course section is successfully removed.
+    * Logs an error message if the course section is not found in sectionsCurrentlyTeachingList.
+    * @return True if the course section is successfully removed; otherwise, false.
+    */
     public boolean removeCourseSectionCurrentlyTeaching(CourseSection courseSection) {
         if(this.sectionsCurrentlyTeachingList.remove(courseSection)) {
-            logger.info("CourseSection removed form the sectionsCurrentlyTeachingList.");
+            removeSchedule(courseSection.getSchedule());
+            logger.info("CourseSection removed from the sectionsCurrentlyTeachingList.");
             return true;
         } 
         logger.error("courseSection not found in the sectionCurrentlyTeachingList", new IllegalArgumentException());
         return false;
     }
+
+    public Schedule getSchedule() {
+        return this.schedule;
+    }
+
+    /**
+     * Adds a CourseSectionSchedule to the schedule list.
+     *
+     * @param sectionSchedule The CourseSectionSchedule to be added (must not be null).
+     * @return True if the CourseSectionSchedule is successfully added; otherwise, false.
+     * @throws IllegalArgumentException If the section schedule is null.
+     */
+    private boolean addSchedule(CourseSectionSchedule sectionSchedule) {
+        if (sectionSchedule != null) {
+            try {
+                schedule.addCourseSectionSchedule(sectionSchedule);
+                logger.info("Schedule added to the list.");
+                return true;
+            } catch (Exception e) {
+                logger.error("Failed to add schedule: " + e.getMessage(), e);
+            }
+        } else {
+            logger.error("Section schedule cannot be null", new IllegalArgumentException());
+        }
+        return false;
+    }
+
+    /**
+     * Removes a course section schedule.
+     *
+     * @param sectionSchedule The schedule associated with the course section to be removed (must not be null).
+     * Removes the schedule from the list.
+     * Logs an info message if the schedule is successfully removed.
+     * Logs an error message if an exception occurs during removal.
+     * @return True if the schedule is successfully removed; otherwise, false.
+     */
+    private boolean removeSchedule(CourseSectionSchedule sectionSchedule) {
+        try {
+            schedule.removeCourseSectionSchedule(sectionSchedule);
+            logger.info("CourseSectionSchedule is removed");
+            return true;
+        } catch(Exception e) {
+            logger.error("CourseSectionSchedule not removed", e);
+            return false;
+        }
+    }
+    
       
 
     // Overridden equals, hashCode, and toString methods

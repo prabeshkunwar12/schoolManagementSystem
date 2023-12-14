@@ -17,7 +17,7 @@
  * associated with that year. Manage sessions by adding or checking session types within the year.
  * Access year and session details using getters. Ensure valid data manipulation by verifying inputs.
  */
-package com.school_management.support_entities;
+package com.school_management.support_entities.time_frame;
 
 import java.time.Year;
 import java.util.ArrayList;
