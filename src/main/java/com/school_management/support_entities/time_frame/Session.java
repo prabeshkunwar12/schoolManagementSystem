@@ -3,6 +3,9 @@ package com.school_management.support_entities.time_frame;
 import java.util.Date;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.school_management.core_entities.CourseSection;
 
 import java.util.List;
@@ -10,16 +13,19 @@ import java.util.List;
 
 public class Session {
     private int sessionID;
-    private SessionType sessionType;
+    private final SessionType sessionType;
     private List<CourseSection> courseSections;
-    private Date starDate;
-    private Date enDate;
+    private final Date starDate;
+    private final Date endDate;
 
-    public Session(int sessionID, SessionType sessionType, Date starDate, Date enDate) {
+    private Logger logger = LoggerFactory.getLogger(Session.class);
+
+    public Session(int sessionID, SessionType sessionType, Date starDate, Date endDate) {
         this.sessionID = sessionID;
         this.sessionType = sessionType;
         this.starDate = starDate;
-        this.enDate = enDate;
+        this.endDate = endDate;
+        logger.info("New Session Initialized");
     }
 
     public int getSessionID() {
@@ -28,62 +34,33 @@ public class Session {
 
     public void setSessionID(int sessionID) {
         this.sessionID = sessionID;
+        logger.info("Session id modified");
     }
 
     public SessionType getSessionType() {
         return this.sessionType;
     }
 
-    public void setSessionType(SessionType sessionType) {
-        this.sessionType = sessionType;
-    }
-
     public Date getStarDate() {
         return this.starDate;
     }
 
-    public void setStarDate(Date starDate) {
-        this.starDate = starDate;
+    public Date getEndDate() {
+        return this.endDate;
     }
-
-    public Date getEnDate() {
-        return this.enDate;
-    }
-
-    public void setEnDate(Date enDate) {
-        this.enDate = enDate;
-    }
-
-    public Session sessionID(int sessionID) {
-        setSessionID(sessionID);
-        return this;
-    }
-
-    public Session sessionType(SessionType sessionType) {
-        setSessionType(sessionType);
-        return this;
-    }
-
-    public Session starDate(Date starDate) {
-        setStarDate(starDate);
-        return this;
-    }
-
-    public Session enDate(Date enDate) {
-        setEnDate(enDate);
-        return this;
-    }
-
 
     public List<CourseSection> getCourseSections() {
         return this.courseSections;
     }
 
-    public void addCourseSection(CourseSection courseSection) {
+    public boolean addCourseSection(CourseSection courseSection) {
         if(courseSection == null) {
-            throw new IllegalArgumentException("course section cannot be null");
+            logger.error("course section cannot be null",  new IllegalArgumentException());
+            return false;
         } else {
             courseSections.add(courseSection);
+            logger.info("CourseSection added");
+            return true;
         }
     }
 
@@ -96,12 +73,12 @@ public class Session {
             return false;
         }
         Session session = (Session) o;
-        return sessionID == session.sessionID && Objects.equals(sessionType, session.sessionType) && Objects.equals(courseSections, session.courseSections) && Objects.equals(starDate, session.starDate) && Objects.equals(enDate, session.enDate);
+        return sessionID == session.sessionID && Objects.equals(sessionType, session.sessionType) && Objects.equals(courseSections, session.courseSections) && Objects.equals(starDate, session.starDate) && Objects.equals(endDate, session.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sessionID, sessionType, courseSections, starDate, enDate);
+        return Objects.hash(sessionID, sessionType, courseSections, starDate, endDate);
     }
 
 
@@ -112,7 +89,7 @@ public class Session {
             ", sessionType='" + getSessionType() + "'" +
             ", courseSections='" + getCourseSections() + "'" +
             ", starDate='" + getStarDate() + "'" +
-            ", enDate='" + getEnDate() + "'" +
+            ", endDate='" + getEndDate() + "'" +
             "}";
     }
     

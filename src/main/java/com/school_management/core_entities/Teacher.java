@@ -43,7 +43,6 @@ import com.school_management.support_entities.schedule.TeacherSchedule;
 
 public class Teacher {
     private int teacherID;
-    private boolean teacherIDGenerated;
     private String name;
     private long phoneNumber;
     private String email;
@@ -54,41 +53,34 @@ public class Teacher {
 
     // Logger for logging messages related to the Teacher class
     private static final Logger logger = LoggerFactory.getLogger(Teacher.class);
-    
-    // Constructor for Teacher
-    public Teacher(String name, long phoneNumber, String email) {
-        setTeacherID();
+
+    /**
+     * Constructor to initialize department details.
+     *
+     * @param teacherID The unique identifier for the teacher.
+     * @param Name The name of the teacher
+     * @param phoneNumber The phoneNumber of the teacher
+     * @param email The email of the teacher
+     */
+    public Teacher(int teacherID, String name, long phoneNumber, String email) {
+        this.teacherID = teacherID;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
         sectionsTaughtList = new ArrayList<>();
         sectionsCurrentlyTeachingList = new ArrayList<>();
         schedule = new TeacherSchedule();
+        logger.info("New Teacher initialized.");
     }
 
-    // Getter for teacher ID
     public int getTeacherID() {
         return this.teacherID;
     }
 
-    // Setter for teacher ID
-    public void setTeacherID() {
-        this.teacherID = teacherIDGenerator();
+    public void setTeacherID(int teacherID) {
+        this.teacherID = teacherID;
+        logger.info("Teacher Id modified.");
     }
-
-    // Private method to generate teacher ID
-    private int teacherIDGenerator() {
-        if (!teacherIDGenerated) {
-            return 111111; // Temporary ID generation logic
-            /*
-             * generate the unique ID for teachers
-             * (Actual logic for generating unique ID can be added here)
-             */
-        }
-        return getTeacherID();
-    }
-
-    // Getters and setters for teacher details
 
     public String getName() {
         return this.name;
@@ -96,6 +88,7 @@ public class Teacher {
     
     public void setName(String name) {
         this.name = name;
+        logger.info("Teacher name modified.");
     }
     
     public long getPhoneNumber() {
@@ -104,6 +97,7 @@ public class Teacher {
     
     public void setPhoneNumber(long phoneNumber) {
         this.phoneNumber = phoneNumber;
+        logger.info("Teacher phoneNumber modified.");
     }
     
     public String getEmail() {
@@ -112,6 +106,7 @@ public class Teacher {
     
     public void setEmail(String email) {
         this.email = email;
+        logger.info("Teacher email modified.");
     }   
 
 
@@ -125,13 +120,17 @@ public class Teacher {
      * @param department The department to be associated with the teacher (must not be null).
      * @throws IllegalArgumentException if the department provided is null.
      */
-    public void setDepartment(Department department) {
+    public boolean setDepartment(Department department) {
         if(department == null) {
-            throw new IllegalArgumentException("department cannot be null");
+            logger.error("department cannot be null.", new IllegalArgumentException());
+            return false;
+        } else {
+            this.department.removeTeacher(this);
+            department.addTeacher(this);
+            this.department = department;
+            logger.info("Teacher deparment modified.");
+            return true;
         }
-        this.department.removeTeacher(this);
-        department.addTeacher(this);
-        this.department = department;
     }
 
 
@@ -160,7 +159,7 @@ public class Teacher {
             this.sectionsCurrentlyTeachingList.remove(courseSection);
             logger.info("CourseSection moved from sectionsCurrentlyTeachingList to sectionsTaughtList.");
         } else {
-            logger.error("CourseSection not found in sectionCurrentlyTeachingList", new IllegalArgumentException("CourseSection not found in sectionCurrentlyTeachingList"));
+            logger.error("CourseSection not found in sectionCurrentlyTeachingList", new IllegalArgumentException());
         }
     }
     

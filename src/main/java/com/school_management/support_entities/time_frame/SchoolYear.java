@@ -25,9 +25,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SchoolYear {
-    private Year year;
+    private final Year year;
     private List<Session> sessions;
+
+    private Logger logger = LoggerFactory.getLogger(SchoolYear.class);
 
     /**
      * Constructor to initialize a SchoolYear with the specified year and an empty session list.
@@ -37,6 +42,7 @@ public class SchoolYear {
     public SchoolYear(Year year) {
         this.year = year;
         sessions = new ArrayList<>();
+        logger.info("New School Year initialized");
     }
 
     /**
@@ -48,6 +54,7 @@ public class SchoolYear {
     public SchoolYear(Year year, List<Session> sessions) {
         this.year = year;
         setSessions(sessions);
+        logger.info("New School Year initialized");
     }
 
     /**
@@ -57,19 +64,6 @@ public class SchoolYear {
      */
     public Year getYear() {
         return this.year;
-    }
-
-    /**
-     * Set the academic year.
-     *
-     * @param year The academic year to be set.
-     * @throws IllegalArgumentException if the provided year is null.
-     */
-    public void setYear(Year year) {
-        if(year == null) {
-            throw new IllegalArgumentException("year cannot be null");
-        }
-        this.year = year;
     }
 
     /**
@@ -87,14 +81,20 @@ public class SchoolYear {
      * @param sessions The list of sessions to be set.
      * @throws IllegalArgumentException if the provided sessions list is null.
      */
-    public void setSessions(List<Session> sessions) {
+    public boolean setSessions(List<Session> sessions) {
         if(sessions == null) {
-            throw new IllegalArgumentException("sessions cannot be null");
-        }
-        this.sessions = new ArrayList<>();
-        for(Session session: sessions) {
-            addSession(session);
-        }
+            logger.error("sessions cannot be null", new IllegalArgumentException());
+            return false;
+        } else {
+            this.sessions = new ArrayList<>();
+            for(Session session: sessions) {
+                if(!addSession(session)){
+                    return false;
+                }
+            }
+            logger.info("List of sessions modified");
+            return true;
+        }  
     }
 
     /**
@@ -103,14 +103,18 @@ public class SchoolYear {
      * @param session The session to be added.
      * @throws IllegalArgumentException if the provided session is null or if the session type already exists.
      */
-    public void addSession(Session session) {
+    public boolean addSession(Session session) {
         if(session == null) {
-            throw new IllegalArgumentException("session cannot be null");
+            logger.error("session cannot be null", new IllegalArgumentException());
+            return false;
         }
         if(containsSessionType(session.getSessionType())) {
-            throw new IllegalArgumentException("this year already contains " + session.getSessionType() + " session.");
+            logger.error("this year already contains {} session.", session.getSessionType(), new IllegalArgumentException());
+            return false;
         }
         this.sessions.add(session);
+        logger.info("Added {} to the sessionList", session.getSessionType());
+        return true;
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.school_management.support_entities.school;
 import java.util.Objects;
 
+import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.schedule.RoomSchedule;
 
 public class Room {
@@ -50,6 +51,10 @@ public class Room {
 
     public void setSchedule(RoomSchedule schedule) {
         this.schedule = schedule;
+    }
+
+    public boolean bookRoom(CourseSectionSchedule schedule) {
+        return this.schedule.addCourseSectionSchedule(schedule);
     }
 
     @Override

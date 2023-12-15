@@ -55,6 +55,7 @@ public class Course {
         this.description = description;
         this.credits = credits;
         schoolYearList = new ArrayList<>();
+        logger.info("New Course Initialized.");
     }
 
     // getters and setters
@@ -65,6 +66,7 @@ public class Course {
 
     public void setCourseID(int courseID) {
         this.courseID = courseID;
+        logger.info("Course ID modified");
     }
 
     public String getCourseName() {
@@ -73,6 +75,7 @@ public class Course {
 
     public void setCourseName(String courseName) {
         this.courseName = courseName;
+        logger.info("Course name modified");
     }
 
     public String getDescription() {
@@ -81,6 +84,7 @@ public class Course {
 
     public void setDescription(String description) {
         this.description = description;
+        logger.info("Course description modified");
     }
 
     public int getCredits() {
@@ -89,19 +93,23 @@ public class Course {
 
     public void setCredits(int credits) {
         this.credits = credits;
+        logger.info("Course credit value modified");
     }
 
     public Department getDepartment() {
         return this.department;
     }
 
-    public void setDepartment(Department department) {
+    public boolean setDepartment(Department department) {
         if(department == null) {
             logger.error("Department cannot be null", new IllegalArgumentException());
+            return false;
         } else {
             this.department.removeCourse(this);
             department.addCourse(this);
             this.department = department;
+            logger.info("Course department modified");
+            return true;
         }     
     }
 
@@ -120,13 +128,17 @@ public class Course {
      * @param schoolYear The school year to be added.
      * @throws IllegalArgumentException If the school year is null or already exists in the list.
      */
-    public void addSchoolYear(SchoolYear schoolYear) {
+    public boolean addSchoolYear(SchoolYear schoolYear) {
         if (schoolYear == null) {
             logger.error("School year cannot be null", new IllegalArgumentException());
+            return false;
         } else if (containsYear(schoolYear.getYear())) {
             logger.error("This course already contains this school year", new IllegalArgumentException());
+            return false;
         } else {
             schoolYearList.add(schoolYear);
+            logger.info("Added new School Year to the course.");
+            return true;
         }
     }
 

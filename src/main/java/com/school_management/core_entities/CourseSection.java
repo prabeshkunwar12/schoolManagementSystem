@@ -1,20 +1,48 @@
+/**
+ * The `CourseSection` class represents a section of a course within the educational system.
+ * It manages the scheduling, room allocation, and enrollment of students.
+ * This class handles the association between a course, room, teacher, enrollment list, and grading criteria.
+ *
+ * Usage:
+ * Create a `CourseSection` instance by providing essential parameters such as section ID, course, room, teacher, and schedule.
+ * Utilize methods like `addEnrollment`, `removeEnrollment`, and `setPassingGrade` to manage enrollments and grading criteria.
+ *
+ * Functionalities:
+ * - Initializes a new course section with associated parameters.
+ * - Manages room allocation for the section based on scheduling.
+ * - Adds and removes student enrollments from the section.
+ * - Sets and retrieves the teacher for the course section.
+ * - Manages and retrieves the passing grade required for the section.
+ * - Handles checking whether an enrollment in the section has passed or failed.
+ *
+ * @see Course
+ * @see Room
+ * @see Teacher
+ * @see Enrollment
+ * @see CourseSectionSchedule
+ */
 package com.school_management.core_entities;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.school.Room;
 
 public class CourseSection  {
     private int sectionID;
-    private Course course;
+    private final Course course;
     private Room room;
-    private List<Enrollment> enrollments;
+    private List<Enrollment> enrollmentList;
     private Teacher teacher;
     private float passingGrade;
-    private CourseSectionSchedule schedule;
+    private final CourseSectionSchedule schedule;
+
+    private Logger logger = LoggerFactory.getLogger(CourseSection.class);
 
     
     /**
@@ -23,18 +51,22 @@ public class CourseSection  {
      * @param sectionID     The unique identifier for the section.
      * @param course        The associated Course.
      * @param room          The room where the section is conducted.
-     * @param enrollments   List of enrollments in the section.
+     * @param enrollmentList   List of enrollments in the section.
      * @param teacher       The teacher assigned to the section.
      * @param schedule      The schedule of the course
      */
-    public CourseSection(int sectionID, Course course, Room room, List<Enrollment> enrollments, Teacher teacher, CourseSectionSchedule schedule) {
-        this.sectionID = sectionID;
-        this.course = course;
-        this.room = room;
-        this.enrollments = new ArrayList<>(enrollments);
-        this.teacher = teacher;
-        this.schedule = schedule;
-        this.passingGrade = 0;
+    public CourseSection(int sectionID, Course course, Room room, Teacher teacher, CourseSectionSchedule schedule) {
+        if(setRoom(room) && setTeacher(teacher)) {
+            this.sectionID = sectionID;
+            this.course = course;
+            this.enrollmentList = new ArrayList<>();
+            this.passingGrade = 0;
+            this.schedule = schedule;
+            logger.info("New Course section for {} Initialized", this.course);
+        } else {
+            logger.error("failed to initialize course Section", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
     }
 
     // Getters and setters
@@ -45,45 +77,34 @@ public class CourseSection  {
 
     public void setSectionID(int sectionID) {
         this.sectionID = sectionID;
+        logger.info("CourseSection ID modified to {}", sectionID);
     }
 
     public Course getCourse() {
         return this.course;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
     public Room getRoom() {
         return this.room;
     }
 
-    public void setRoom(Room room) {
-        this.room = room;
+    public boolean setRoom(Room room) {
+        if(room.bookRoom(this.schedule)){
+            this.room = room;
+            logger.info("{} is booked with capacity of {}", room.getRoomType(), room.getStudentCapacity());
+            return true;
+        }
+        logger.error("Failed to book the room.", new IllegalArgumentException());
+        return false;
     }
 
     /**
      * Retrieves the list of enrollments for this course section.
      *
-     * @return An unmodifiable list of enrollments.
+     * @return An unmodifiable list of enrollmentList.
      */
-    public List<Enrollment> getEnrollments() {
-        return Collections.unmodifiableList(this.enrollments);
-    }
-
-    /**
-     * Sets the enrollments for this course section.
-     *
-     * @param enrollments The list of enrollments to set.
-     * @throws IllegalArgumentException if the provided list is null.
-     */
-    public void setEnrollments(List<Enrollment> enrollments) {
-        if(enrollments != null) {
-            this.enrollments = new ArrayList<>(enrollments);
-        } else {
-            throw new IllegalArgumentException("list of enrollments cannot be null");
-        }
+    public List<Enrollment> getEnrollmentList() {
+        return Collections.unmodifiableList(this.enrollmentList);
     }
 
     /**
@@ -92,26 +113,30 @@ public class CourseSection  {
      * @param enrollment The enrollment to add.
      * @throws IllegalArgumentException if enrollment is null.
      */
-    public void addEnrollment(Enrollment enrollment) {
+    public boolean addEnrollment(Enrollment enrollment) {
         if(enrollment != null) {
-            this.enrollments.add(enrollment);
+            this.enrollmentList.add(enrollment);
+            logger.info("New enrollment for {} has been added.", enrollment.getStudent().getName());
+            return true;
         }
-        else {
-            throw new IllegalArgumentException("enrollment cannot be null");
-        } 
+        logger.error("failed to add new enrollment", new IllegalArgumentException());
+        return false;
     }
 
     /**
-     * Removes an enrollment from the list of enrollments for this section.
+     * Removes an enrollment from the list of enrollments for this section and also for the respective student.
      *
      * @param enrollment The enrollment to remove.
      * @throws IllegalArgumentException if enrollment is not found in the list.
      */
-    public void removeEnrollment(Enrollment enrollment) {
-        boolean removedEnrollment = this.enrollments.remove(enrollment);
+    public boolean removeEnrollment(Enrollment enrollment) {
+        boolean removedEnrollment = enrollment.getStudent().removeCourse(enrollment) && this.enrollmentList.remove(enrollment);
         if(!(removedEnrollment)) {
-            throw new IllegalArgumentException("enrollment not found in the list");
+            logger.error("Failed to remove the enrollment", new IllegalArgumentException());
+            return false;
         }
+        logger.info("Enrollment for {} has been removed.", enrollment.getStudent().getName());
+        return true;
     }
 
     public Teacher getTeacher() {
@@ -124,14 +149,15 @@ public class CourseSection  {
      * @param teacher The teacher to be assigned.
      * @throws IllegalArgumentException if the provided teacher is null.
      */
-    public void setTeacher(Teacher teacher) {
-        if(teacher != null) {
-            if(teacher.addCourseSectionCurrentlyTeaching(this)) {
-                this.teacher.removeCourseSectionCurrentlyTeaching(this);
-            }
-        } else {
-            throw new IllegalArgumentException("teacher cannot be null");
+    public boolean setTeacher(Teacher teacher) {
+        if(teacher != null && teacher.addCourseSectionCurrentlyTeaching(this)) { 
+            this.teacher.removeCourseSectionCurrentlyTeaching(this);
+            this.teacher = teacher;
+            logger.info("New teacher {} set for the course section", this.teacher.getName());
+            return true;  
         }
+        logger.error("Failed to set new teacher", new IllegalArgumentException());
+        return false;
     }
 
 
@@ -139,11 +165,14 @@ public class CourseSection  {
         return this.passingGrade;
     }
 
-    public void setPassingGrade(float passingGrade) {
+    public boolean setPassingGrade(float passingGrade) {
         if(passingGrade<0 || passingGrade>100) {
-            throw new IllegalArgumentException("passing grade should not be in between 0 and 100.");
+            logger.error("passing grade should not be in between 0 and 100. Failed to set the passing grade.", new IllegalArgumentException());
+            return false;
         }
         this.passingGrade = passingGrade;
+        logger.info("Passing grade changed to {}", passingGrade);
+        return true;
     }
 
 
@@ -154,7 +183,7 @@ public class CourseSection  {
      * @return True if the enrollment is passed, false otherwise.
      */
     public boolean isPassed(Enrollment enrollment) {
-        if(this.enrollments.contains(enrollment)) {
+        if(this.enrollmentList.contains(enrollment)) {
             return enrollment.isPassed();
         } else {
             throw new IllegalArgumentException("enrollment not found in the list");
@@ -164,10 +193,6 @@ public class CourseSection  {
 
     public CourseSectionSchedule getSchedule() {
         return this.schedule;
-    }
-
-    public void setSchedule(CourseSectionSchedule schedule) {
-        this.schedule = schedule;
     }
 
     //hash, equals and toString
@@ -181,12 +206,12 @@ public class CourseSection  {
             return false;
         }
         CourseSection courseSection = (CourseSection) o;
-        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(enrollments, courseSection.enrollments) && Objects.equals(teacher, courseSection.teacher) && passingGrade == courseSection.passingGrade && Objects.equals(schedule, courseSection.schedule);
+        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(enrollmentList, courseSection.enrollmentList) && Objects.equals(teacher, courseSection.teacher) && passingGrade == courseSection.passingGrade && Objects.equals(schedule, courseSection.schedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionID, course, room, enrollments, teacher, passingGrade, schedule);
+        return Objects.hash(sectionID, course, room, enrollmentList, teacher, passingGrade, schedule);
     }
 
 
@@ -196,7 +221,7 @@ public class CourseSection  {
             " sectionID='" + getSectionID() + "'" +
             ", course='" + getCourse() + "'" +
             ", room='" + getRoom() + "'" +
-            ", enrollments='" + getEnrollments() + "'" +
+            ", enrollmentList='" + getEnrollmentList() + "'" +
             ", teacher='" + getTeacher() + "'" +
             ", passingGrade='" + getPassingGrade() + "'" +
             ", schedule='" + getSchedule() + "'" +

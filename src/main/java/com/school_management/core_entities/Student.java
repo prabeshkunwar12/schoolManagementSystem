@@ -1,3 +1,22 @@
+/**
+ * The `Student` class encapsulates student information and handles enrollment and course completion.
+ * It manages personal details, enrollment in courses, and completed courses for a student.
+ *
+ * Usage:
+ * Create a `Student` instance by providing mandatory personal details like ID, name, address, date of birth, and email.
+ * Use methods like `addCourse`, `removeCourse`, and `setCourseAsComplete` to manage enrolled and completed courses.
+ *
+ * Functionalities:
+ * - Initializes and manages student personal details and guardian information.
+ * - Keeps track of the student's enrollment in courses and completed courses.
+ * - Allows adding, removing, and marking courses as complete for the student.
+ * - Provides methods to access and manipulate the student's schedule.
+ *
+ * @see Enrollment
+ * @see YearStanding
+ * @see StudentSchedule
+ * @see Schedule
+ */
 package com.school_management.core_entities;
 
 import java.util.List;
@@ -8,6 +27,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.school_management.support_entities.schedule.Schedule;
 import com.school_management.support_entities.schedule.StudentSchedule;
 import com.school_management.support_entities.time_frame.YearStanding;
 
@@ -17,9 +37,6 @@ public class Student {
 
     // Unique identifier for the student
     private int studentID;
-
-    // Flag to track whether the student ID has been generated
-    private boolean studentIDGenerated = false;
 
     // Student's personal details
     private String name;
@@ -42,15 +59,13 @@ public class Student {
     // List of courses completed by the student
     private List<Enrollment> completedCourses;
 
-    private StudentSchedule schedule;
+    private final StudentSchedule schedule;
 
 
     // Constructor to initialize mandatory personal details of the student
-    public Student(String name, String address, Date dateOfBirth, String email) {
-        // Generates a unique student ID
-        setStudentID();
-
+    public Student(int studentID, String name, String address, Date dateOfBirth, String email) {
         // Set basic personal details
+        this.studentID = studentID;
         this.name = name;
         this.address = address;
         this.dateOfBirth = dateOfBirth;
@@ -75,16 +90,8 @@ public class Student {
         return this.studentID;
     }
 
-    public void setStudentID() {
-        this.studentID = studentIDGenerator();
-    }
-
-    // Private method to generate a unique student ID
-    private int studentIDGenerator() {
-        if (!studentIDGenerated) {
-            return 111111; // Replace with actual logic for generating a unique ID
-        }
-        return getStudentID();
+    public void setStudentID(int studentID) {
+        this.studentID = studentID;
     }
 
     public String getName() {
@@ -174,29 +181,14 @@ public class Student {
      * @param enrollment The enrollment to be added
      * @throws IllegalArgumentException if enrollment is null
      */
-    public void addCourse(Enrollment enrollment) {
+    public boolean addCourse(Enrollment enrollment) {
         if(enrollment != null) {
-            schedule.addCourseSectionSchedule(enrollment.getCourseSection().getSchedule());
             enrolledCourses.add(enrollment);
-        } else {
-            throw new IllegalArgumentException("Enrollment cannot be null");
+            logger.info("Enrollement for {} course has been added to the list", enrollment.getCourseSection().getCourse().getCourseName());
+            return true;
         }
-    }
-
-    /**
-     * Adds a course section to the list of courses in which the student is enrolled.
-     *
-     * @param courseSection The course section to be added
-     * @throws IllegalArgumentException if courseSection is null
-     */
-    public void addCourse(CourseSection courseSection) {
-        if(courseSection != null) {
-            schedule.addCourseSectionSchedule(courseSection.getSchedule());
-            Enrollment enrollment = new Enrollment(this, courseSection);
-            addCourse(enrollment);
-        } else {
-            throw new IllegalArgumentException("Course Section cannot be null");
-        }
+        logger.error("Failed to add enrollementto the list", new IllegalArgumentException());
+        return false;
     }
 
     /**
@@ -205,28 +197,14 @@ public class Student {
      * @param enrollment The enrollment to be removed
      * @throws IllegalArgumentException if enrollment is not found in the list
      */
-    public void removeCourse(Enrollment enrollment) {
+    public boolean removeCourse(Enrollment enrollment) {
         boolean removed = this.enrolledCourses.remove(enrollment) && this.schedule.removeCourseSectionSchedule(enrollment.getCourseSection().getSchedule());
         if(!removed) {
-            throw new IllegalArgumentException("enrollment not found in the list");
+            logger.error("enrollment not found in the list", new IllegalArgumentException());
+            return false;
         }
-    }
-
-    /**
-     * Removes a course section from the list of courses in which the student is enrolled.
-     *
-     * @param courseSection The course section to be removed
-     */
-    public void removeCourse(CourseSection courseSection) {
-        boolean removed = false;
-        for(Enrollment enrollment: enrolledCourses) {
-            if(enrollment.getCourseSection() == courseSection) {
-                removed = this.enrolledCourses.remove(enrollment) && this.schedule.removeCourseSectionSchedule(enrollment.getCourseSection().getSchedule());
-            }
-        }
-        if(!removed) {
-            throw new IllegalArgumentException("Course Section not found in the list");
-        }
+        logger.info("Enrollment for {} course removed from the list", enrollment.getCourseSection().getCourse().getCourseName());
+        return true;
     }
 
     /**
@@ -250,6 +228,7 @@ public class Student {
             if(enrollment.isPassed()) {
                 this.completedCourses.add(enrollment);
                 this.removeCourse(enrollment);
+                logger.info("Course {} is set as completed", enrollment.getCourseSection().getCourse().getCourseName());
                 return true;
             } else {
                 logger.warn("Student didn't meet the criteria to pass the course");
@@ -259,6 +238,10 @@ public class Student {
         } else {
             throw new IllegalArgumentException("Enrollment cannot be null");
         }
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
     }
 
     // Equals, hashCode, and toString methods
