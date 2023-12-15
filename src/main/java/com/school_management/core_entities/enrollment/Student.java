@@ -17,7 +17,7 @@
  * @see StudentSchedule
  * @see Schedule
  */
-package com.school_management.core_entities;
+package com.school_management.core_entities.enrollment;
 
 import java.util.List;
 import java.util.ArrayList;

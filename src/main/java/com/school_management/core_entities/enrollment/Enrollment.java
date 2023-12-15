@@ -23,7 +23,7 @@
  * @see Attendance
  * @see Grades
  */
-package com.school_management.core_entities;
+package com.school_management.core_entities.enrollment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

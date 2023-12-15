@@ -37,6 +37,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.school_management.core_entities.enrollment.CourseSection;
 import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.schedule.Schedule;
 import com.school_management.support_entities.schedule.TeacherSchedule;
