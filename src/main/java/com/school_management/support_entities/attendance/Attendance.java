@@ -1,3 +1,20 @@
+/**
+ * The Attendance class manages and tracks the attendance of students for a specific CourseSectionSchedule.
+ * It maintains a record of attendance status for each scheduled date within the course section's schedule.
+ *
+ * Functionalities:
+ * - Stores and manages attendance status for scheduled dates within the CourseSectionSchedule.
+ * - Allows retrieval of the CourseSectionSchedule and the attendance status list for each scheduled date.
+ * - Provides a method to assign/update attendance status for specific dates.
+ *
+ * Usage:
+ * This class is utilized to monitor and manage the attendance of students within a particular course section.
+ * It uses the CourseSectionSchedule associated with the course section to initialize the attendance list
+ * and allows the modification of attendance status for each scheduled date as needed.
+ *
+ * Note: The attendance status follows an enum type (AttendanceStatus) and is linked to specific dates in
+ * the course section schedule. It's intended to maintain an accurate record of student attendance.
+ */
 package com.school_management.support_entities.attendance;
 
 import java.time.LocalDate;
@@ -7,31 +24,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.school_management.support_entities.schedule.CourseSectionSchedule;
 
+
+
 public class Attendance {
-    private CourseSectionSchedule schedule;
+    private final CourseSectionSchedule schedule;
     private Map<LocalDate, AttendanceStatus> attendanceList;
 
+    private Logger logger = LoggerFactory.getLogger(Attendance.class);
+    
     
     public Attendance(CourseSectionSchedule schedule) {
         if(schedule == null) {
-            throw new IllegalArgumentException("enrollment cannot be null");
+            logger.error("CourseSectionSchedule is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("schedule cannot be null");
         }
         this.schedule = schedule;
         initializeAttendanceList();
+        logger.info("New attendance created");
     }
 
     public CourseSectionSchedule getSchedule() {
         return this.schedule;
-    }
-
-    public void setSchedule(CourseSectionSchedule schedule) {
-        if(schedule == null) {
-            throw new IllegalArgumentException("enrollment cannot be null");
-        }
-        this.schedule = schedule;
-        initializeAttendanceList();
     }
 
     public Map<LocalDate, AttendanceStatus> getAttendanceList() {
@@ -48,10 +66,13 @@ public class Attendance {
     }
 
     
-    public void assignStatus(LocalDate date, AttendanceStatus attendanceStatus) {
+    public boolean assignStatus(LocalDate date, AttendanceStatus attendanceStatus) {
         if(attendanceList.computeIfPresent(date, (key, oldValue)->attendanceStatus) == null) {
-            throw new IllegalArgumentException("Date not found in the list");
+            logger.error("Date not found in the list", new IllegalArgumentException());
+            return false;
         }
+        logger.info("Attendance status for date {} changed to {}", date, attendanceStatus);
+        return true;
     }
 
     // Override methods for equals, hashCode, and toString
