@@ -1,54 +1,87 @@
+/**
+ * Represents a Teacher within the school system, containing information such as teacher ID,
+ * name, contact details, associated department, and the sections of courses taught.
+ * This class provides methods to manage and access teacher details, including adding/removing
+ * courses taught, setting the associated department, and ensuring valid data manipulation.
+ *
+ * Key Attributes:
+ * - Teacher ID: Unique identifier for the teacher.
+ * - Name: Full name of the teacher.
+ * - Phone Number: Contact number of the teacher.
+ * - Email: Email address of the teacher.
+ * - Department: Department associated with the teacher.
+ * - Sections Taught: List of sections taught by the teacher.
+ * - Sections Currently Teaching: List of sections the teacher is currently teaching.
+ *
+ * Functionality:
+ * - Constructor: Initializes a teacher with name, phone number, and email.
+ * - Getters and Setters: Access and modify teacher attributes.
+ * - Department Association: Set the department associated with the teacher.
+ * - Course Management: Add/remove sections taught and currently teaching.
+ * - Logging: Utilizes logging for informative and error messages.
+ * - Overrides: Equals, hashCode, and toString methods for object comparison and representation.
+ *
+ * Usage:
+ * 1. Create a Teacher instance by providing name, phone number, and email.
+ * 2. Add or update department association using setter method setDepartment().
+ * 3. Manage courses taught and currently teaching using respective methods.
+ * 4. Access teacher details and sections taught/teaching using getters.
+ * 5. Ensure valid data manipulation through defined constraints and logging messages.
+ */
 package com.school_management.core_entities;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.school_management.core_entities.enrollment.CourseSection;
+import com.school_management.support_entities.schedule.CourseSectionSchedule;
+import com.school_management.support_entities.schedule.Schedule;
+import com.school_management.support_entities.schedule.TeacherSchedule;
 
 public class Teacher {
     private int teacherID;
-    private boolean teacherIDGenerated;
     private String name;
     private long phoneNumber;
     private String email;
     private Department department;
-    private List<Course> coursesTaught;
-    private List<CourseSection> sectionsCurrentlyTeaching;
-    
-    // Constructor for Teacher
-    public Teacher(String name, long phoneNumber, String email, Department department) {
-        setTeacherID();
+    private List<CourseSection> sectionsTaughtList;
+    private List<CourseSection> sectionsCurrentlyTeachingList;
+    private Schedule schedule;
+
+    // Logger for logging messages related to the Teacher class
+    private static final Logger logger = LoggerFactory.getLogger(Teacher.class);
+
+    /**
+     * Constructor to initialize department details.
+     *
+     * @param teacherID The unique identifier for the teacher.
+     * @param Name The name of the teacher
+     * @param phoneNumber The phoneNumber of the teacher
+     * @param email The email of the teacher
+     */
+    public Teacher(int teacherID, String name, long phoneNumber, String email) {
+        this.teacherID = teacherID;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.department = department;
-        coursesTaught = new ArrayList<>();
-        sectionsCurrentlyTeaching = new ArrayList<>();
+        sectionsTaughtList = new ArrayList<>();
+        sectionsCurrentlyTeachingList = new ArrayList<>();
+        schedule = new TeacherSchedule();
+        logger.info("New Teacher initialized.");
     }
 
-    // Getter for teacher ID
     public int getTeacherID() {
         return this.teacherID;
     }
 
-    // Setter for teacher ID
-    public void setTeacherID() {
-        this.teacherID = teacherIDGenerator();
+    public void setTeacherID(int teacherID) {
+        this.teacherID = teacherID;
+        logger.info("Teacher Id modified.");
     }
-
-    // Private method to generate teacher ID
-    private int teacherIDGenerator() {
-        if (!teacherIDGenerated) {
-            return 111111; // Temporary ID generation logic
-            /*
-             * generate the unique ID for teachers
-             * (Actual logic for generating unique ID can be added here)
-             */
-        }
-        return getTeacherID();
-    }
-
-    // Getters and setters for teacher details
 
     public String getName() {
         return this.name;
@@ -56,6 +89,7 @@ public class Teacher {
     
     public void setName(String name) {
         this.name = name;
+        logger.info("Teacher name modified.");
     }
     
     public long getPhoneNumber() {
@@ -64,6 +98,7 @@ public class Teacher {
     
     public void setPhoneNumber(long phoneNumber) {
         this.phoneNumber = phoneNumber;
+        logger.info("Teacher phoneNumber modified.");
     }
     
     public String getEmail() {
@@ -72,122 +107,164 @@ public class Teacher {
     
     public void setEmail(String email) {
         this.email = email;
-    }
-    
+        logger.info("Teacher email modified.");
+    }   
+
+
     public Department getDepartment() {
         return this.department;
     }
-    
-    public void setDepartment(Department department) {
-        this.department = department;
-    }    
 
-    /*
-    * Get courses taught by the teacher.
-    * 
-    * @return List<Course> - Unmodifiable view of the courses taught by the teacher.
-    * Returns a new ArrayList to prevent the modification of the original List.
-    */
-    public List<Course> getCoursesTaught() {
+    /**
+     * Sets the department associated with the teacher.
+     *
+     * @param department The department to be associated with the teacher (must not be null).
+     * @throws IllegalArgumentException if the department provided is null.
+     */
+    public boolean setDepartment(Department department) {
+        if(department == null) {
+            logger.error("department cannot be null.", new IllegalArgumentException());
+            return false;
+        } else {
+            this.department.removeTeacher(this);
+            department.addTeacher(this);
+            this.department = department;
+            logger.info("Teacher deparment modified.");
+            return true;
+        }
+    }
 
-        return Collections.unmodifiableList(coursesTaught);
-    }
-    
-    /*
-    * Set courses taught by the teacher.
-    * 
-    * @param coursesTaught - List of courses to set for the teacher.
-    * Throws an IllegalArgumentException if coursesTaught is null.
-    */
-    public void setCourses(List<Course> coursesTaught) {
 
-        if (coursesTaught != null) {
-            this.coursesTaught = new ArrayList<>(coursesTaught);
-            // Assigns a new ArrayList to prevent the modification of the original List.
+    /**
+     * Retrieves an unmodifiable list of courses taught by the teacher.
+     *
+     * @return List<CourseSection> - Unmodifiable view of the courses taught by the teacher.
+     * Returns a new ArrayList to prevent the modification of the original List.
+     */
+    public List<CourseSection> getCourseSectionTaught() {
+
+        return Collections.unmodifiableList(sectionsTaughtList);
+    }
+    
+    /**
+     * Adds a course section to the list of courses taught by the teacher.
+     *
+     * @param courseSection The course section to be added (must not be null).
+     * Moves the course section from sectionsCurrentlyTeachingList to sectionsTaughtList.
+     * Logs an info message if the course section is successfully moved.
+     * Logs an error message if the course section is not found in sectionsCurrentlyTeachingList.
+     */
+    public void addCourseSectionTaught(CourseSection courseSection) {
+        if(sectionsCurrentlyTeachingList.remove(courseSection)) {
+            this.sectionsTaughtList.add(courseSection);
+            this.sectionsCurrentlyTeachingList.remove(courseSection);
+            logger.info("CourseSection moved from sectionsCurrentlyTeachingList to sectionsTaughtList.");
         } else {
-            throw new IllegalArgumentException("Courses taught cannot be null");
+            logger.error("CourseSection not found in sectionCurrentlyTeachingList", new IllegalArgumentException());
         }
     }
     
-    /*
-    * Add a course taught by the teacher.
-    * 
-    * @param courseTaught - Course to be added.
-    * Throws an IllegalArgumentException if courseTaught is null.
-    */
-    public void addCourse(Course courseTaught) {
-        
-    
-        if (courseTaught != null) {
-            this.coursesTaught.add(courseTaught);
+    /**
+     * Retrieves an unmodifiable list of sections currently taught by the teacher.
+     *
+     * @return List<CourseSection> - Unmodifiable view of the sections currently taught by the teacher.
+     * Returns a new ArrayList to prevent the modification of the original List.
+     */
+    public List<CourseSection> getCourseSectionsCurrentlyTeachingList() {
+        return Collections.unmodifiableList(sectionsCurrentlyTeachingList);
+    }
+
+    /**
+     * Adds a course section to the list of sections currently taught by the teacher.
+     *
+     * @param courseSection The course section to be added (must not be null).
+     * Checks if the course section's department matches the teacher's department.
+     * Adds the course section to sectionsCurrentlyTeachingList if the departments match.
+     * Logs an info message if the course section is added successfully.
+     * Logs an error message if the course section is from a different department.
+     * @return True if the course section is successfully added; otherwise, false.
+     */
+    public boolean addCourseSectionCurrentlyTeaching(CourseSection courseSection) {
+        if (courseSection != null) {
+            if (this.getDepartment().equals(courseSection.getCourse().getDepartment()) && this.addSchedule(courseSection.getSchedule())) {
+                sectionsCurrentlyTeachingList.add(courseSection);
+                logger.info("CourseSection added to sectionsCurrentlyTeachingList;");
+                return true;
+            } else {
+                logger.error("Course section is from a different department.", new IllegalArgumentException());
+            }
         } else {
-            throw new IllegalArgumentException("Course taught cannot be null");
+            logger.error("Course section cannot be null", new IllegalArgumentException());
         }
+        return false;
     }
     
-    /*
-    * Remove a course taught by the teacher.
-    * 
-    * @param courseToRemove - Course to be removed.
-    * Throws an IllegalArgumentException if the course is not found in the List.
+
+    /**
+    * Removes a course section from the list of sections currently taught by the teacher.
+    *
+    * @param courseSection The course section to be removed (must not be null).
+    * Removes the course section from sectionsCurrentlyTeachingList.
+    * Logs an info message if the course section is successfully removed.
+    * Logs an error message if the course section is not found in sectionsCurrentlyTeachingList.
+    * @return True if the course section is successfully removed; otherwise, false.
     */
-    public void removeCourse(Course courseToRemove) {
-        boolean removed = coursesTaught.remove(courseToRemove);
-        if (!removed) {
-            throw new IllegalArgumentException("Course not found in the List");
-        }
+    public boolean removeCourseSectionCurrentlyTeaching(CourseSection courseSection) {
+        if(this.sectionsCurrentlyTeachingList.remove(courseSection)) {
+            removeSchedule(courseSection.getSchedule());
+            logger.info("CourseSection removed from the sectionsCurrentlyTeachingList.");
+            return true;
+        } 
+        logger.error("courseSection not found in the sectionCurrentlyTeachingList", new IllegalArgumentException());
+        return false;
     }
-    
-    /*
-    * Get sections currently taught by the teacher.
-    * 
-    * @return List<CourseSection> - Unmodifiable view of the sections currently taught by the teacher.
-    * Returns a new ArrayList to prevent the modification of the original List.
-    */
-    public List<CourseSection> getsectionsCurrentlyTeaching() {
-        return Collections.unmodifiableList(sectionsCurrentlyTeaching);
+
+    public Schedule getSchedule() {
+        return this.schedule;
     }
-    
-    /*
-    * Set sections currently taught by the teacher.
-    * 
-    * @param sectionsCurrentlyTeaching - List of sections to set for the teacher.
-    * Throws an IllegalArgumentException if sectionsCurrentlyTeaching is null.
-    */
-    public void setClasses(List<CourseSection> sectionsCurrentlyTeaching) {
-        if (sectionsCurrentlyTeaching != null) {
-            this.sectionsCurrentlyTeaching = new ArrayList<>(sectionsCurrentlyTeaching);
+
+    /**
+     * Adds a CourseSectionSchedule to the schedule list.
+     *
+     * @param sectionSchedule The CourseSectionSchedule to be added (must not be null).
+     * @return True if the CourseSectionSchedule is successfully added; otherwise, false.
+     * @throws IllegalArgumentException If the section schedule is null.
+     */
+    private boolean addSchedule(CourseSectionSchedule sectionSchedule) {
+        if (sectionSchedule != null) {
+            try {
+                schedule.addCourseSectionSchedule(sectionSchedule);
+                logger.info("Schedule added to the list.");
+                return true;
+            } catch (Exception e) {
+                logger.error("Failed to add schedule: " + e.getMessage(), e);
+            }
         } else {
-            throw new IllegalArgumentException("List of sections cannot be null");
+            logger.error("Section schedule cannot be null", new IllegalArgumentException());
+        }
+        return false;
+    }
+
+    /**
+     * Removes a course section schedule.
+     *
+     * @param sectionSchedule The schedule associated with the course section to be removed (must not be null).
+     * Removes the schedule from the list.
+     * Logs an info message if the schedule is successfully removed.
+     * Logs an error message if an exception occurs during removal.
+     * @return True if the schedule is successfully removed; otherwise, false.
+     */
+    private boolean removeSchedule(CourseSectionSchedule sectionSchedule) {
+        try {
+            schedule.removeCourseSectionSchedule(sectionSchedule);
+            logger.info("CourseSectionSchedule is removed");
+            return true;
+        } catch(Exception e) {
+            logger.error("CourseSectionSchedule not removed", e);
+            return false;
         }
     }
     
-    /*
-    * Add a section currently taught by the teacher.
-    * 
-    * @param section - Section to be added.
-    * Throws an IllegalArgumentException if section is null.
-    */
-    public void addSection(CourseSection section) {
-        if (section != null) {
-            sectionsCurrentlyTeaching.add(section);
-        } else {
-            throw new IllegalArgumentException("Section cannot be null");
-        }
-    }
-    
-    /*
-    * Remove a section currently taught by the teacher.
-    * 
-    * @param section - Section to be removed.
-    * Throws an IllegalArgumentException if the section is not found in the List.
-    */
-    public void removeSection(CourseSection section) {
-        boolean removed = this.sectionsCurrentlyTeaching.remove(section);
-        if (!removed) {
-            throw new IllegalArgumentException("Cannot find the section in the list");
-        }
-    }
       
 
     // Overridden equals, hashCode, and toString methods
@@ -199,12 +276,12 @@ public class Teacher {
             return false;
         }
         Teacher teacher = (Teacher) o;
-        return teacherID == teacher.teacherID && Objects.equals(name, teacher.name) && phoneNumber == teacher.phoneNumber && Objects.equals(email, teacher.email) && Objects.equals(department, teacher.department) && Objects.equals(coursesTaught, teacher.coursesTaught) && Objects.equals(sectionsCurrentlyTeaching, teacher.sectionsCurrentlyTeaching);
+        return teacherID == teacher.teacherID && Objects.equals(name, teacher.name) && phoneNumber == teacher.phoneNumber && Objects.equals(email, teacher.email) && Objects.equals(department, teacher.department) && Objects.equals(sectionsTaughtList, teacher.sectionsTaughtList) && Objects.equals(sectionsCurrentlyTeachingList, teacher.sectionsCurrentlyTeachingList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teacherID, name, phoneNumber, email, department, coursesTaught, sectionsCurrentlyTeaching);
+        return Objects.hash(teacherID, name, phoneNumber, email, department, sectionsTaughtList, sectionsCurrentlyTeachingList);
     }
 
     @Override
@@ -215,8 +292,8 @@ public class Teacher {
             ", phoneNumber='" + getPhoneNumber() + "'" +
             ", email='" + getEmail() + "'" +
             ", department='" + getDepartment() + "'" +
-            ", coursesTaught='" + getCoursesTaught() + "'" +
-            ", sectionsCurrentlyTeaching='" + getsectionsCurrentlyTeaching() + "'" +
+            ", sectionsTaughtList='" + getCourseSectionTaught() + "'" +
+            ", sectionsCurrentlyTeachingList='" + getCourseSectionsCurrentlyTeachingList() + "'" +
             "}";
     }
 }

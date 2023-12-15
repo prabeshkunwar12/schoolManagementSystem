@@ -1,24 +1,45 @@
+/**
+ * The {@code Course} class represents a course offered by a school or educational institution.
+ * It holds information about the course ID, name, description, credits, and associated school years.
+ * Courses can have multiple school years associated with them.
+ * 
+ * This class provides methods to manage and retrieve information about the course and its school years,
+ * such as adding a school year, checking for the presence of a school year, getting the index of a school year,
+ * and retrieving details about a specific school year.
+ * 
+ * Note: The list of school years associated with the course is managed internally and provides
+ * methods to access this information in a controlled manner.
+ * 
+ * Usage:
+ * Course course = new Course(courseID, courseName, description, credits);
+ * course.addSchoolYear(schoolYear); // Adding a school year to the course
+ * 
+ * @see SchoolYear
+ */
 package com.school_management.core_entities;
 
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Stack;
 
-import com.school_management.support_entities.Schedule;
-import com.school_management.support_entities.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.school_management.support_entities.time_frame.SchoolYear;
 
 public class Course {
     private int courseID;
     private String courseName;
     private String description;
     private int credits;
-    private Map<Year, Map<Session, Stack<CourseSection>>> sections; //each year can have multiple sessions and each sessions can have multiple sections available
-    
+    private Department department;
+    private List<SchoolYear> schoolYearList;
+
+    // Logger for logging messages related to the Student class
+    private static final Logger logger = LoggerFactory.getLogger(Course.class);
+
     /**
      * Constructor to initialize a Course with given parameters.
      *
@@ -33,7 +54,8 @@ public class Course {
         this.courseName = courseName;
         this.description = description;
         this.credits = credits;
-        sections = new HashMap<>();
+        schoolYearList = new ArrayList<>();
+        logger.info("New Course Initialized.");
     }
 
     // getters and setters
@@ -44,6 +66,7 @@ public class Course {
 
     public void setCourseID(int courseID) {
         this.courseID = courseID;
+        logger.info("Course ID modified");
     }
 
     public String getCourseName() {
@@ -52,14 +75,16 @@ public class Course {
 
     public void setCourseName(String courseName) {
         this.courseName = courseName;
+        logger.info("Course name modified");
     }
 
-    public String getdescription() {
+    public String getDescription() {
         return this.description;
     }
 
-    public void setdescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
+        logger.info("Course description modified");
     }
 
     public int getCredits() {
@@ -68,109 +93,98 @@ public class Course {
 
     public void setCredits(int credits) {
         this.credits = credits;
+        logger.info("Course credit value modified");
     }
 
-    /**
-     * Retrieves the sections mapped by Year and Session.
-     *
-     * @return An unmodifiable map of sections mapped by Year and Session.
-     */
-    public Map<Year, Map<Session, Stack<CourseSection>>> getSections() {
-        return Collections.unmodifiableMap(this.sections);
+    public Department getDepartment() {
+        return this.department;
     }
 
-    /**
-     * Adds a new Year to the sections map.
-     *
-     * @param year The Year to be added.
-     */
-    private void addYear(Year year) {
-        EnumMap<Session, Stack<CourseSection>> sessionMap = new EnumMap<>(Session.class);
-        sections.put(year, sessionMap);
-    }
-
-    /**
-     * Adds a new Session to the sections map for the provided Year.
-     *
-     * @param year    The Year to which the Session is added.
-     * @param session The Session to be added.
-     */
-    private void addSession(Year year, Session session) {
-        sections.get(year).put(session, new Stack<>());
-    }
-
-    /**
-     * Adds a new section to the course with the provided parameters.
-     *
-     * @param room             The room for the new section.
-     * @param enrollemntsList  The list of enrollments for the section.
-     * @param teacher          The teacher for the section.
-     * @param year             The Year when this course is/was available.
-     * @param session          The Session when this course is/was available.
-     * @param schedule         The weeklySchedule of the section
-     * @throws IllegalArgumentException if any parameter is null.
-     */
-    public void addSection(String room, List<Enrollment> enrollemntsList, Teacher teacher, Year year, Session session, Schedule schedule) {
-        if (room != null && enrollemntsList != null && teacher != null && year != null && session != null) {
-            if (!sections.containsKey(year)) {
-                addYear(year);
-            }
-            if (!sections.get(year).containsKey(session)) {
-                addSession(year, session);
-            }
-
-            int sectionID = sectionIdGenerator(year, session);
-            CourseSection section = new CourseSection(sectionID, this, room, enrollemntsList, teacher, year, session);
-            section.setSchedule(schedule);
-            sections.get(year).get(session).push(section);
-
+    public boolean setDepartment(Department department) {
+        if(department == null) {
+            logger.error("Department cannot be null", new IllegalArgumentException());
+            return false;
         } else {
-            throw new IllegalArgumentException("Parameters cannot be null");
+            this.department.removeCourse(this);
+            department.addCourse(this);
+            this.department = department;
+            logger.info("Course department modified");
+            return true;
+        }     
+    }
+
+    /**
+     * Retrieves an unmodifiable view of the list of school years associated with this course.
+     *
+     * @return An unmodifiable list of school years.
+     */
+    public List<SchoolYear> getSchoolYearList() {
+        return Collections.unmodifiableList(schoolYearList);
+    }
+
+    /**
+     * Adds a school year to the list of school years associated with this course.
+     *
+     * @param schoolYear The school year to be added.
+     * @throws IllegalArgumentException If the school year is null or already exists in the list.
+     */
+    public boolean addSchoolYear(SchoolYear schoolYear) {
+        if (schoolYear == null) {
+            logger.error("School year cannot be null", new IllegalArgumentException());
+            return false;
+        } else if (containsYear(schoolYear.getYear())) {
+            logger.error("This course already contains this school year", new IllegalArgumentException());
+            return false;
+        } else {
+            schoolYearList.add(schoolYear);
+            logger.info("Added new School Year to the course.");
+            return true;
         }
     }
 
     /**
-     * Adds a new section to the course with the provided Year and Session.
+     * Gets the index of a specific school year in the list.
      *
-     * @param year          The Year when this course is/was available.
-     * @param session       The Session when this course is/was available.
-     * @param schedule      The weeklySchedule of the section
-     * @throws IllegalArgumentException if any parameter is null.
+     * @param year The year to search for.
+     * @return The index of the school year in the list, or -1 if not found.
      */
-    public void addSection(Year year, Session session, Schedule schedule) {
-        if (year != null && session != null) {
-            if (!sections.containsKey(year)) {
-                addYear(year);
+    public int getIndexOfSchoolYear(Year year) {
+        for (int i = 0; i < schoolYearList.size(); i++) {
+            if (schoolYearList.get(i).getYear().equals(year)) {
+                return i;
             }
-            if (!sections.get(year).containsKey(session)) {
-                addSession(year, session);
-            }
-
-            int sectionID = sectionIdGenerator(year, session);
-            CourseSection section = new CourseSection(sectionID, this, year, session);
-            section.setSchedule(schedule);
-            sections.get(year).get(session).push(section);
-
-        } else {
-            throw new IllegalArgumentException("Parameters cannot be null");
         }
+        return -1;
     }
 
     /**
-     * Generates a unique section ID for the provided Year and Session combination.
+     * Checks if a specific year exists in the list of school years associated with this course.
      *
-     * @param year    The Year for the section.
-     * @param session The Session for the section.
-     * @return A unique section ID.
+     * @param year The year to check for.
+     * @return True if the year exists in the list, false otherwise.
      */
-    public int sectionIdGenerator(Year year, Session session) {
-        CourseSection courseSection = sections.get(year).get(session).peek();
-        if (courseSection == null) {
-            return 1;
-        } else {
-            return courseSection.getSectionID() + 1;
-        }
+    public boolean containsYear(Year year) {
+        return getIndexOfSchoolYear(year) != -1;
     }
+
+    /**
+     * Retrieves the school year at a specified index from the list.
+     *
+     * @param index The index of the school year to retrieve.
+     * @return The school year at the given index.
+     * @throws IndexOutOfBoundsException If the index is invalid (negative or beyond the list size).
+     */
+    public SchoolYear getSchoolYear(int index) {
+        if (index < 0 || index >= schoolYearList.size()) {
+            logger.error("Index out of bounds for school years list", new IndexOutOfBoundsException());
+        }
+        return schoolYearList.get(index);
+    }
+
+
+    // Overridden equals, hashCode, and toString methods
+
+    
 
     @Override
     public boolean equals(Object o) {
@@ -180,22 +194,24 @@ public class Course {
             return false;
         }
         Course course = (Course) o;
-        return courseID == course.courseID && Objects.equals(courseName, course.courseName) && Objects.equals(description, course.description) && credits == course.credits && Objects.equals(sections, course.sections);
+        return courseID == course.courseID && Objects.equals(courseName, course.courseName) && Objects.equals(description, course.description) && credits == course.credits && Objects.equals(department, course.department) && Objects.equals(schoolYearList, course.schoolYearList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(courseID, courseName, description, credits, sections);
+        return Objects.hash(courseID, courseName, description, credits, department, schoolYearList);
     }
+
 
     @Override
     public String toString() {
         return "{" +
             " courseID='" + getCourseID() + "'" +
             ", courseName='" + getCourseName() + "'" +
-            ", description='" + getdescription() + "'" +
+            ", description='" + getDescription() + "'" +
             ", credits='" + getCredits() + "'" +
-            ", sections='" + getSections() + "'" +
+            ", department='" + getDepartment() + "'" +
+            ", schoolYearList='" + getSchoolYearList() + "'" +
             "}";
     }
     

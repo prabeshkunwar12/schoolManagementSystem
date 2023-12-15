@@ -1,9 +1,30 @@
+/**
+ * Represents a Department in a school, encapsulating information such as department ID, name,
+ * head of department, description, list of teachers, and courses offered by the department.
+ * This class provides methods to manage and access department details, including adding/removing
+ * teachers and courses, retrieving department information, and ensuring valid data manipulation.
+ *
+ * Key Methods:
+ * - Constructors: Initialize department details.
+ * - Getters and Setters: Access and modify department attributes.
+ * - List Manipulation: Add, remove, and retrieve teachers and courses.
+ * - Validation: Ensure non-null and avoid duplicate entries.
+ * - Overrides: Equals, hashCode, and toString methods for object comparison and representation.
+ *
+ * Usage:
+ * 1. Create a Department instance with its ID, name, and description.
+ * 2. Add teachers and courses using respective methods.
+ * 3. Retrieve and modify department details using getters and setters.
+ * 4. Validate inputs for non-null and avoid duplicate entries.
+ */
 package com.school_management.core_entities;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Department {
     // Member variables for department details
@@ -13,6 +34,9 @@ public class Department {
     private String description;
     private List<Teacher> teachersList;
     private List<Course> coursesOffered;
+
+    // Logger for logging messages related to the Student class
+    private static final Logger logger = LoggerFactory.getLogger(Department.class);
 
     /**
      * Constructor to initialize department details.
@@ -24,7 +48,7 @@ public class Department {
      */
     public Department(int departmentID, String departmentName, String description) {
         if (departmentName == null || description == null) {
-            throw new IllegalArgumentException("Department name or description cannot be null");
+            logger.error("Department name and description cannot be null", new IllegalArgumentException());
         }
         this.departmentID = departmentID;
         this.departmentName = departmentName;
@@ -32,6 +56,7 @@ public class Department {
         this.description = description;
         this.teachersList = new ArrayList<>(); // Initialize an empty list of teachers
         this.coursesOffered = new ArrayList<>(); // Initialize an empty list of courses
+        logger.info("New Department created");
     }
 
     // Getters and setters for department details
@@ -56,7 +81,7 @@ public class Department {
      */
     public void setDepartmentName(String departmentName) {
         if (departmentName == null) {
-            throw new IllegalArgumentException("Department name cannot be null");
+            logger.error("Department name cannot be null",  new IllegalArgumentException());
         }
         this.departmentName = departmentName;
     }
@@ -66,14 +91,17 @@ public class Department {
     }
 
     /**
-     * Set Head of Department, ensuring it's not null.
+     * Sets the Head of Department for this department.
      *
-     * @param headOfDepartment The name of the department (must not be null).
-     * @throws IllegalArgumentException If headOfDepartment is null.
+     * @param headOfDepartment The Teacher to be assigned as Head of Department (must not be null).
+     * @throws IllegalArgumentException If the provided headOfDepartment is null or not listed as a teacher in the department.
      */
     public void setHeadOfDepartment(Teacher headOfDepartment) {
         if (headOfDepartment == null) {
-            throw new IllegalArgumentException("Head of Department cannot be null");
+            logger.error("Head of department is null", new IllegalArgumentException());
+        }
+        if (!isInDepartment(headOfDepartment)) {
+            logger.error("teacher is not in the teacher's list of department", new IllegalArgumentException());
         }
         this.headOfDepartment = headOfDepartment;
     }
@@ -91,7 +119,7 @@ public class Department {
      */
     public void setDescription(String description) {
         if (description == null) {
-            throw new IllegalArgumentException("Description cannot be null");
+            logger.error("Department description cannot be null", new IllegalArgumentException());
         }
         this.description = description;
     }
@@ -115,7 +143,7 @@ public class Department {
      */
     public void setTeachersList(List<Teacher> teachersList) {
         if (teachersList == null) {
-            throw new IllegalArgumentException("Teachers list cannot be null");
+            logger.error("Teacher's list cannot be null", new IllegalArgumentException());
         }
         this.teachersList = new ArrayList<>(teachersList);
     }
@@ -130,7 +158,7 @@ public class Department {
         if (teacher != null) {
             teachersList.add(teacher);
         } else {
-            throw new IllegalArgumentException("Teacher cannot be null");
+            logger.error("Teacher cannot be null",  new IllegalArgumentException());
         }
     }
 
@@ -141,10 +169,29 @@ public class Department {
      * @throws IllegalArgumentException If teacher not found in the list.
      */
     public void removeTeacher(Teacher teacher) {
-        boolean removed = teachersList.remove(teacher);
-        if (!removed) {
-            throw new IllegalArgumentException("Teacher not found in the list");
+        if (!teachersList.remove(teacher)) {
+            logger.error("TEacher not found in the list", new IllegalArgumentException());
         }
+    }
+
+    /**
+     * Checks if the provided Teacher is part of the department's list of teachers.
+     *
+     * @param teacher The Teacher to check for inclusion in the department.
+     * @return True if the teacher is present in the department's list of teachers, otherwise false.
+     */
+    public boolean isInDepartment(Teacher teacher) {
+        return teachersList.contains(teacher);
+    }
+
+    /**
+     * Checks if the provided Course is offered by the department.
+     *
+     * @param course The Course to check for inclusion in the department's offered courses.
+     * @return True if the course is included in the department's offered courses, otherwise false.
+     */
+    public boolean isInDepartment(Course course) {
+        return coursesOffered.contains(course);
     }
 
     // Accessor methods for coursesOffered list
@@ -166,7 +213,7 @@ public class Department {
      */
     public void setCoursesOffered(List<Course> coursesOffered) {
         if(coursesOffered == null){
-            throw new IllegalArgumentException("Courses offered cannot be null");
+            logger.error("Courses offered cannot be null", new IllegalArgumentException());
         }
         this.coursesOffered = new ArrayList<>(coursesOffered);
     }
@@ -181,7 +228,7 @@ public class Department {
         if (course != null) {
             coursesOffered.add(course);
         } else {
-            throw new IllegalArgumentException("Course cannot be null");
+            logger.error("Course cannot be null", new IllegalArgumentException());
         }
     }
 
@@ -192,9 +239,8 @@ public class Department {
      * @throws IllegalArgumentException If course not found in the list.
      */
     public void removeCourse(Course course) {
-        boolean removed = coursesOffered.remove(course);
-        if(!removed) {
-            throw new IllegalArgumentException("Course not found on the list");
+        if (!coursesOffered.remove(course)) {
+            logger.error("Course not found in the list", new IllegalArgumentException());
         }
     }
 

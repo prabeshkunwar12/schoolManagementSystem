@@ -1,4 +1,4 @@
-package com.school_management.schoolManagement;
+package com.school_management.school_management;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
