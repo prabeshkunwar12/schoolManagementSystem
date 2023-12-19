@@ -63,9 +63,7 @@ public class Student {
 
 
     // Constructor to initialize mandatory personal details of the student
-    public Student(int studentID, String name, String address, Date dateOfBirth, String email) {
-        // Set basic personal details
-        this.studentID = studentID;
+    public Student(String name, String address, Date dateOfBirth, String email) {
         this.name = name;
         this.address = address;
         this.dateOfBirth = dateOfBirth;

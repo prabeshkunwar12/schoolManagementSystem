@@ -1,21 +1,27 @@
 package com.school_management.support_entities.school;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.schedule.RoomSchedule;
 
 public class Room {
-    int roomID;
-    RoomType roomType;
-    int studentCapacity;
-    RoomSchedule schedule;
+    private int roomID;
+    private Building building;
+    private RoomType roomType;
+    private int studentCapacity;
+    private RoomSchedule schedule;
 
+    private Logger logger = LoggerFactory.getLogger(Room.class);
 
-    public Room() {
-    }
-
-    public Room(int roomID, RoomType roomType, int studentCapacity, RoomSchedule schedule) {
-        this.roomID = roomID;
+    public Room(Building building, RoomType roomType, int studentCapacity, RoomSchedule schedule) {
+        if(building==null || roomType==null || schedule==null) {
+            logger.error("parameters cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        this.building = building;
         this.roomType = roomType;
         this.studentCapacity = studentCapacity;
         this.schedule = schedule;
@@ -27,6 +33,10 @@ public class Room {
 
     public void setRoomID(int roomID) {
         this.roomID = roomID;
+    }
+
+    public Building getBuilding() {
+        return this.building;
     }
 
     public RoomType getRoomType() {
@@ -65,7 +75,7 @@ public class Room {
             return false;
         }
         Room room = (Room) o;
-        return roomID == room.roomID && Objects.equals(roomType, room.roomType) && studentCapacity == room.studentCapacity && Objects.equals(schedule, room.schedule);
+        return roomID == room.roomID && Objects.equals(roomType, room.roomType) && Objects.equals(building, room.building) && studentCapacity == room.studentCapacity && Objects.equals(schedule, room.schedule);
     }
 
     @Override
@@ -77,6 +87,7 @@ public class Room {
     public String toString() {
         return "{" +
             " roomID='" + getRoomID() + "'" +
+            " building='" + getBuilding() + "'" +
             ", roomType='" + getRoomType() + "'" +
             ", studentCapacity='" + getStudentCapacity() + "'" +
             ", schedule='" + getSchedule() + "'" +

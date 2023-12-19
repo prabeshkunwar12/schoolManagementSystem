@@ -18,6 +18,10 @@ public class School {
      * @param schoolType The type of the school (e.g., elementary, high school, university).
      */
     public School(String schoolName, SchoolType schoolType) {
+        if(schoolName==null || schoolType==null) {
+            logger.error("parameters cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
         this.schoolName = schoolName;
         this.schoolType = schoolType;
         logger.info("School is initialized");
