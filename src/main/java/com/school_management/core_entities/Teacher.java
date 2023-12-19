@@ -128,6 +128,20 @@ public class Teacher {
         return this.schedule;
     }
 
+    public boolean addCourseSectionSchedule(CourseSectionSchedule schedule) {
+        if(schedule==null){
+            logger.error("schedule cannot be null", new IllegalArgumentException());
+            return false;
+        }
+        if(this.schedule.addCourseSectionSchedule(schedule)) {
+            logger.info("course section schedule added to teacher's schedule");
+            return true;
+        }
+        logger.error("failed to add the course section schedule", new IllegalArgumentException());
+        return false;
+
+    }
+
     /**
      * Adds a CourseSectionSchedule to the schedule list.
      *

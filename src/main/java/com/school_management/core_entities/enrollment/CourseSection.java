@@ -34,13 +34,15 @@ import com.school_management.core_entities.Course;
 import com.school_management.core_entities.Teacher;
 import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.school.Room;
+import com.school_management.support_entities.time_frame.Session;
 
 public class CourseSection  {
     private int sectionID;
     private final Course course;
     private Room room;
-    private List<Enrollment> enrollmentList;
+    private final List<Enrollment> enrollmentList;
     private Teacher teacher;
+    private final Session session;
     private float passingGrade;
     private final CourseSectionSchedule schedule;
 
@@ -50,20 +52,27 @@ public class CourseSection  {
     /**
      * Constructor to initialize a CourseSection with provided parameters.
      *
-     * @param sectionID     The unique identifier for the section.
      * @param course        The associated Course.
      * @param room          The room where the section is conducted.
      * @param enrollmentList   List of enrollments in the section.
      * @param teacher       The teacher assigned to the section.
      * @param schedule      The schedule of the course
      */
-    public CourseSection(int sectionID, Course course, Room room, Teacher teacher, CourseSectionSchedule schedule) {
+    public CourseSection(Course course, Room room, Teacher teacher, Session session, CourseSectionSchedule schedule) {
+        if(course==null || room==null || teacher==null || session==null || schedule==null) {
+            logger.error("parameters cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        if(schedule.getStartDate().isBefore(session.getStartDate()) || schedule.getEndDate().isAfter(session.getEndDate())){
+            logger.error("schedule's startDate must not be before and endDate must not be after session's startdate and endDate respectively", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        this.schedule = schedule;
+        this.session = session;
         if(setRoom(room) && setTeacher(teacher)) {
-            this.sectionID = sectionID;
             this.course = course;
             this.enrollmentList = new ArrayList<>();
             this.passingGrade = 0;
-            this.schedule = schedule;
             logger.info("New Course section for {} Initialized", this.course);
         } else {
             logger.error("failed to initialize course Section", new IllegalArgumentException());
@@ -88,6 +97,9 @@ public class CourseSection  {
 
     public Room getRoom() {
         return this.room;
+    }
+    public Session getSession() {
+        return this.session;
     }
 
     public boolean setRoom(Room room) {
@@ -152,8 +164,7 @@ public class CourseSection  {
      * @throws IllegalArgumentException if the provided teacher is null.
      */
     public boolean setTeacher(Teacher teacher) {
-        if(teacher != null && teacher.addCourseSectionCurrentlyTeaching(this)) { 
-            this.teacher.removeCourseSectionCurrentlyTeaching(this);
+        if(teacher != null && teacher.addCourseSectionSchedule(this.schedule)) { 
             this.teacher = teacher;
             logger.info("New teacher {} set for the course section", this.teacher.getName());
             return true;  
@@ -208,12 +219,12 @@ public class CourseSection  {
             return false;
         }
         CourseSection courseSection = (CourseSection) o;
-        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(enrollmentList, courseSection.enrollmentList) && Objects.equals(teacher, courseSection.teacher) && passingGrade == courseSection.passingGrade && Objects.equals(schedule, courseSection.schedule);
+        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(session, courseSection.session) && Objects.equals(enrollmentList, courseSection.enrollmentList) && Objects.equals(teacher, courseSection.teacher) && passingGrade == courseSection.passingGrade && Objects.equals(schedule, courseSection.schedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionID, course, room, enrollmentList, teacher, passingGrade, schedule);
+        return Objects.hash(sectionID, course, room, session, enrollmentList, teacher, passingGrade, schedule);
     }
 
 
@@ -223,6 +234,7 @@ public class CourseSection  {
             " sectionID='" + getSectionID() + "'" +
             ", course='" + getCourse() + "'" +
             ", room='" + getRoom() + "'" +
+            ", session='" + getSession() + "'" +
             ", enrollmentList='" + getEnrollmentList() + "'" +
             ", teacher='" + getTeacher() + "'" +
             ", passingGrade='" + getPassingGrade() + "'" +
