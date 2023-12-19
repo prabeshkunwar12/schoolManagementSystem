@@ -105,8 +105,6 @@ public class Course {
             logger.error("Department cannot be null", new IllegalArgumentException());
             return false;
         } else {
-            this.department.removeCourse(this);
-            department.addCourse(this);
             this.department = department;
             logger.info("Course department modified");
             return true;

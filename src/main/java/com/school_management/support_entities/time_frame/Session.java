@@ -14,21 +14,17 @@
  */
 package com.school_management.support_entities.time_frame;
 
-import java.util.List;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.school_management.core_entities.enrollment.CourseSection;
-
 
 public class Session {
     private int sessionID;
     private final SessionType sessionType;
-    private List<CourseSection> courseSectionList;
+    private final SchoolYear schoolYear;
     private final LocalDate startDate;
     private final LocalDate endDate;
 
@@ -42,12 +38,24 @@ public class Session {
      * @param startDate   The start date of the session.
      * @param endDate     The end date of the session.
      */
-    public Session(int sessionID, SessionType sessionType, LocalDate startDate, LocalDate endDate) {
-        this.sessionID = sessionID;
+    public Session(SessionType sessionType, SchoolYear schoolYear, LocalDate startDate, LocalDate endDate) {
+        if(sessionType==null || schoolYear==null || startDate==null || endDate==null) {
+            logger.error("parameters cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        if(startDate.getYear()!=endDate.getYear() || startDate.getYear()!=schoolYear.getYear() || endDate.getYear()!=schoolYear.getYear()){
+            logger.error("start date and end date must be in the same year as schoolYear", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        if(startDate.isAfter(endDate)) {
+            logger.error("Start date should be before end date", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
         this.sessionType = sessionType;
+        this.schoolYear = schoolYear;
         this.startDate = startDate;
         this.endDate = endDate;
-        courseSectionList = new ArrayList<>();
+
         logger.info("New Session Initialized");
     }
 
@@ -64,39 +72,16 @@ public class Session {
         return this.sessionType;
     }
 
+    public SchoolYear getSchoolYear() {
+        return this.schoolYear;
+    }
+
     public LocalDate getStartDate() {
         return this.startDate;
     }
 
     public LocalDate getEndDate() {
         return this.endDate;
-    }
-
-    public List<CourseSection> getCourseSectionList() {
-        return this.courseSectionList;
-    }
-
-    /**
-     * Adds a course section to the session's course section list.
-     *
-     * @param courseSection The course section to add.
-     * @return True if the course section is added successfully, false otherwise.
-     * @throws IllegalArgumentException if the course section is null or its schedule doesn't fit within the session dates.
-     */
-    public boolean addCourseSection(CourseSection courseSection) {
-        if(courseSection == null) {
-            logger.error("course section cannot be null",  new IllegalArgumentException());
-            return false;
-        }
-        
-        if(courseSection.getSchedule().getStartDate().isBefore(this.startDate) || courseSection.getSchedule().getEndDate().isAfter(this.endDate)) {
-            logger.error("The course should be available between {} and {}", startDate, endDate,  new IllegalArgumentException());
-            return false;
-        }
-
-        courseSectionList.add(courseSection);
-        logger.info("CourseSection added");
-        return true;
     }
 
     // Overridden equals, hashCode, and toString methods
@@ -109,12 +94,12 @@ public class Session {
             return false;
         }
         Session session = (Session) o;
-        return sessionID == session.sessionID && Objects.equals(sessionType, session.sessionType) && Objects.equals(courseSectionList, session.courseSectionList) && Objects.equals(startDate, session.startDate) && Objects.equals(endDate, session.endDate);
+        return sessionID == session.sessionID && Objects.equals(sessionType, session.sessionType) && Objects.equals(schoolYear, session.schoolYear) && Objects.equals(startDate, session.startDate) && Objects.equals(endDate, session.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sessionID, sessionType, courseSectionList, startDate, endDate);
+        return Objects.hash(sessionID, sessionType, schoolYear, startDate, endDate);
     }
 
 
@@ -123,7 +108,7 @@ public class Session {
         return "{" +
             " sessionID='" + getSessionID() + "'" +
             ", sessionType='" + getSessionType() + "'" +
-            ", courseSectionList='" + getCourseSectionList() + "'" +
+            ", schoolYear='" + getSchoolYear() + "'" +
             ", startDate='" + getStartDate() + "'" +
             ", endDate='" + getEndDate() + "'" +
             "}";
