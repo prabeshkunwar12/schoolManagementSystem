@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 public class School {
+    private int schoolID;
     private String schoolName;
     private SchoolType schoolType;
 
@@ -25,6 +26,10 @@ public class School {
         this.schoolName = schoolName;
         this.schoolType = schoolType;
         logger.info("School is initialized");
+    }
+    
+    public int getSchoolID() {
+        return schoolID;
     }
 
     public String getSchoolName() {

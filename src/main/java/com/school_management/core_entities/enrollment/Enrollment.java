@@ -38,12 +38,14 @@ import com.school_management.support_entities.grade.FinalCourseGrade;
 import com.school_management.support_entities.grade.Grades;
 
 public class Enrollment {
+    private int  enrollmentID;
     private final Student student;
+    private final CourseSection courseSection;
     private EnrollmentStatus enrollmentStatus;
     private List<AssessmentGrade> assessmentGrades;
-    private final CourseSection courseSection;
     private Attendance attendance;
     private Grades finalGrade;
+    private PassStatus passStatus;
 
     // Logger for logging messages related to the Enrollment class
     private static final Logger logger = LoggerFactory.getLogger(Enrollment.class);
@@ -61,11 +63,14 @@ public class Enrollment {
         }
 
         this.student = student;
-        this.student.addCourse(this);
         this.courseSection = courseSection;
-        this.courseSection.addEnrollment(this);
+        this.passStatus = PassStatus.NOT_DECIDED;
         initializeEnrollment();
         logger.info("New Enrollment created");
+    }
+
+    public int getEnrollmentID() {
+        return this.enrollmentID;
     }
 
     private boolean areSchedulesCompatible(Student student, CourseSection courseSection) {
@@ -188,13 +193,28 @@ public class Enrollment {
         setFinalGrade(calculateFinalGrade());
     } 
 
-    public boolean isPassed() {
-        for(AssessmentGrade assessmentGrade: assessmentGrades) {
-            if(!assessmentGrade.isPassed()) {
-                return false;
+    public void decidePassed() {
+        
+        if(enrollmentStatus.equals(EnrollmentStatus.REGISTERED) && calculateFinalGrade() >= getCourseSection().getPassingGrade()) {
+            boolean passed = true;
+            for(AssessmentGrade assessmentGrade: assessmentGrades) {
+                if(!assessmentGrade.isPassed()) {
+                    passed = false;
+                }
             }
+            if(passed) {
+                passStatus = PassStatus.PASSED;
+            } else {
+                passStatus = PassStatus.FAILED;
+            }
+        } else {
+            passStatus = PassStatus.FAILED;
         }
-        return calculateFinalGrade() >= getCourseSection().getPassingGrade();
+    }
+
+    public boolean isPassed() {
+        decidePassed();
+        return passStatus.equals(PassStatus.PASSED);
     }
 
 

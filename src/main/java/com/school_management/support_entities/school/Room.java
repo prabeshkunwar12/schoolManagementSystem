@@ -9,6 +9,7 @@ import com.school_management.support_entities.schedule.RoomSchedule;
 
 public class Room {
     private int roomID;
+    private String roomName;
     private Building building;
     private RoomType roomType;
     private int studentCapacity;
@@ -16,23 +17,34 @@ public class Room {
 
     private Logger logger = LoggerFactory.getLogger(Room.class);
 
-    public Room(Building building, RoomType roomType, int studentCapacity, RoomSchedule schedule) {
-        if(building==null || roomType==null || schedule==null) {
+    public Room(String roomName, Building building, RoomType roomType, int studentCapacity, RoomSchedule schedule) {
+        if(roomName==null || building==null || roomType==null || schedule==null) {
             logger.error("parameters cannot be null", new IllegalArgumentException());
             throw new IllegalArgumentException();
         }
+        this.roomName = roomName;
         this.building = building;
         this.roomType = roomType;
         this.studentCapacity = studentCapacity;
         this.schedule = schedule;
+        logger.info("A new room in building {} is initialized", building.getName());
     }
 
     public int getRoomID() {
         return this.roomID;
     }
 
-    public void setRoomID(int roomID) {
-        this.roomID = roomID;
+    public String getRoomName() {
+        return this.roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        if(roomName==null) {
+            logger.error("Room name cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        this.roomName = roomName;
+        logger.info("Room name of {} changed to {}", roomID, roomName);
     }
 
     public Building getBuilding() {
@@ -44,7 +56,12 @@ public class Room {
     }
 
     public void setRoomType(RoomType roomType) {
+        if(roomType==null) {
+            logger.error("Room type cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
         this.roomType = roomType;
+        logger.info("Room type of {} changed to {}", roomID, roomType);
     }
 
     public int getStudentCapacity() {
@@ -52,7 +69,12 @@ public class Room {
     }
 
     public void setStudentCapacity(int studentCapacity) {
+        if(studentCapacity<=0) {
+            logger.error("student capacity must be higher than 0", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
         this.studentCapacity = studentCapacity;
+        logger.info("Room capacity of {} changed to {}", roomID, studentCapacity);
     }
 
     public RoomSchedule getSchedule() {
@@ -60,7 +82,12 @@ public class Room {
     }
 
     public void setSchedule(RoomSchedule schedule) {
+        if(schedule==null) {
+            logger.error("room schedule cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
         this.schedule = schedule;
+        logger.info("Room schedule of {} changed to {}", roomID, schedule);
     }
 
     public boolean bookRoom(CourseSectionSchedule schedule) {

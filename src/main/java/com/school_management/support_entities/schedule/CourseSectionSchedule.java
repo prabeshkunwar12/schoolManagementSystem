@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CourseSectionSchedule{
+    private int courseSectionScheduleID;
     private EnumMap<DayOfWeek, LocalTime> weeklySchedule;
     private Duration duration;
     private LocalDate startDate;
@@ -51,6 +52,9 @@ public class CourseSectionSchedule{
         logger.info("CourseSectionSchedule initialized.");  
     }
 
+    public int getCourseSectionScheduleID() {
+        return this.courseSectionScheduleID;
+    }
     /**
      * Retrieves an unmodifiable view of the weekly schedule for this course section.
      *

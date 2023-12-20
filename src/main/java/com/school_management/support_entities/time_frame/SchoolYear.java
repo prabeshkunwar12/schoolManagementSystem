@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.school_management.support_entities.school.School;
 
 public class SchoolYear {
+    private int schoolYearID;
     private  final School school;
     private final LocalDate startDate;
     private final LocalDate endDate;
@@ -56,6 +57,10 @@ public class SchoolYear {
         this.endDate = endDate;
         this.school = school;
         logger.info("New School Year initialized");
+    }
+
+    public int getSchoolYearID() {
+        return this.schoolYearID;
     }
 
     public School getSchool() {

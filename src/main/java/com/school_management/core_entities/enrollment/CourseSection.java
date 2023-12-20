@@ -22,9 +22,6 @@
  * @see CourseSectionSchedule
  */
 package com.school_management.core_entities.enrollment;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -40,7 +37,6 @@ public class CourseSection  {
     private int sectionID;
     private final Course course;
     private Room room;
-    private final List<Enrollment> enrollmentList;
     private Teacher teacher;
     private final Session session;
     private float passingGrade;
@@ -71,7 +67,6 @@ public class CourseSection  {
         this.session = session;
         if(setRoom(room) && setTeacher(teacher)) {
             this.course = course;
-            this.enrollmentList = new ArrayList<>();
             this.passingGrade = 0;
             logger.info("New Course section for {} Initialized", this.course);
         } else {
@@ -112,47 +107,6 @@ public class CourseSection  {
         return false;
     }
 
-    /**
-     * Retrieves the list of enrollments for this course section.
-     *
-     * @return An unmodifiable list of enrollmentList.
-     */
-    public List<Enrollment> getEnrollmentList() {
-        return Collections.unmodifiableList(this.enrollmentList);
-    }
-
-    /**
-     * Adds an enrollment to the list of enrollments for this section.
-     *
-     * @param enrollment The enrollment to add.
-     * @throws IllegalArgumentException if enrollment is null.
-     */
-    public boolean addEnrollment(Enrollment enrollment) {
-        if(enrollment != null) {
-            this.enrollmentList.add(enrollment);
-            logger.info("New enrollment for {} has been added.", enrollment.getStudent().getName());
-            return true;
-        }
-        logger.error("failed to add new enrollment", new IllegalArgumentException());
-        return false;
-    }
-
-    /**
-     * Removes an enrollment from the list of enrollments for this section and also for the respective student.
-     *
-     * @param enrollment The enrollment to remove.
-     * @throws IllegalArgumentException if enrollment is not found in the list.
-     */
-    public boolean removeEnrollment(Enrollment enrollment) {
-        boolean removedEnrollment = enrollment.getStudent().removeCourse(enrollment) && this.enrollmentList.remove(enrollment);
-        if(!(removedEnrollment)) {
-            logger.error("Failed to remove the enrollment", new IllegalArgumentException());
-            return false;
-        }
-        logger.info("Enrollment for {} has been removed.", enrollment.getStudent().getName());
-        return true;
-    }
-
     public Teacher getTeacher() {
         return this.teacher;
     }
@@ -188,22 +142,6 @@ public class CourseSection  {
         return true;
     }
 
-
-    /**
-     * Checks if the provided enrollment exists in the list.
-     *
-     * @param enrollment The enrollment to check.
-     * @return True if the enrollment is passed, false otherwise.
-     */
-    public boolean isPassed(Enrollment enrollment) {
-        if(this.enrollmentList.contains(enrollment)) {
-            return enrollment.isPassed();
-        } else {
-            throw new IllegalArgumentException("enrollment not found in the list");
-        }
-    }
-
-
     public CourseSectionSchedule getSchedule() {
         return this.schedule;
     }
@@ -219,12 +157,12 @@ public class CourseSection  {
             return false;
         }
         CourseSection courseSection = (CourseSection) o;
-        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(session, courseSection.session) && Objects.equals(enrollmentList, courseSection.enrollmentList) && Objects.equals(teacher, courseSection.teacher) && passingGrade == courseSection.passingGrade && Objects.equals(schedule, courseSection.schedule);
+        return sectionID == courseSection.sectionID && Objects.equals(course, courseSection.course) && Objects.equals(room, courseSection.room) && Objects.equals(session, courseSection.session) && Objects.equals(teacher, courseSection.teacher) && passingGrade == courseSection.passingGrade && Objects.equals(schedule, courseSection.schedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionID, course, room, session, enrollmentList, teacher, passingGrade, schedule);
+        return Objects.hash(sectionID, course, room, session, teacher, passingGrade, schedule);
     }
 
 
@@ -235,7 +173,6 @@ public class CourseSection  {
             ", course='" + getCourse() + "'" +
             ", room='" + getRoom() + "'" +
             ", session='" + getSession() + "'" +
-            ", enrollmentList='" + getEnrollmentList() + "'" +
             ", teacher='" + getTeacher() + "'" +
             ", passingGrade='" + getPassingGrade() + "'" +
             ", schedule='" + getSchedule() + "'" +

@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Assessment {
+    private int assessmentID;
     private final AssessmentType assessmentType;
     private String description;
     private ZonedDateTime startDate;
@@ -57,6 +58,9 @@ public class Assessment {
 
     // Getters and setters for Assessment
 
+    public int getAssessmentID() {
+        return this.assessmentID;
+    }
 
     public AssessmentType getAssessmentType() {
         return this.assessmentType;

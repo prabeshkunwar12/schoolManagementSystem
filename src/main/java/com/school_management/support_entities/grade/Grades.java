@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Grades {
+    private int gradesID;
     private float scoredGrade;
     private float totalGrade;
     private float passingGrade;
@@ -51,6 +52,10 @@ public abstract class Grades {
         this.scoredGrade = 0;
         this.passingGrade = 0;
         logger.info("new Grades initialized.");
+    }
+
+    public int getGradesID() {
+        return this.gradesID;
     }
 
     // Getters and setters for scoredGrade and totalGrade
