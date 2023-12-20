@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CourseSectionSchedule{
+    private int courseSectionScheduleID;
     private EnumMap<DayOfWeek, LocalTime> weeklySchedule;
     private Duration duration;
     private LocalDate startDate;
@@ -36,18 +37,24 @@ public class CourseSectionSchedule{
     private Logger logger = LoggerFactory.getLogger(CourseSectionSchedule.class);
     
     public CourseSectionSchedule(Map<DayOfWeek, LocalTime> weeklySchedule, Duration duration, LocalDate startDate, LocalDate endDate) {
-        super();
         if(weeklySchedule == null || duration==null || startDate ==null || endDate == null) {
-            logger.error("paramenteres cannot be null!", new IllegalArgumentException());   
-        } else {
-            this.weeklySchedule = new EnumMap<>(weeklySchedule);
-            this.startDate = startDate;
-            this.endDate = endDate;
-            dateGenerator(); 
-            logger.info("CourseSectionSchedule initialized.");
-        }   
+            logger.error("paramenteres cannot be null!", new IllegalArgumentException());  
+            throw new IllegalArgumentException(); 
+        } 
+        if(startDate.isAfter(endDate)) {
+            logger.error("startDate must be before endDate", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        this.weeklySchedule = new EnumMap<>(weeklySchedule);
+        this.startDate = startDate;
+        this.endDate = endDate;
+        dateGenerator(); 
+        logger.info("CourseSectionSchedule initialized.");  
     }
 
+    public int getCourseSectionScheduleID() {
+        return this.courseSectionScheduleID;
+    }
     /**
      * Retrieves an unmodifiable view of the weekly schedule for this course section.
      *

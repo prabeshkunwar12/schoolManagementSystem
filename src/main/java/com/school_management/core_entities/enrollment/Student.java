@@ -19,14 +19,12 @@
  */
 package com.school_management.core_entities.enrollment;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.schedule.Schedule;
 import com.school_management.support_entities.schedule.StudentSchedule;
 import com.school_management.support_entities.time_frame.YearStanding;
@@ -53,19 +51,15 @@ public class Student {
     private long guardianContactNumber;
     private String guardianEmail;
 
-    // List of courses in which the student is currently enrolled
-    private List<Enrollment> enrolledCourses;
-
-    // List of courses completed by the student
-    private List<Enrollment> completedCourses;
-
     private final StudentSchedule schedule;
 
 
     // Constructor to initialize mandatory personal details of the student
-    public Student(int studentID, String name, String address, Date dateOfBirth, String email) {
-        // Set basic personal details
-        this.studentID = studentID;
+    public Student(String name, String address, Date dateOfBirth, String email) {
+        if(name==null || address==null || dateOfBirth==null || email==null) {
+            logger.error("parameters cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
         this.name = name;
         this.address = address;
         this.dateOfBirth = dateOfBirth;
@@ -79,9 +73,8 @@ public class Student {
         this.guardianEmail = "none";
 
         // Initialize lists for enrolled and completed courses
-        this.enrolledCourses = new ArrayList<>();
-        this.completedCourses = new ArrayList<>();
         this.schedule = new StudentSchedule();
+        logger.info("New student initialized");
     }
 
     // Getters and setters 
@@ -95,6 +88,7 @@ public class Student {
     }
 
     public String getName() {
+        logger.info("Student {} name modified", getStudentID());
         return this.name;
     }
 
@@ -107,6 +101,7 @@ public class Student {
     }
 
     public void setAddress(String address) {
+        logger.info("Student {} address modified", getStudentID());
         this.address = address;
     }
 
@@ -115,6 +110,7 @@ public class Student {
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
+        logger.info("Student {} date of birth modified", getStudentID());
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -123,6 +119,7 @@ public class Student {
     }
 
     public void setEmail(String email) {
+        logger.info("Student {} email modified", getStudentID());
         this.email = email;
     }
 
@@ -131,6 +128,7 @@ public class Student {
     }
 
     public void setPhoneNumber(long phoneNumber) {
+        logger.info("Student {} phone number modified", getStudentID());
         this.phoneNumber = phoneNumber;
     }
 
@@ -139,6 +137,7 @@ public class Student {
     }
 
     public void setYearStanding(YearStanding yearStanding) {
+        logger.info("Student {} year standing modified", getStudentID());
         this.yearStanding = yearStanding;
     }
 
@@ -147,6 +146,7 @@ public class Student {
     }
 
     public void setGuardianName(String guardianName) {
+        logger.info("Student {} gurdian name modified", getStudentID());
         this.guardianName = guardianName;
     }
 
@@ -155,6 +155,7 @@ public class Student {
     }
 
     public void setGuardianContactNumber(long guardianContactNumber) {
+        logger.info("Student {} gurdian contact number modified", getStudentID());
         this.guardianContactNumber = guardianContactNumber;
     }
 
@@ -163,85 +164,26 @@ public class Student {
     }
 
     public void setGuardianEmail(String guardianEmail) {
+        logger.info("Student {} gurdian email modified", getStudentID());
         this.guardianEmail = guardianEmail;
     }
 
-    /**
-     * Returns a read-only view of the list of courses in which the student is enrolled.
-     *
-     * @return Unmodifiable list of enrolled courses
-     */
-    public List<Enrollment> getEnrolledCourses() {
-        return Collections.unmodifiableList(enrolledCourses);
-    }
-
-    /**
-     * Adds an enrollment to the list of courses in which the student is enrolled.
-     *
-     * @param enrollment The enrollment to be added
-     * @throws IllegalArgumentException if enrollment is null
-     */
-    public boolean addCourse(Enrollment enrollment) {
-        if(enrollment != null) {
-            enrolledCourses.add(enrollment);
-            logger.info("Enrollement for {} course has been added to the list", enrollment.getCourseSection().getCourse().getCourseName());
-            return true;
-        }
-        logger.error("Failed to add enrollementto the list", new IllegalArgumentException());
-        return false;
-    }
-
-    /**
-     * Removes an enrollment from the list of courses in which the student is enrolled.
-     *
-     * @param enrollment The enrollment to be removed
-     * @throws IllegalArgumentException if enrollment is not found in the list
-     */
-    public boolean removeCourse(Enrollment enrollment) {
-        boolean removed = this.enrolledCourses.remove(enrollment) && this.schedule.removeCourseSectionSchedule(enrollment.getCourseSection().getSchedule());
-        if(!removed) {
-            logger.error("enrollment not found in the list", new IllegalArgumentException());
-            return false;
-        }
-        logger.info("Enrollment for {} course removed from the list", enrollment.getCourseSection().getCourse().getCourseName());
-        return true;
-    }
-
-    /**
-     * Returns a read-only view of the list of courses completed by the student.
-     *
-     * @return Unmodifiable list of completed courses
-     */
-    public List<Enrollment> getCompletedCourses() {
-        return Collections.unmodifiableList(completedCourses);
-    }
-
-    /**
-     * Marks an enrollment as complete and moves it to the completed courses list.
-     *
-     * @param enrollment The enrollment to be marked as complete
-     * @return True if the course is marked as complete, false otherwise
-     * @throws IllegalArgumentException if enrollment is null
-     */
-    public boolean setCourseAsComplete(Enrollment enrollment) {
-        if(enrollment != null) {
-            if(enrollment.isPassed()) {
-                this.completedCourses.add(enrollment);
-                this.removeCourse(enrollment);
-                logger.info("Course {} is set as completed", enrollment.getCourseSection().getCourse().getCourseName());
-                return true;
-            } else {
-                logger.warn("Student didn't meet the criteria to pass the course");
-                return false;
-
-            }
-        } else {
-            throw new IllegalArgumentException("Enrollment cannot be null");
-        }
-    }
-
+    
     public Schedule getSchedule() {
         return schedule;
+    }
+
+    public boolean addCourseSectionSchedule(CourseSectionSchedule css) {
+        if(css==null) {
+            logger.error("course section schedule cannot be null.", new IllegalArgumentException());
+            return false;
+        }
+        if(schedule.addCourseSectionSchedule(css)) {
+           logger.info("CourseSectionSchedule added to the student {}'s schedule", studentID); 
+           return true;
+        }
+        logger.error("failed to add the coursesectionSchedule", new IllegalArgumentException());
+        return false;
     }
 
     // Equals, hashCode, and toString methods
@@ -253,12 +195,12 @@ public class Student {
             return false;
         }
         Student student = (Student) o;
-        return studentID == student.studentID && Objects.equals(name, student.name) && Objects.equals(address, student.address) && Objects.equals(dateOfBirth, student.dateOfBirth) && Objects.equals(email, student.email) && phoneNumber == student.phoneNumber && Objects.equals(yearStanding, student.yearStanding) && Objects.equals(guardianName, student.guardianName) && guardianContactNumber == student.guardianContactNumber && Objects.equals(guardianEmail, student.guardianEmail) && Objects.equals(enrolledCourses, student.enrolledCourses) && Objects.equals(completedCourses, student.completedCourses);
+        return studentID == student.studentID && Objects.equals(name, student.name) && Objects.equals(address, student.address) && Objects.equals(dateOfBirth, student.dateOfBirth) && Objects.equals(email, student.email) && phoneNumber == student.phoneNumber && Objects.equals(yearStanding, student.yearStanding) && Objects.equals(guardianName, student.guardianName) && guardianContactNumber == student.guardianContactNumber && Objects.equals(guardianEmail, student.guardianEmail) && Objects.equals(schedule, student.schedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(studentID, name, address, dateOfBirth, email, phoneNumber, yearStanding, guardianName, guardianContactNumber, guardianEmail, enrolledCourses, completedCourses);
+        return Objects.hash(studentID, name, address, dateOfBirth, email, phoneNumber, yearStanding, guardianName, guardianContactNumber, guardianEmail, schedule);
     }
 
     @Override
@@ -274,8 +216,6 @@ public class Student {
             ", guardianName='" + getGuardianName() + "'" +
             ", guardianContactNumber='" + getGuardianContactNumber() + "'" +
             ", guardianEmail='" + getGuardianEmail() + "'" +
-            ", enrolledCourses='" + getEnrolledCourses() + "'" +
-            ", completedCourses='" + getCompletedCourses() + "'" +
             "}";
     }
     

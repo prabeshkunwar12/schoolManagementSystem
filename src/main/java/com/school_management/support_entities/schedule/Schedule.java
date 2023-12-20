@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Schedule {
+    private int scheduleID;
     private List<CourseSectionSchedule> weeklySchedules;
     // Logger for logging messages related to the Schedule class
     private static final Logger logger = LoggerFactory.getLogger(Schedule.class);
@@ -34,6 +35,10 @@ public abstract class Schedule {
      */
     protected Schedule() {
         this.weeklySchedules = new ArrayList<>();
+    }
+
+    public int getScheduleID() {
+        return scheduleID;
     }
 
     /**

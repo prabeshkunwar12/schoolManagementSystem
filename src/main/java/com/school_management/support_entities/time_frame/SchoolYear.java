@@ -19,18 +19,19 @@
  */
 package com.school_management.support_entities.time_frame;
 
-import java.time.Year;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.school_management.support_entities.school.School;
+
 public class SchoolYear {
-    private final Year year;
-    private List<Session> sessions;
+    private int schoolYearID;
+    private  final School school;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
 
     private Logger logger = LoggerFactory.getLogger(SchoolYear.class);
 
@@ -39,22 +40,31 @@ public class SchoolYear {
      *
      * @param year The academic year.
      */
-    public SchoolYear(Year year) {
-        this.year = year;
-        sessions = new ArrayList<>();
+    public SchoolYear(School school, LocalDate startDate, LocalDate endDate) {
+        if(school == null || startDate == null || endDate == null) {
+            logger.error("Parameters cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        if(startDate.getYear()!=endDate.getYear()){
+            logger.error("start date and end date must have same year", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        if(startDate.isAfter(endDate)) {
+            logger.error("Start date should be before end date", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.school = school;
         logger.info("New School Year initialized");
     }
 
-    /**
-     * Constructor to initialize a SchoolYear with the specified year and sessions.
-     *
-     * @param year The academic year.
-     * @param sessions The list of sessions associated with the year.
-     */
-    public SchoolYear(Year year, List<Session> sessions) {
-        this.year = year;
-        setSessions(sessions);
-        logger.info("New School Year initialized");
+    public int getSchoolYearID() {
+        return this.schoolYearID;
+    }
+
+    public School getSchool() {
+        return school;
     }
 
     /**
@@ -62,74 +72,16 @@ public class SchoolYear {
      *
      * @return The academic year.
      */
-    public Year getYear() {
-        return this.year;
+    public int getYear() {
+        return this.startDate.getYear();
     }
 
-    /**
-     * Get an unmodifiable view of the list of sessions associated with the year.
-     *
-     * @return Unmodifiable list of sessions.
-     */
-    public List<Session> getSessions() {
-        return Collections.unmodifiableList(sessions);
+    public LocalDate getStartDate() {
+        return this.startDate;
     }
 
-    /**
-     * Set the list of sessions associated with the year.
-     *
-     * @param sessions The list of sessions to be set.
-     * @throws IllegalArgumentException if the provided sessions list is null.
-     */
-    public boolean setSessions(List<Session> sessions) {
-        if(sessions == null) {
-            logger.error("sessions cannot be null", new IllegalArgumentException());
-            return false;
-        } else {
-            this.sessions = new ArrayList<>();
-            for(Session session: sessions) {
-                if(!addSession(session)){
-                    return false;
-                }
-            }
-            logger.info("List of sessions modified");
-            return true;
-        }  
-    }
-
-    /**
-     * Add a session to the list associated with the year.
-     *
-     * @param session The session to be added.
-     * @throws IllegalArgumentException if the provided session is null or if the session type already exists.
-     */
-    public boolean addSession(Session session) {
-        if(session == null) {
-            logger.error("session cannot be null", new IllegalArgumentException());
-            return false;
-        }
-        if(containsSessionType(session.getSessionType())) {
-            logger.error("this year already contains {} session.", session.getSessionType(), new IllegalArgumentException());
-            return false;
-        }
-        this.sessions.add(session);
-        logger.info("Added {} to the sessionList", session.getSessionType());
-        return true;
-    }
-
-    /**
-     * Check if a specific session type exists within the year's session list.
-     *
-     * @param sessionType The session type to be checked.
-     * @return True if the session type exists, otherwise false.
-     */
-    public boolean containsSessionType(SessionType sessionType) {
-        for(Session session: sessions) {
-            if(session.getSessionType().equals(sessionType)) {
-                return true;
-            }
-        }
-        return false;
+    public LocalDate getEndDate() {
+        return this.endDate;
     }
 
     // Overridden equals, hashCode, and toString methods
@@ -142,19 +94,20 @@ public class SchoolYear {
             return false;
         }
         SchoolYear schoolYear = (SchoolYear) o;
-        return Objects.equals(year, schoolYear.year) && Objects.equals(sessions, schoolYear.sessions);
+        return Objects.equals(school, schoolYear.school) && Objects.equals(startDate, schoolYear.startDate) && Objects.equals(endDate, schoolYear.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(year, sessions);
+        return Objects.hash(school, startDate, endDate);
     }
 
     @Override
     public String toString() {
         return "{" +
-            " year='" + getYear() + "'" +
-            ", sessions='" + getSessions() + "'" +
+            " school='" + getSchool() + "'" +
+            " startDate='" + getStartDate() + "'" +
+            " endDate='" + getEndDate() + "'" +
             "}";
     }
     

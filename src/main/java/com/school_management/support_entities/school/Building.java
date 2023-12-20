@@ -14,9 +14,6 @@
  */
 package com.school_management.support_entities.school;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -27,8 +24,8 @@ import org.slf4j.LoggerFactory;
 public class Building {
     private int buildingID;
     private String name;
-    private List<Room> roomList;
-    
+    private final School school;
+
     private Logger logger = LoggerFactory.getLogger(Building.class);
 
     /**
@@ -37,10 +34,13 @@ public class Building {
      * @param buildingID The unique identifier for the building.
      * @param name       The name of the building.
      */
-    public Building(int buildingID, String name) {
-        this.buildingID = buildingID;
+    public Building(String name, School school) {
+        if(name==null || school==null){
+            logger.error("parameters cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
         this.name = name;
-        this.roomList = new ArrayList<>();
+        this.school = school;
         logger.info("New building initialized");
     }
 
@@ -72,26 +72,8 @@ public class Building {
         logger.info("Building name changed");
     }
 
-    public List<Room> getRoomList() {
-        return Collections.unmodifiableList(this.roomList);
-    }
-
-    /**
-     * Adds a room to the list of rooms in the building.
-     *
-     * @param room The room to be added (must not be null).
-     * @return True if the room is successfully added; otherwise, false.
-     * @throws IllegalArgumentException if the room parameter is null.
-     */
-    public boolean addRoom(Room room){
-        if(room == null) {
-            logger.error("Room cannot be null.", new IllegalArgumentException());
-            return false;
-        } else {
-            roomList.add(room);
-            logger.info("Room added to the list");
-            return true;
-        }
+    public School getSchool() {
+        return this.school;
     }
 
     // Equals, hashCode, and toString methods are overridden
@@ -103,12 +85,12 @@ public class Building {
             return false;
         }
         Building building = (Building) o;
-        return buildingID == building.buildingID && Objects.equals(name, building.name) && Objects.equals(roomList, building.roomList) && Objects.equals(logger, building.logger);
+        return buildingID == building.buildingID && Objects.equals(name, building.name) && Objects.equals(school, building.school);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(buildingID, name, roomList, logger);
+        return Objects.hash(buildingID, name, school);
     }
 
     @Override
@@ -116,7 +98,7 @@ public class Building {
         return "{" +
             " buildingID='" + getBuildingID() + "'" +
             ", name='" + getName() + "'" +
-            ", roomList='" + getRoomList() + "'" +
+            ", school='" + getSchool() + "'" +
             "}";
     }
     

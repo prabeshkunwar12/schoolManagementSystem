@@ -32,6 +32,7 @@ import com.school_management.support_entities.schedule.CourseSectionSchedule;
 
 
 public class Attendance {
+    private int attendanceID;
     private final CourseSectionSchedule schedule;
     private Map<LocalDate, AttendanceStatus> attendanceList;
 
@@ -46,6 +47,10 @@ public class Attendance {
         this.schedule = schedule;
         initializeAttendanceList();
         logger.info("New attendance created");
+    }
+
+    public int getAttendanceID() {
+        return attendanceID;
     }
 
     public CourseSectionSchedule getSchedule() {
