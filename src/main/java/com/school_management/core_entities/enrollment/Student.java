@@ -21,6 +21,7 @@ package com.school_management.core_entities.enrollment;
 
 import java.util.Date;
 import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,28 +30,49 @@ import com.school_management.support_entities.schedule.Schedule;
 import com.school_management.support_entities.schedule.StudentSchedule;
 import com.school_management.support_entities.time_frame.YearStanding;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 public class Student {
     // Logger for logging messages related to the Student class
     private static final Logger logger = LoggerFactory.getLogger(Student.class);
 
     // Unique identifier for the student
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "student_id")
     private int studentID;
 
     // Student's personal details
+    @Column(name = "name")
     private String name;
+    @Column(name = "address")
     private String address;
+    @Column(name = "date_of_birth")
     private Date dateOfBirth;
+    @Column(name = "email")
     private String email;
+    @Column(name = "phone_number")
     private long phoneNumber;
 
     // Year standing of the student (e.g., First year, Second year, etc.)
+    @Column(name = "year_standing")
     private YearStanding yearStanding;
 
     // Guardian details
+    @Column(name = "guardian_name")
     private String guardianName;
+    @Column(name = "guardian_phone_number")
     private long guardianContactNumber;
+    @Column(name = "guardian_email")
     private String guardianEmail;
 
+    @ManyToOne
+    @JoinColumn(name = "schedule_id")
     private final StudentSchedule schedule;
 
 
