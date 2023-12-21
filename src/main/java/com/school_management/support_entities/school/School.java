@@ -3,14 +3,37 @@ package com.school_management.support_entities.school;
 import java.util.Objects;
 
 import org.slf4j.LoggerFactory;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import org.slf4j.Logger;
 
+@Entity
+@Table(name = "school")
 public class School {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "school_id")
     private int schoolID;
+
+    @Column(name = "school_name")
     private String schoolName;
+
+    @Column(name = "school_type")
     private SchoolType schoolType;
 
     private Logger logger = LoggerFactory.getLogger(School.class);
+
+    // Default constructor for JPA entity compliance.
+    public School() {
+
+    }
 
     /**
      * Initializes a new School instance with a provided school name and school type.
@@ -32,11 +55,20 @@ public class School {
         return schoolID;
     }
 
+    // setter for testing purpose
+    public void setSchoolID(int schoolID) {
+        this.schoolID = schoolID;
+    }
+
     public String getSchoolName() {
         return this.schoolName;
     }
 
     public void setSchoolName(String schoolName) {
+        if(schoolName==null) {
+            logger.error("School Name is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("School Name is Null");
+        }
         this.schoolName = schoolName;
         logger.info("New schoolName set.");
     }
@@ -46,11 +78,16 @@ public class School {
     }
 
     public void setSchoolType(SchoolType schoolType) {
+        if(schoolType==null) {
+            logger.error("School type is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("School type is Null");
+        }
         this.schoolType = schoolType;
         logger.info("schoolType modified");
     }
 
     // Equals, hashCode, and toString methods are overridden
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -59,20 +96,20 @@ public class School {
             return false;
         }
         School school = (School) o;
-        return Objects.equals(schoolName, school.schoolName) && Objects.equals(schoolType, school.schoolType) ;
+        return schoolID == school.schoolID && Objects.equals(schoolName, school.schoolName) && Objects.equals(schoolType, school.schoolType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(schoolName, schoolType);
+        return Objects.hash(schoolID, schoolName, schoolType);
     }
 
     @Override
     public String toString() {
         return "{" +
-            " schoolName='" + getSchoolName() + "'" +
+            " schoolID='" + getSchoolID() + "'" +
+            ", schoolName='" + getSchoolName() + "'" +
             ", schoolType='" + getSchoolType() + "'" +
             "}";
-    }
-
+    }    
 }
