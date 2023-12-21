@@ -38,12 +38,34 @@ import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.schedule.Schedule;
 import com.school_management.support_entities.schedule.TeacherSchedule;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 public class Teacher {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "teacher_id")
     private int teacherID;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "phone_number")
     private long phoneNumber;
+
+    @Column(name = "email")
     private String email;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
     private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
     // Logger for logging messages related to the Teacher class

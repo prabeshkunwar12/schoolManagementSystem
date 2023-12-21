@@ -181,6 +181,7 @@ CREATE TABLE Session (
 -- adding the foreign key references
 
 ALTER TABLE Department ADD FOREIGN KEY (school_id) REFERENCES School(school_id);
+ALTER TABLE Department Add FOREIGN KEY (head_of_department) REFERENCES Teacher(teacher_id);
 
 ALTER TABLE Teacher ADD FOREIGN KEY (department_id) REFERENCES Department(department_id);
 ALTER TABLE Teacher ADD FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_id);
@@ -188,7 +189,9 @@ ALTER TABLE Teacher ADD FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_i
 ALTER TABLE Course ADD FOREIGN KEY (department_id) REFERENCES Department(department_id);
 
 ALTER TABLE Course_section ADD FOREIGN KEY (course_id) REFERENCES Course(course_id);
+ALTER TABLE course_section ADD FOREIGN KEY (room_id) REFERENCES Room(room_id);
 ALTER TABLE Course_section ADD FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id);
+ALTER TABLE Course_section ADD FOREIGN KEY (session_id) REFERENCES Session(session_id);
 ALTER TABLE Course_section ADD FOREIGN KEY (course_section_schedule_id) REFERENCES Course_section_schedule(course_section_schedule_id);
 
 ALTER TABLE Student ADD FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_id);

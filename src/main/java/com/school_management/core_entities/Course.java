@@ -23,11 +23,31 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 public class Course {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "course_id")
     private int courseID;
+
+    @Column(name = "course_name")
     private String courseName;
+
+    @Column(name = "course_description")
     private String description;
+
+    @Column(name = "course_credit")
     private int credits;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
     private final Department department;
 
     // Logger for logging messages related to the Student class
