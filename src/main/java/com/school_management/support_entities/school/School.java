@@ -46,11 +46,15 @@ public class School {
             logger.error("parameters cannot be null", new IllegalArgumentException());
             throw new IllegalArgumentException();
         }
+        if( schoolName.equals("") || schoolName.length()>100) {
+            logger.error("School name should have between 1 and 100 characters", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
         this.schoolName = schoolName;
         this.schoolType = schoolType;
         logger.info("School is initialized");
     }
-    
+     
     public int getSchoolID() {
         return schoolID;
     }
@@ -68,6 +72,10 @@ public class School {
         if(schoolName==null) {
             logger.error("School Name is null", new IllegalArgumentException());
             throw new IllegalArgumentException("School Name is Null");
+        }
+        if( schoolName.equals("") || schoolName.length()>100) {
+            logger.error("School name should have between 1 and 100 characters", new IllegalArgumentException());
+            throw new IllegalArgumentException();
         }
         this.schoolName = schoolName;
         logger.info("New schoolName set.");
