@@ -71,6 +71,9 @@ public class Teacher {
     // Logger for logging messages related to the Teacher class
     private static final Logger logger = LoggerFactory.getLogger(Teacher.class);
 
+    //default constructor for JPA compliance
+    public Teacher() {}
+    
     /**
      * Constructor to initialize department details.
      *
@@ -150,6 +153,23 @@ public class Teacher {
         return this.schedule;
     }
 
+    public boolean setSchedule(Schedule schedule) {
+        if(schedule == null) {
+            logger.error("schedule cannot be null", new IllegalArgumentException());
+            return false;
+        } 
+        this.schedule = schedule;
+        logger.info("Schedule set for Teacher {}", this.getTeacherID() );
+        return true;
+    }
+
+    /**
+     * Adds a CourseSectionSchedule to the schedule list.
+     *
+     * @param sectionSchedule The CourseSectionSchedule to be added (must not be null).
+     * @return True if the CourseSectionSchedule is successfully added; otherwise, false.
+     * @throws IllegalArgumentException If the section schedule is null.
+     */
     public boolean addCourseSectionSchedule(CourseSectionSchedule schedule) {
         if(schedule==null){
             logger.error("schedule cannot be null", new IllegalArgumentException());
@@ -163,28 +183,7 @@ public class Teacher {
         return false;
 
     }
-
-    /**
-     * Adds a CourseSectionSchedule to the schedule list.
-     *
-     * @param sectionSchedule The CourseSectionSchedule to be added (must not be null).
-     * @return True if the CourseSectionSchedule is successfully added; otherwise, false.
-     * @throws IllegalArgumentException If the section schedule is null.
-     */
-    public boolean addSchedule(CourseSectionSchedule sectionSchedule) {
-        if (sectionSchedule != null) {
-            try {
-                schedule.addCourseSectionSchedule(sectionSchedule);
-                logger.info("Schedule added to the list.");
-                return true;
-            } catch (Exception e) {
-                logger.error("Failed to add schedule: " + e.getMessage(), e);
-            }
-        } else {
-            logger.error("Section schedule cannot be null", new IllegalArgumentException());
-        }
-        return false;
-    }
+    
 
     /**
      * Removes a course section schedule.

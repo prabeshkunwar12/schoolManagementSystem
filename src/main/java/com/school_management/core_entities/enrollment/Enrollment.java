@@ -37,18 +37,53 @@ import com.school_management.support_entities.grade.AssessmentGrade;
 import com.school_management.support_entities.grade.FinalCourseGrade;
 import com.school_management.support_entities.grade.Grades;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
 public class Enrollment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "enrollment_id")
     private int  enrollmentID;
-    private final Student student;
-    private final CourseSection courseSection;
+
+    
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private Student student;
+    
+    @ManyToOne
+    @JoinColumn(name = "course_section_id")
+    private CourseSection courseSection;
+    
+    @Column(name = "enrollment_status")
     private EnrollmentStatus enrollmentStatus;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "enrollment_id")
     private List<AssessmentGrade> assessmentGrades;
+    
+    @ManyToOne
+    @JoinColumn(name = "attendance_id")
     private Attendance attendance;
+    
+    @ManyToOne
+    @JoinColumn(name = "final_course_grade_id")
     private Grades finalGrade;
+    
+    @Column(name = "pass_status")
     private PassStatus passStatus;
 
     // Logger for logging messages related to the Enrollment class
-    private static final Logger logger = LoggerFactory.getLogger(Enrollment.class);
+    private static Logger logger = LoggerFactory.getLogger(Enrollment.class);
+
+    // Default constructor for JPA compliance
+    public Enrollment() {}
 
     //Constructor for Enrollment
     public Enrollment(Student student, CourseSection courseSection) {
@@ -92,12 +127,42 @@ public class Enrollment {
         return this.student;
     }
 
+    //jpa compliance
+    public boolean setStudent(Student student) {
+        if(student==null){
+            logger.error("Student is null", new IllegalArgumentException());
+            return false;
+        }
+        this.student = student;
+        return true;
+    }
+
     public CourseSection getCourseSection() {
         return this.courseSection;
     }
 
+    //jpa compliance
+    public boolean setCourseSection(CourseSection courseSection) {
+        if(courseSection==null){
+            logger.error("Course section is null", new IllegalArgumentException());
+            return false;
+        }
+        this.courseSection = courseSection;
+        return true;
+    }
+
     public Attendance getAttendance() {
         return this.attendance;
+    }
+
+    //jpa compliance
+    public boolean setAttendance(Attendance attendance) {
+        if(attendance==null){
+            logger.error("Attendance is null", new IllegalArgumentException());
+            return false;
+        }
+        this.attendance = attendance;
+        return true;
     }
 
     /**
@@ -180,7 +245,8 @@ public class Enrollment {
         return this.finalGrade;
     }
 
-    private void setFinalGrade(float finalScoredGrade) {
+    //JPA cpmpliance
+    public void setFinalGrade(float finalScoredGrade) {
         this.finalGrade.setScoredGrade(finalScoredGrade);
         logger.info("final grade set.");
     }
@@ -224,6 +290,21 @@ public class Enrollment {
 
     public void setEnrollmentStatus(EnrollmentStatus enrollmentStatus) {
         this.enrollmentStatus = enrollmentStatus;
+    }
+
+    public PassStatus getPassStatus() {
+        return this.passStatus;
+    }
+
+    // JPA complaiance
+    public boolean setPassStatus(PassStatus passStatus) {
+        if(passStatus == null) {
+            logger.error("pass status is null", new IllegalArgumentException());
+            return false;
+        }
+        this.passStatus = passStatus;
+        logger.info("pass status set");
+        return true;
     }
 
 

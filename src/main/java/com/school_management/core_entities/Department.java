@@ -56,6 +56,11 @@ public class Department {
     // Logger for logging messages related to the Student class
     private static final Logger logger = LoggerFactory.getLogger(Department.class);
 
+    // Default constructor for JPA entity compliance.
+    public Department() {
+
+    }
+    
     /**
      * Constructor to initialize department details.
      *
@@ -105,6 +110,14 @@ public class Department {
 
     public School getSchool() {
         return this.school;
+    }
+
+    public void setSchool(School school) {
+        if(school==null) {
+            logger.error("School cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        this.school = school;
     }
 
     public Teacher getHeadOfDepartment() {

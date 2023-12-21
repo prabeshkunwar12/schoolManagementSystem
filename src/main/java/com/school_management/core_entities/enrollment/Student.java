@@ -39,7 +39,7 @@ import jakarta.persistence.ManyToOne;
 
 public class Student {
     // Logger for logging messages related to the Student class
-    private static final Logger logger = LoggerFactory.getLogger(Student.class);
+    private static Logger logger = LoggerFactory.getLogger(Student.class);
 
     // Unique identifier for the student
     @Id
@@ -50,12 +50,16 @@ public class Student {
     // Student's personal details
     @Column(name = "name")
     private String name;
+
     @Column(name = "address")
     private String address;
+
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
+
     @Column(name = "email")
     private String email;
+
     @Column(name = "phone_number")
     private long phoneNumber;
 
@@ -66,15 +70,20 @@ public class Student {
     // Guardian details
     @Column(name = "guardian_name")
     private String guardianName;
+
     @Column(name = "guardian_phone_number")
     private long guardianContactNumber;
+
     @Column(name = "guardian_email")
     private String guardianEmail;
 
     @ManyToOne
     @JoinColumn(name = "schedule_id")
-    private final StudentSchedule schedule;
+    private Schedule schedule;
 
+
+    // Default constructor for JPA complaince
+    public Student() {}
 
     // Constructor to initialize mandatory personal details of the student
     public Student(String name, String address, Date dateOfBirth, String email) {
@@ -193,6 +202,16 @@ public class Student {
     
     public Schedule getSchedule() {
         return schedule;
+    }
+
+    public boolean setSchedule(Schedule schedule) {
+        if(schedule == null) {
+            logger.error("schedule cannot be null", new IllegalArgumentException());
+            return false;
+        } 
+        this.schedule = schedule;
+        logger.info("Schedule set for Teacher {}", this.getStudentID() );
+        return true;
     }
 
     public boolean addCourseSectionSchedule(CourseSectionSchedule css) {

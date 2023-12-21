@@ -48,7 +48,7 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "department_id")
-    private final Department department;
+    private Department department;
 
     // Logger for logging messages related to the Student class
     private static final Logger logger = LoggerFactory.getLogger(Course.class);
@@ -108,6 +108,16 @@ public class Course {
 
     public Department getDepartment() {
         return this.department;
+    }
+
+    public boolean setDepartment(Department department) {
+        if(department == null) {
+            logger.error("Department is null", new IllegalArgumentException());
+            return false;
+        }
+        this.department = department;
+        logger.info("Department was modified for course {}", getCourseID());
+        return true;
     }
 
     // Overridden equals, hashCode, and toString methods

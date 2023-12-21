@@ -55,9 +55,9 @@ CREATE TABLE Student (
     email VARCHAR(100),
     phone_number VARCHAR(20),
     year_standing ENUM('FIRST_YEAR', 'SECOND_YEAR', 'THIRD_YEAR', 'FORTH_YEAR', 'FIFTH_YEAR', 'SIXTH_YEAR'),
-    gurdian_name VARCHAR(100),
-    gurdian_email VARCHAR(100),
-    gurdian_phone_number VARCHAR(20),
+    guardian_name VARCHAR(100),
+    guardian_email VARCHAR(100),
+    guardian_phone_number VARCHAR(20),
     schedule_id int
 );
 
