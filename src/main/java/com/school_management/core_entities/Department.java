@@ -25,12 +25,32 @@ import org.slf4j.LoggerFactory;
 
 import com.school_management.support_entities.school.School;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 public class Department {
     // Member variables for department details
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "department_id")
     private int departmentID;
+
+    @Column(name = "department_name")
     private String departmentName;
+
+    @ManyToOne
+    @JoinColumn(name = "head_of_department")
     private Teacher headOfDepartment;
+
+    @Column(name = "description")
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "school_id")
     private School school;
 
     // Logger for logging messages related to the Student class
