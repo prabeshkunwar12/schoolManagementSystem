@@ -255,7 +255,7 @@ public class Enrollment {
     }
 
     // JPA complaince
-    public void setFinalGrade(Grades finalGrade) {
+    public void setFinalGrade(FinalCourseGrade finalGrade) {
         if(finalGrade == null) {
             logger.error("finalGrade is null", new IllegalArgumentException());
             throw new IllegalArgumentException("finalGrade cannot be null");

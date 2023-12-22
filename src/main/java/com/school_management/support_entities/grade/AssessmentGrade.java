@@ -32,11 +32,27 @@ import org.slf4j.LoggerFactory;
 import com.school_management.support_entities.assessment.Assessment;
 import com.school_management.support_entities.assessment.AssessmentType;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "Assessment_grade")
 public class AssessmentGrade extends Grades {
-    private final Assessment assessment;
+    
+    @ManyToOne
+    @JoinColumn(name = "assessment_id")
+    private Assessment assessment;
+
+    @Column(name = "weightage")
     private float weightage ;
 
     private Logger logger = LoggerFactory.getLogger(AssessmentGrade.class);
+
+    //default constructor for JPA compliance
+    public AssessmentGrade() {super();}
 
     /**
      * Constructor for AssessmentGrade.
@@ -57,6 +73,15 @@ public class AssessmentGrade extends Grades {
         return this.assessment;
     }
 
+    public void setAssessment(Assessment assessment) {
+        if(assessment == null) {
+            logger.error("assessment is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("assessment cannot be null");
+        }
+        this.assessment = assessment;
+        logger.info("assessment for {} has been modified to {}", super.getGradesID(), getAssessment().getAssessmentID());
+    }
+
     /**
      * Retrieves the weightage of the assessment.
      *
@@ -66,14 +91,13 @@ public class AssessmentGrade extends Grades {
         return this.weightage;
     }
 
-    public boolean setWeightage(float weightage) {
+    public void setWeightage(float weightage) {
         if(weightage<0 && weightage>100) {
             logger.error("Weightage should be between 0 and 100", new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("Weightage should be between 0 and 100");
         } 
         this.weightage = weightage;
-        logger.info("Weightage modified for the assessment");
-        return true;
+        logger.info("Weightage modified to {} for the assessment {}", getWeightage(), getAssessment().getAssessmentID());
     }
 
     /**
