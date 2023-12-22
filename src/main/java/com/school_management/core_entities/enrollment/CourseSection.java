@@ -123,14 +123,13 @@ public class CourseSection  {
     }
 
     //setter for Course for JPA compliance
-    public boolean setCourse(Course course) {
+    public void setCourse(Course course) {
         if(course == null) {
-            logger.error("Course is null", new IllegalArgumentException());
-            return false;
+            logger.error("course is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("course cannot be null");
         }
-        this.course = course;
-        logger.info("Course for courseSection {} has been modified", this.sectionID);
-        return true;
+        this.course = course; 
+        logger.info("course for course {} has been changed to {}", getSectionID(), getCourse().getCourseName());
     }
 
     public Room getRoom() {
@@ -138,14 +137,14 @@ public class CourseSection  {
     }
 
     //setter for Room for JPA compliance
-    public boolean setRoom(Room room) {
+    public void setRoom(Room room) {
         if(room == null) {
             logger.error("room is null", new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("room cannot be null");
         }
-        this.room = room;
-        logger.info("room for courseSection {} has been modified", this.sectionID);
-        return true;
+        this.room = room; 
+        logger.info("room for course {} has been changed to {}", getSectionID(), getRoom().getRoomName());
+    
     }
 
     /**
@@ -173,13 +172,14 @@ public class CourseSection  {
     }
 
     //setter for Room for JPA compliance
-    public boolean setTeacher(Teacher teacher) {
+    public void setTeacher(Teacher teacher) {
         if(teacher == null) {
-            logger.error("Teacher is null", new IllegalArgumentException());
-            return false;
+            logger.error("teacher is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("teacher cannot be null");
         }
-        this.teacher = teacher;
-        return true;
+        this.teacher = teacher; 
+        logger.info("teacher for course {} has been changed to {}", getSectionID(), getTeacher().getName());
+    
     }
 
     /**
@@ -204,35 +204,41 @@ public class CourseSection  {
     }
 
     //setter for Room for JPA compliance
-    public boolean setSession(Session session) {
+    public void setSession(Session session) {
         if(session == null) {
             logger.error("session is null", new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("session cannot be null");
         }
-        this.session = session;
-        return true;
-    }
+        this.session = session; 
+        logger.info("session for course {} has been changed to {}", getSectionID(), getSession().getSessionID());
     
-
+    }
 
     public float getPassingGrade() {
         return this.passingGrade;
     }
 
-    public boolean setPassingGrade(float passingGrade) {
+    public void setPassingGrade(float passingGrade) {
         if(passingGrade<0 || passingGrade>100) {
-            logger.error("passing grade should not be in between 0 and 100. Failed to set the passing grade.", new IllegalArgumentException());
-            return false;
+            logger.error("passing grade should be in between 0 and 100. Failed to set the passing grade.", new IllegalArgumentException());
+            throw new IllegalArgumentException("passing grade should be in between 0 and 100. Failed to set the passing grade.");
         }
         this.passingGrade = passingGrade;
-        logger.info("Passing grade changed to {}", passingGrade);
-        return true;
+        logger.info("Passing grade for section {} changed to {}.", getSectionID(), getPassingGrade());
     }
 
     public CourseSectionSchedule getSchedule() {
         return this.schedule;
     }
-
+    
+    public void setSchedule(CourseSectionSchedule schedule) {
+        if(schedule == null) {
+            logger.error("schedule is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("schedule cannot be null");
+        }
+        this.schedule = schedule;
+        logger.info("schedule for {} has been modified to {}", getSectionID(), getSchedule().getCourseSectionScheduleID());
+    }
     //hash, equals and toString
 
 

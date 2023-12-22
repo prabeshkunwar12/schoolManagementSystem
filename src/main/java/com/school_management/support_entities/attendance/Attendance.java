@@ -29,16 +29,38 @@ import org.slf4j.LoggerFactory;
 
 import com.school_management.support_entities.schedule.CourseSectionSchedule;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
 
 
 public class Attendance {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "attendance_id")
     private int attendanceID;
-    private final CourseSectionSchedule schedule;
+    
+    @ManyToOne
+    @JoinColumn(name = "schedule_id")
+    private CourseSectionSchedule schedule;
+    
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "attendance_id")
     private Map<LocalDate, AttendanceStatus> attendanceList;
 
-    private Logger logger = LoggerFactory.getLogger(Attendance.class);
+
+    private static Logger logger = LoggerFactory.getLogger(Attendance.class);
     
-    
+    // default constructor for JPA compliance
+    public Attendance() {}
+
     public Attendance(CourseSectionSchedule schedule) {
         if(schedule == null) {
             logger.error("CourseSectionSchedule is null", new IllegalArgumentException());
@@ -57,8 +79,28 @@ public class Attendance {
         return this.schedule;
     }
 
+    //JPA compliance
+    public void setSchedule(CourseSectionSchedule schedule) {
+        if(schedule == null) {
+            logger.error("schedule is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("schedule cannot be null");
+        }
+        this.schedule = schedule;
+        logger.info("schedule for {} has been modified to {}", getAttendanceID(), getSchedule().getCourseSectionScheduleID());
+    }
+
     public Map<LocalDate, AttendanceStatus> getAttendanceList() {
         return Collections.unmodifiableMap(attendanceList);
+    }
+
+    //jpa compliance
+    public void setAttendanceList(Map<LocalDate, AttendanceStatus> attendanceList) {
+        if(attendanceList == null) {
+            logger.error("attendanceList is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("attendanceList cannot be null");
+        }
+        this.attendanceList = attendanceList;
+        logger.info("attendanceList for {} has been modified", getAttendanceID());
     }
 
     private void initializeAttendanceList() {

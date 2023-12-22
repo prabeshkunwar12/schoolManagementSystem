@@ -84,8 +84,12 @@ public class Course {
     }
 
     public void setCourseName(String courseName) {
-        this.courseName = courseName;
-        logger.info("Course name modified");
+        if(courseName == null) {
+            logger.error("courseName is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("courseName cannot be null");
+        }
+        this.courseName = courseName; 
+        logger.info("courseName for course {} has been changed to {}", getCourseID(), getCourseName());
     }
 
     public String getDescription() {
@@ -93,8 +97,13 @@ public class Course {
     }
 
     public void setDescription(String description) {
-        this.description = description;
-        logger.info("Course description modified");
+        if(description == null) {
+            logger.error("description is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("description cannot be null");
+        }
+        this.description = description; 
+        logger.info("description for course {} has been changed to {}", getCourseID(), getDescription());
+    
     }
 
     public int getCredits() {
@@ -110,14 +119,14 @@ public class Course {
         return this.department;
     }
 
-    public boolean setDepartment(Department department) {
+    public void setDepartment(Department department) {
         if(department == null) {
-            logger.error("Department is null", new IllegalArgumentException());
-            return false;
+            logger.error("department is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("department cannot be null");
         }
-        this.department = department;
-        logger.info("Department was modified for course {}", getCourseID());
-        return true;
+        this.department = department; 
+        logger.info("department for course {} has been changed to {}", getCourseID(), getDepartment().getDepartmentName());
+    
     }
 
     // Overridden equals, hashCode, and toString methods

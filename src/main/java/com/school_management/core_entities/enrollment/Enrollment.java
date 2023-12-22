@@ -128,13 +128,13 @@ public class Enrollment {
     }
 
     //jpa compliance
-    public boolean setStudent(Student student) {
-        if(student==null){
-            logger.error("Student is null", new IllegalArgumentException());
-            return false;
+    public void setStudent(Student student) {
+        if(student == null) {
+            logger.error("student is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("student cannot be null");
         }
         this.student = student;
-        return true;
+        logger.info("student for {} has been modified to {}", getEnrollmentID(), getStudent().getStudentID());
     }
 
     public CourseSection getCourseSection() {
@@ -142,13 +142,13 @@ public class Enrollment {
     }
 
     //jpa compliance
-    public boolean setCourseSection(CourseSection courseSection) {
-        if(courseSection==null){
-            logger.error("Course section is null", new IllegalArgumentException());
-            return false;
+    public void setCourseSection(CourseSection courseSection) {
+        if(courseSection == null) {
+            logger.error("courseSection is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("courseSection cannot be null");
         }
         this.courseSection = courseSection;
-        return true;
+        logger.info("courseSection for {} has been modified to {}", getEnrollmentID(), getCourseSection().getSectionID());
     }
 
     public Attendance getAttendance() {
@@ -156,13 +156,13 @@ public class Enrollment {
     }
 
     //jpa compliance
-    public boolean setAttendance(Attendance attendance) {
-        if(attendance==null){
-            logger.error("Attendance is null", new IllegalArgumentException());
-            return false;
+    public void setAttendance(Attendance attendance) {
+        if(attendance == null) {
+            logger.error("attendance is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("attendance cannot be null");
         }
         this.attendance = attendance;
-        return true;
+        logger.info("attendance for {} has been modified to {}", getEnrollmentID(), getAttendance().getAttendanceID());
     }
 
     /**
@@ -245,10 +245,19 @@ public class Enrollment {
         return this.finalGrade;
     }
 
-    //JPA cpmpliance
     public void setFinalGrade(float finalScoredGrade) {
         this.finalGrade.setScoredGrade(finalScoredGrade);
         logger.info("final grade set.");
+    }
+
+    // JPA complaince
+    public void setFinalGrade(Grades finalGrade) {
+        if(finalGrade == null) {
+            logger.error("finalGrade is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("finalGrade cannot be null");
+        }
+        this.finalGrade = finalGrade;
+        logger.info("finalGrade for {} has been modified to {}", getEnrollmentID(), getFinalGrade().getScoredGrade());
     }
 
     public float getFinalCourseGrade() {
@@ -297,14 +306,13 @@ public class Enrollment {
     }
 
     // JPA complaiance
-    public boolean setPassStatus(PassStatus passStatus) {
+    public void setPassStatus(PassStatus passStatus) {
         if(passStatus == null) {
-            logger.error("pass status is null", new IllegalArgumentException());
-            return false;
+            logger.error("passStatus is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("passStatus cannot be null");
         }
         this.passStatus = passStatus;
-        logger.info("pass status set");
-        return true;
+        logger.info("passStatus for {} has been modified to {}", getEnrollmentID(), getPassStatus());
     }
 
 

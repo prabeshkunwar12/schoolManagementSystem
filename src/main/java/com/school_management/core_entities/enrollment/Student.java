@@ -124,7 +124,12 @@ public class Student {
     }
 
     public void setName(String name) {
+        if(name == null) {
+            logger.error("name is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("name cannot be null");
+        }
         this.name = name;
+        logger.info("name for {} has been modified to {}", getStudentID(), getName());
     }
 
     public String getAddress() {
@@ -132,8 +137,12 @@ public class Student {
     }
 
     public void setAddress(String address) {
-        logger.info("Student {} address modified", getStudentID());
+        if(address == null) {
+            logger.error("address is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("address cannot be null");
+        }
         this.address = address;
+        logger.info("address for {} has been modified to {}", getStudentID(), getAddress());
     }
 
     public Date getDateOfBirth() {
@@ -141,8 +150,12 @@ public class Student {
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
-        logger.info("Student {} date of birth modified", getStudentID());
+        if(dateOfBirth == null) {
+            logger.error("dateOfBirth is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("dateOfBirth cannot be null");
+        }
         this.dateOfBirth = dateOfBirth;
+        logger.info("dateOfBirth for {} has been modified to {}", getStudentID(), getDateOfBirth());
     }
 
     public String getEmail() {
@@ -150,8 +163,12 @@ public class Student {
     }
 
     public void setEmail(String email) {
-        logger.info("Student {} email modified", getStudentID());
+        if(email == null) {
+            logger.error("email is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("email cannot be null");
+        }
         this.email = email;
+        logger.info("email for {} has been modified to {}", getStudentID(), getEmail());
     }
 
     public long getPhoneNumber() {
@@ -168,8 +185,12 @@ public class Student {
     }
 
     public void setYearStanding(YearStanding yearStanding) {
-        logger.info("Student {} year standing modified", getStudentID());
+        if(yearStanding == null) {
+            logger.error("yearStanding is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("yearStanding cannot be null");
+        }
         this.yearStanding = yearStanding;
+        logger.info("yearStanding for {} has been modified to {}", getStudentID(), getYearStanding());
     }
 
     public String getGuardianName() {
@@ -177,8 +198,12 @@ public class Student {
     }
 
     public void setGuardianName(String guardianName) {
-        logger.info("Student {} gurdian name modified", getStudentID());
+        if(guardianName == null) {
+            logger.error("guardianName is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("guardianName cannot be null");
+        }
         this.guardianName = guardianName;
+        logger.info("guardianName for {} has been modified to {}", getStudentID(), getGuardianName());
     }
 
     public long getGuardianContactNumber() {
@@ -186,8 +211,8 @@ public class Student {
     }
 
     public void setGuardianContactNumber(long guardianContactNumber) {
-        logger.info("Student {} gurdian contact number modified", getStudentID());
         this.guardianContactNumber = guardianContactNumber;
+        logger.info("Student {} gurdian contact number modified", getStudentID());    
     }
 
     public String getGuardianEmail() {
@@ -195,8 +220,12 @@ public class Student {
     }
 
     public void setGuardianEmail(String guardianEmail) {
-        logger.info("Student {} gurdian email modified", getStudentID());
+        if(guardianEmail == null) {
+            logger.error("guardianEmail is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("guardianEmail cannot be null");
+        }
         this.guardianEmail = guardianEmail;
+        logger.info("guardianEmail for {} has been modified to {}", getStudentID(), getGuardianEmail());
     }
 
     
@@ -204,14 +233,13 @@ public class Student {
         return schedule;
     }
 
-    public boolean setSchedule(Schedule schedule) {
+    public void setSchedule(Schedule schedule) {
         if(schedule == null) {
-            logger.error("schedule cannot be null", new IllegalArgumentException());
-            return false;
-        } 
+            logger.error("schedule is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("schedule cannot be null");
+        }
         this.schedule = schedule;
-        logger.info("Schedule set for Teacher {}", this.getStudentID() );
-        return true;
+        logger.info("schedule for {} has been modified", getStudentID());
     }
 
     public boolean addCourseSectionSchedule(CourseSectionSchedule css) {

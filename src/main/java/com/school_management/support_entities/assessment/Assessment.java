@@ -28,15 +28,37 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 public class Assessment {
+
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int assessmentID;
-    private final AssessmentType assessmentType;
+    
+    @Column(name = "assessment_type")
+    private AssessmentType assessmentType;
+    
+    @Column(name = "description")
     private String description;
+    
+    @Column(name = "start_date")
     private ZonedDateTime startDate;
+    
+    @Column(name = "end_date")
     private ZonedDateTime endDate;
+    
+    @Column(name = "duration_minutes")
     private int durationMinutes;
 
     private Logger logger = LoggerFactory.getLogger(Assessment.class);
+
+    //default constructor for JPA compliance
+    public Assessment() {}
 
     /**
      * Constructs an Assessment object.
@@ -66,13 +88,27 @@ public class Assessment {
         return this.assessmentType;
     }
 
+    // JPA compliance
+    public void setAssessmentType(AssessmentType assessmentType) {
+        if(assessmentType == null) {
+            logger.error("assessmentType is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("assessmentType cannot be null");
+        }
+        this.assessmentType = assessmentType;
+        logger.info("assessmentType for {} has been modified to {}", getAssessmentID(), getAssessmentType());
+    }
+
     public String getDescription() {
         return this.description;
     }
 
     public void setDescription(String description) {
+        if(description == null) {
+            logger.error("description is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("description cannot be null");
+        }
         this.description = description;
-        logger.info("Description modified for the assessment");
+        logger.info("description for {} has been modified to {}", getAssessmentID(), getDescription());
     }
 
     public ZonedDateTime getStartDate() {
@@ -80,8 +116,12 @@ public class Assessment {
     }
 
     public void setStartDate(ZonedDateTime startDate) {
+        if(startDate == null) {
+            logger.error("startDate is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("startDate cannot be null");
+        }
         this.startDate = startDate;
-        logger.info("StartDate modified for the assessment");
+        logger.info("startDate for {} has been modified to {}", getAssessmentID(), getStartDate());
     }
 
     public ZonedDateTime getEndDate() {
@@ -89,8 +129,12 @@ public class Assessment {
     }
 
     public void setEndDate(ZonedDateTime endDate) {
+        if(endDate == null) {
+            logger.error("endDate is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("endDate cannot be null");
+        }
         this.endDate = endDate;
-        logger.info("EndDate modified for the assessment");
+        logger.info("endDate for {} has been modified to {}", getAssessmentID(), getEndDate());
     }
 
     public int getDurationMinutes() {
@@ -99,7 +143,7 @@ public class Assessment {
 
     public void setDurationMinutes(int durationMinutes) {
         this.durationMinutes = durationMinutes;
-        logger.info("Duration modified for the assessment");
+        logger.info("durationMinutes for {} has been modified to {}", getAssessmentID(), getDurationMinutes());
     }
 
 

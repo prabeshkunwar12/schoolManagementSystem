@@ -130,17 +130,17 @@ public class Department {
      * @param headOfDepartment The Teacher to be assigned as Head of Department (must not be null).
      * @throws IllegalArgumentException If the provided headOfDepartment is null or not listed as a teacher in the department.
      */
-    public boolean setHeadOfDepartment(Teacher headOfDepartment) {
+    public void setHeadOfDepartment(Teacher headOfDepartment) {
         if (headOfDepartment == null) {
             logger.error("Head of department is null", new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("head of department cannot be null");
         }
         if (!headOfDepartment.getDepartment().equals(this)) {
             logger.error("teacher is not in the teacher's list of department", new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("Teacher doesn't belong to this department.");
         }
         this.headOfDepartment = headOfDepartment;
-        return true;
+        logger.info("head of department for {} changed to {}", this.departmentName, headOfDepartment.getName());
     }
 
     // Get department description
@@ -157,8 +157,10 @@ public class Department {
     public void setDescription(String description) {
         if (description == null) {
             logger.error("Department description cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException("description cannot be null");
         }
         this.description = description;
+        logger.info("description changed for {}", this.departmentName);
     }
 
     // Overridden equals, hashCode, and toString methods
