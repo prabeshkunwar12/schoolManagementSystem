@@ -31,12 +31,16 @@ import com.school_management.support_entities.schedule.StudentSchedule;
 import com.school_management.support_entities.time_frame.YearStanding;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "Student")
 public class Student {
     // Logger for logging messages related to the Student class
     private static Logger logger = LoggerFactory.getLogger(Student.class);

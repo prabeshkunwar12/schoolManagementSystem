@@ -18,10 +18,9 @@
 package com.school_management.support_entities.attendance;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -31,15 +30,17 @@ import com.school_management.support_entities.schedule.CourseSectionSchedule;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
-
-
+@Entity
+@Table(name = "Attendance")
 public class Attendance {
 
     @Id
@@ -53,7 +54,7 @@ public class Attendance {
     
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "attendance_id")
-    private Map<LocalDate, AttendanceStatus> attendanceList;
+    private List<AttendanceRecord> attendanceRecordList;
 
 
     private static Logger logger = LoggerFactory.getLogger(Attendance.class);
@@ -67,7 +68,7 @@ public class Attendance {
             throw new IllegalArgumentException("schedule cannot be null");
         }
         this.schedule = schedule;
-        initializeAttendanceList();
+        initializeAttendanceRecordList();
         logger.info("New attendance created");
     }
 
@@ -89,35 +90,46 @@ public class Attendance {
         logger.info("schedule for {} has been modified to {}", getAttendanceID(), getSchedule().getCourseSectionScheduleID());
     }
 
-    public Map<LocalDate, AttendanceStatus> getAttendanceList() {
-        return Collections.unmodifiableMap(attendanceList);
+    public List<AttendanceRecord> getAttendanceRecordList() {
+        return Collections.unmodifiableList(attendanceRecordList);
     }
 
     //jpa compliance
-    public void setAttendanceList(Map<LocalDate, AttendanceStatus> attendanceList) {
-        if(attendanceList == null) {
-            logger.error("attendanceList is null", new IllegalArgumentException());
-            throw new IllegalArgumentException("attendanceList cannot be null");
+    public void setAttendanceRecordList(List<AttendanceRecord> attendanceRecordList) {
+        if(attendanceRecordList == null) {
+            logger.error("attendanceRecordList is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("attendanceRecordList cannot be null");
         }
-        this.attendanceList = attendanceList;
-        logger.info("attendanceList for {} has been modified", getAttendanceID());
+        this.attendanceRecordList = new ArrayList<>(attendanceRecordList);
+        logger.info("attendanceRecordList for {} has been modified", getAttendanceID());
     }
 
-    private void initializeAttendanceList() {
-        attendanceList = new HashMap<>();
+    private void initializeAttendanceRecordList() {
+        attendanceRecordList = new ArrayList<>();
         List<LocalDate> dates = getSchedule().getDateList();
 
         for(LocalDate date:dates) {
-            attendanceList.put(date, AttendanceStatus.NA);
+            attendanceRecordList.add(new AttendanceRecord(this, date, AttendanceStatus.NA));
         }
     }
 
     
     public boolean assignStatus(LocalDate date, AttendanceStatus attendanceStatus) {
-        if(attendanceList.computeIfPresent(date, (key, oldValue)->attendanceStatus) == null) {
+        boolean dateFound = false;
+
+        for (AttendanceRecord attendanceRecord : attendanceRecordList) {
+            if (attendanceRecord.getDate().equals(date)) {
+                attendanceRecord.setStatus(attendanceStatus);
+                dateFound = true;
+                break;
+            }
+        }
+
+        if (!dateFound) {
             logger.error("Date not found in the list", new IllegalArgumentException());
             return false;
         }
+
         logger.info("Attendance status for date {} changed to {}", date, attendanceStatus);
         return true;
     }
@@ -132,19 +144,19 @@ public class Attendance {
             return false;
         }
         Attendance attendance = (Attendance) o;
-        return Objects.equals(schedule, attendance.schedule) && Objects.equals(attendanceList, attendance.attendanceList);
+        return Objects.equals(schedule, attendance.schedule) && Objects.equals(attendanceRecordList, attendance.attendanceRecordList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(schedule, attendanceList);
+        return Objects.hash(schedule, attendanceRecordList);
     }
 
     @Override
     public String toString() {
         return "{" +
             " schedule='" + getSchedule() + "'" +
-            ", attendanceList='" + getAttendanceList() + "'" +
+            ", attendanceRecordList='" + getAttendanceRecordList() + "'" +
             "}";
     }
 }

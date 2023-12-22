@@ -89,7 +89,8 @@ CREATE TABLE Attendance (
 );
 
 -- Table for Attendance_list
-CREATE TABLE Attendance_list (
+CREATE TABLE Attendance_record (
+    attendance_record_id INT AUTO_INCREMENT PRIMARY KEY,
     attendance_id INT,
     date DATETIME,
     attendance_status ENUM('PRESENT', 'ABSENT', 'SICK_CALL', 'LATE', 'NA'),
@@ -206,7 +207,7 @@ ALTER TABLE Assessment_grade ADD FOREIGN KEY (assessment_id) REFERENCES Assessme
 
 ALTER TABLE Attendance ADD FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_id);
 
-ALTER TABLE Attendance_list ADD FOREIGN KEY (attendance_id) REFERENCES Attendance(attendance_id);
+ALTER TABLE Attendance_record ADD FOREIGN KEY (attendance_id) REFERENCES Attendance(attendance_id);
 
 ALTER TABLE Weekly_schedule_css ADD FOREIGN KEY (course_section_schedule_id) REFERENCES Course_section_schedule(course_section_schedule_id);
 
