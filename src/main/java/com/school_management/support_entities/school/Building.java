@@ -19,27 +19,48 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 
+@Entity
+@Table(name = "Building")
 public class Building {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "building_id")
     private int buildingID;
-    private String name;
-    private final School school;
+    
+    @Column(name = "building_name")
+    private String buildingName;
+    
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
 
     private Logger logger = LoggerFactory.getLogger(Building.class);
+
+    //default constructor for JPA compliance
+    public Building() {}
 
     /**
      * Constructor to initialize a Building with a given ID and name.
      *
      * @param buildingID The unique identifier for the building.
-     * @param name       The name of the building.
+     * @param buildingName       The name of the building.
      */
-    public Building(String name, School school) {
-        if(name==null || school==null){
+    public Building(String buildingName, School school) {
+        if(buildingName==null || school==null){
             logger.error("parameters cannot be null", new IllegalArgumentException());
             throw new IllegalArgumentException();
         }
-        this.name = name;
+        this.buildingName = buildingName;
         this.school = school;
         logger.info("New building initialized");
     }
@@ -58,8 +79,8 @@ public class Building {
         logger.info("Building ID modified");
     }
 
-    public String getName() {
-        return this.name;
+    public String getBuildingName() {
+        return this.buildingName;
     }
 
     /**
@@ -67,14 +88,27 @@ public class Building {
      *
      * @param name The new name for the building.
      */
-    public void setName(String name) {
-        this.name = name;
-        logger.info("Building name changed");
+    public void setBuildingName(String buildingName) {
+        if(buildingName == null) {
+            logger.error("buildingName is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("buildingName cannot be null");
+        }
+        this.buildingName = buildingName;
+        logger.info("buildingName for {} has been modified to {}", getBuildingID(), getBuildingName());
     }
 
     public School getSchool() {
         return this.school;
     }
+
+    public void setSchool(School school) {
+        if(school == null) {
+            logger.error("school is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("school cannot be null");
+        }
+        this.school = school;
+        logger.info("school for {} has been modified to {}", getBuildingName(), getSchool().getSchoolName());
+    } 
 
     // Equals, hashCode, and toString methods are overridden
     @Override
@@ -85,19 +119,19 @@ public class Building {
             return false;
         }
         Building building = (Building) o;
-        return buildingID == building.buildingID && Objects.equals(name, building.name) && Objects.equals(school, building.school);
+        return buildingID == building.buildingID && Objects.equals(buildingName, building.buildingName) && Objects.equals(school, building.school);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(buildingID, name, school);
+        return Objects.hash(buildingID, buildingName, school);
     }
 
     @Override
     public String toString() {
         return "{" +
             " buildingID='" + getBuildingID() + "'" +
-            ", name='" + getName() + "'" +
+            ", buildingName='" + getBuildingName() + "'" +
             ", school='" + getSchool() + "'" +
             "}";
     }
