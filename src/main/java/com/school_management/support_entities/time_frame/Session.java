@@ -20,16 +20,41 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "Session")
 public class Session {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "session_id")
     private int sessionID;
-    private final SessionType sessionType;
-    private final SchoolYear schoolYear;
-    private final LocalDate startDate;
-    private final LocalDate endDate;
+    
+    @Column(name = "session_type")
+    private SessionType sessionType;
+    
+    @ManyToOne
+    @JoinColumn(name = "school_year_id")
+    private SchoolYear schoolYear;
+    
+    @Column(name = "start_date")
+    private LocalDate startDate;
+    
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     private Logger logger = LoggerFactory.getLogger(Session.class);
 
+    //default constructor for JPA compliance
+    public Session(){}
     /**
      * Initializes a new Session with provided parameters.
      *
@@ -72,16 +97,52 @@ public class Session {
         return this.sessionType;
     }
 
+    public void setSessionType(SessionType sessionType) {
+        if(sessionType == null) {
+            logger.error("sessionType is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("sessionType cannot be null");
+        }
+        this.sessionType = sessionType;
+        logger.info("sessionType for {} has been modified to {}", getSessionID(), getSessionType());
+    }
+
     public SchoolYear getSchoolYear() {
         return this.schoolYear;
+    }
+
+    public void setSchoolYear(SchoolYear schoolYear) {
+        if(schoolYear == null) {
+            logger.error("schoolYear is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("schoolYear cannot be null");
+        }
+        this.schoolYear = schoolYear;
+        logger.info("schoolYear for {} has been modified to {}", getSessionID(), getSchoolYear());
     }
 
     public LocalDate getStartDate() {
         return this.startDate;
     }
 
+    public void setStartDate(LocalDate startDate) {
+        if(startDate == null) {
+            logger.error("startDate is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("startDate cannot be null");
+        }
+        this.startDate = startDate;
+        logger.info("startDate for {} has been modified to {}", getSessionID(), getStartDate());
+    }
+
     public LocalDate getEndDate() {
         return this.endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        if(endDate == null) {
+            logger.error("endDate is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("endDate cannot be null");
+        }
+        this.endDate = endDate;
+        logger.info("endDate for {} has been modified to {}", getSessionID(), getEndDate());
     }
 
     // Overridden equals, hashCode, and toString methods
