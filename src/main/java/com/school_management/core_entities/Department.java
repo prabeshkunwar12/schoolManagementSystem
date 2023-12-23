@@ -69,15 +69,11 @@ public class Department {
      * @param description The description of the department (must not be null).
      * @throws IllegalArgumentException If departmentName or description is null.
      */
-    public Department(int departmentID, String departmentName, String description, School school) {
-        if (departmentName == null || description == null) {
-            logger.error("Department name and description cannot be null", new IllegalArgumentException());
-        }
-        this.departmentID = departmentID;
-        this.departmentName = departmentName;
+    public Department(String departmentName, String description, School school) {
+        setDepartmentName(departmentName);
         this.headOfDepartment = null; // Initially no head of department assigned
-        this.description = description;
-        this.school = school;
+        setDescription(description);
+        setSchool(school);
         logger.info("New Department created");
     }
 
@@ -104,6 +100,11 @@ public class Department {
     public void setDepartmentName(String departmentName) {
         if (departmentName == null) {
             logger.error("Department name cannot be null",  new IllegalArgumentException());
+            throw new IllegalArgumentException("Department name is null");
+        }
+        if(departmentName.length() < 1 || departmentName.length() > 100) {
+            logger.error("departmentName should be between 1 and 100 characters.", new IllegalArgumentException());
+            throw new IllegalArgumentException("departmentName is too short(<1) or too long(>100)");
         }
         this.departmentName = departmentName;
     }
@@ -155,9 +156,13 @@ public class Department {
      * @throws IllegalArgumentException If description is null.
      */
     public void setDescription(String description) {
-        if (description == null) {
+        if(description == null) {
             logger.error("Department description cannot be null", new IllegalArgumentException());
             throw new IllegalArgumentException("description cannot be null");
+        }
+        if(description.length()>300) {
+            logger.error("Description cannot be more than 300 characters", new IllegalArgumentException());
+            throw new IllegalArgumentException("Description cannot be more than 300 characters");
         }
         this.description = description;
         logger.info("description changed for {}", this.departmentName);

@@ -81,12 +81,14 @@ public class Teacher {
      * @param Name The name of the teacher
      * @param phoneNumber The phoneNumber of the teacher
      * @param email The email of the teacher
+     * @param department department of teacher
      */
-    public Teacher(int teacherID, String name, long phoneNumber, String email) {
+    public Teacher(int teacherID, String name, long phoneNumber, String email, Department department) {
         this.teacherID = teacherID;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        setDepartment(department);
         schedule = new TeacherSchedule();
         logger.info("New Teacher initialized.");
     }
