@@ -24,8 +24,29 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "Schedule")
 public abstract class Schedule {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int scheduleID;
+
+    @ManyToMany
+    @JoinTable(
+        name = "weekly_schedule_s", // Name of the join table
+        joinColumns = @JoinColumn(name = "schedule_id"), // Column name for this entity (Schedule)
+        inverseJoinColumns = @JoinColumn(name = "course_section_schedule_id") // Column name for the other entity (CourseSectionSchedule)
+    )
     private List<CourseSectionSchedule> weeklySchedules;
     // Logger for logging messages related to the Schedule class
     private static final Logger logger = LoggerFactory.getLogger(Schedule.class);
@@ -48,6 +69,15 @@ public abstract class Schedule {
      */
     public List<CourseSectionSchedule> getWeeklySchedules() {
         return Collections.unmodifiableList(weeklySchedules);
+    }
+
+    public void setWeeklySchedule(List<CourseSectionSchedule> weeklySchedules) {
+        if(weeklySchedules == null) {
+            logger.error("weeklySchedules is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("weeklySchedules cannot be null");
+        }
+        this.weeklySchedules = new ArrayList<>(weeklySchedules);
+        logger.info("weeklySchedules for {} has been modified", getScheduleID());
     }
 
     /**
