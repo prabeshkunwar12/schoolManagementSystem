@@ -25,17 +25,42 @@ import org.slf4j.LoggerFactory;
 
 import com.school_management.support_entities.school.School;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 public class Department {
     // Member variables for department details
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "department_id")
     private int departmentID;
+
+    @Column(name = "department_name")
     private String departmentName;
+
+    @ManyToOne
+    @JoinColumn(name = "head_of_department")
     private Teacher headOfDepartment;
+
+    @Column(name = "description")
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "school_id")
     private School school;
 
     // Logger for logging messages related to the Student class
     private static final Logger logger = LoggerFactory.getLogger(Department.class);
 
+    // Default constructor for JPA entity compliance.
+    public Department() {
+
+    }
+    
     /**
      * Constructor to initialize department details.
      *
@@ -87,6 +112,14 @@ public class Department {
         return this.school;
     }
 
+    public void setSchool(School school) {
+        if(school==null) {
+            logger.error("School cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException();
+        }
+        this.school = school;
+    }
+
     public Teacher getHeadOfDepartment() {
         return this.headOfDepartment;
     }
@@ -97,17 +130,17 @@ public class Department {
      * @param headOfDepartment The Teacher to be assigned as Head of Department (must not be null).
      * @throws IllegalArgumentException If the provided headOfDepartment is null or not listed as a teacher in the department.
      */
-    public boolean setHeadOfDepartment(Teacher headOfDepartment) {
+    public void setHeadOfDepartment(Teacher headOfDepartment) {
         if (headOfDepartment == null) {
             logger.error("Head of department is null", new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("head of department cannot be null");
         }
         if (!headOfDepartment.getDepartment().equals(this)) {
             logger.error("teacher is not in the teacher's list of department", new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("Teacher doesn't belong to this department.");
         }
         this.headOfDepartment = headOfDepartment;
-        return true;
+        logger.info("head of department for {} changed to {}", this.departmentName, headOfDepartment.getName());
     }
 
     // Get department description
@@ -124,8 +157,10 @@ public class Department {
     public void setDescription(String description) {
         if (description == null) {
             logger.error("Department description cannot be null", new IllegalArgumentException());
+            throw new IllegalArgumentException("description cannot be null");
         }
         this.description = description;
+        logger.info("description changed for {}", this.departmentName);
     }
 
     // Overridden equals, hashCode, and toString methods

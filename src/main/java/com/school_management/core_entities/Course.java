@@ -23,12 +23,32 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 public class Course {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "course_id")
     private int courseID;
+
+    @Column(name = "course_name")
     private String courseName;
+
+    @Column(name = "course_description")
     private String description;
+
+    @Column(name = "course_credit")
     private int credits;
-    private final Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     // Logger for logging messages related to the Student class
     private static final Logger logger = LoggerFactory.getLogger(Course.class);
@@ -64,8 +84,12 @@ public class Course {
     }
 
     public void setCourseName(String courseName) {
-        this.courseName = courseName;
-        logger.info("Course name modified");
+        if(courseName == null) {
+            logger.error("courseName is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("courseName cannot be null");
+        }
+        this.courseName = courseName; 
+        logger.info("courseName for course {} has been changed to {}", getCourseID(), getCourseName());
     }
 
     public String getDescription() {
@@ -73,8 +97,13 @@ public class Course {
     }
 
     public void setDescription(String description) {
-        this.description = description;
-        logger.info("Course description modified");
+        if(description == null) {
+            logger.error("description is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("description cannot be null");
+        }
+        this.description = description; 
+        logger.info("description for course {} has been changed to {}", getCourseID(), getDescription());
+    
     }
 
     public int getCredits() {
@@ -88,6 +117,16 @@ public class Course {
 
     public Department getDepartment() {
         return this.department;
+    }
+
+    public void setDepartment(Department department) {
+        if(department == null) {
+            logger.error("department is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("department cannot be null");
+        }
+        this.department = department; 
+        logger.info("department for course {} has been changed to {}", getCourseID(), getDepartment().getDepartmentName());
+    
     }
 
     // Overridden equals, hashCode, and toString methods

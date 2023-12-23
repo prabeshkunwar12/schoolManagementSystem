@@ -55,9 +55,9 @@ CREATE TABLE Student (
     email VARCHAR(100),
     phone_number VARCHAR(20),
     year_standing ENUM('FIRST_YEAR', 'SECOND_YEAR', 'THIRD_YEAR', 'FORTH_YEAR', 'FIFTH_YEAR', 'SIXTH_YEAR'),
-    gurdian_name VARCHAR(100),
-    gurdian_email VARCHAR(100),
-    gurdian_phone_number VARCHAR(20),
+    guardian_name VARCHAR(100),
+    guardian_email VARCHAR(100),
+    guardian_phone_number VARCHAR(20),
     schedule_id int
 );
 
@@ -89,7 +89,8 @@ CREATE TABLE Attendance (
 );
 
 -- Table for Attendance_list
-CREATE TABLE Attendance_list (
+CREATE TABLE Attendance_record (
+    attendance_record_id INT AUTO_INCREMENT PRIMARY KEY,
     attendance_id INT,
     date DATETIME,
     attendance_status ENUM('PRESENT', 'ABSENT', 'SICK_CALL', 'LATE', 'NA'),
@@ -181,6 +182,7 @@ CREATE TABLE Session (
 -- adding the foreign key references
 
 ALTER TABLE Department ADD FOREIGN KEY (school_id) REFERENCES School(school_id);
+ALTER TABLE Department Add FOREIGN KEY (head_of_department) REFERENCES Teacher(teacher_id);
 
 ALTER TABLE Teacher ADD FOREIGN KEY (department_id) REFERENCES Department(department_id);
 ALTER TABLE Teacher ADD FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_id);
@@ -188,7 +190,9 @@ ALTER TABLE Teacher ADD FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_i
 ALTER TABLE Course ADD FOREIGN KEY (department_id) REFERENCES Department(department_id);
 
 ALTER TABLE Course_section ADD FOREIGN KEY (course_id) REFERENCES Course(course_id);
+ALTER TABLE course_section ADD FOREIGN KEY (room_id) REFERENCES Room(room_id);
 ALTER TABLE Course_section ADD FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id);
+ALTER TABLE Course_section ADD FOREIGN KEY (session_id) REFERENCES Session(session_id);
 ALTER TABLE Course_section ADD FOREIGN KEY (course_section_schedule_id) REFERENCES Course_section_schedule(course_section_schedule_id);
 
 ALTER TABLE Student ADD FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_id);
@@ -203,7 +207,7 @@ ALTER TABLE Assessment_grade ADD FOREIGN KEY (assessment_id) REFERENCES Assessme
 
 ALTER TABLE Attendance ADD FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_id);
 
-ALTER TABLE Attendance_list ADD FOREIGN KEY (attendance_id) REFERENCES Attendance(attendance_id);
+ALTER TABLE Attendance_record ADD FOREIGN KEY (attendance_id) REFERENCES Attendance(attendance_id);
 
 ALTER TABLE Weekly_schedule_css ADD FOREIGN KEY (course_section_schedule_id) REFERENCES Course_section_schedule(course_section_schedule_id);
 

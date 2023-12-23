@@ -37,18 +37,57 @@ import com.school_management.support_entities.grade.AssessmentGrade;
 import com.school_management.support_entities.grade.FinalCourseGrade;
 import com.school_management.support_entities.grade.Grades;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "Enrollment")
 public class Enrollment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "enrollment_id")
     private int  enrollmentID;
-    private final Student student;
-    private final CourseSection courseSection;
+
+    
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private Student student;
+    
+    @ManyToOne
+    @JoinColumn(name = "course_section_id")
+    private CourseSection courseSection;
+    
+    @Column(name = "enrollment_status")
     private EnrollmentStatus enrollmentStatus;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "enrollment_id")
     private List<AssessmentGrade> assessmentGrades;
+    
+    @ManyToOne
+    @JoinColumn(name = "attendance_id")
     private Attendance attendance;
+    
+    @ManyToOne
+    @JoinColumn(name = "final_course_grade_id")
     private Grades finalGrade;
+    
+    @Column(name = "pass_status")
     private PassStatus passStatus;
 
     // Logger for logging messages related to the Enrollment class
-    private static final Logger logger = LoggerFactory.getLogger(Enrollment.class);
+    private static Logger logger = LoggerFactory.getLogger(Enrollment.class);
+
+    // Default constructor for JPA compliance
+    public Enrollment() {}
 
     //Constructor for Enrollment
     public Enrollment(Student student, CourseSection courseSection) {
@@ -92,12 +131,42 @@ public class Enrollment {
         return this.student;
     }
 
+    //jpa compliance
+    public void setStudent(Student student) {
+        if(student == null) {
+            logger.error("student is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("student cannot be null");
+        }
+        this.student = student;
+        logger.info("student for {} has been modified to {}", getEnrollmentID(), getStudent().getStudentID());
+    }
+
     public CourseSection getCourseSection() {
         return this.courseSection;
     }
 
+    //jpa compliance
+    public void setCourseSection(CourseSection courseSection) {
+        if(courseSection == null) {
+            logger.error("courseSection is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("courseSection cannot be null");
+        }
+        this.courseSection = courseSection;
+        logger.info("courseSection for {} has been modified to {}", getEnrollmentID(), getCourseSection().getSectionID());
+    }
+
     public Attendance getAttendance() {
         return this.attendance;
+    }
+
+    //jpa compliance
+    public void setAttendance(Attendance attendance) {
+        if(attendance == null) {
+            logger.error("attendance is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("attendance cannot be null");
+        }
+        this.attendance = attendance;
+        logger.info("attendance for {} has been modified to {}", getEnrollmentID(), getAttendance().getAttendanceID());
     }
 
     /**
@@ -180,9 +249,19 @@ public class Enrollment {
         return this.finalGrade;
     }
 
-    private void setFinalGrade(float finalScoredGrade) {
+    public void setFinalGrade(float finalScoredGrade) {
         this.finalGrade.setScoredGrade(finalScoredGrade);
         logger.info("final grade set.");
+    }
+
+    // JPA complaince
+    public void setFinalGrade(FinalCourseGrade finalGrade) {
+        if(finalGrade == null) {
+            logger.error("finalGrade is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("finalGrade cannot be null");
+        }
+        this.finalGrade = finalGrade;
+        logger.info("finalGrade for {} has been modified to {}", getEnrollmentID(), getFinalGrade().getScoredGrade());
     }
 
     public float getFinalCourseGrade() {
@@ -224,6 +303,20 @@ public class Enrollment {
 
     public void setEnrollmentStatus(EnrollmentStatus enrollmentStatus) {
         this.enrollmentStatus = enrollmentStatus;
+    }
+
+    public PassStatus getPassStatus() {
+        return this.passStatus;
+    }
+
+    // JPA complaiance
+    public void setPassStatus(PassStatus passStatus) {
+        if(passStatus == null) {
+            logger.error("passStatus is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("passStatus cannot be null");
+        }
+        this.passStatus = passStatus;
+        logger.info("passStatus for {} has been modified to {}", getEnrollmentID(), getPassStatus());
     }
 
 

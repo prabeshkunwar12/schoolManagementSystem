@@ -7,15 +7,44 @@ import org.slf4j.LoggerFactory;
 import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.schedule.RoomSchedule;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+@Entity
+@Table(name = "Room")
 public class Room {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "room_id")
     private int roomID;
+    
+    @Column(name = "room_name")
     private String roomName;
+    
+    @ManyToOne
+    @JoinColumn(name = "building_id")
     private Building building;
+    
+    @Column(name = "room_type")
     private RoomType roomType;
+    
+    @Column(name = "student_capacity")
     private int studentCapacity;
+    
+    @ManyToOne
+    @JoinColumn(name = "schedule_id")
     private RoomSchedule schedule;
 
     private Logger logger = LoggerFactory.getLogger(Room.class);
+
+    //default constructor for JPA compliance
+    public Room() {}
 
     public Room(String roomName, Building building, RoomType roomType, int studentCapacity, RoomSchedule schedule) {
         if(roomName==null || building==null || roomType==null || schedule==null) {
@@ -27,7 +56,7 @@ public class Room {
         this.roomType = roomType;
         this.studentCapacity = studentCapacity;
         this.schedule = schedule;
-        logger.info("A new room in building {} is initialized", building.getName());
+        logger.info("A new room in building {} is initialized", building.getBuildingName());
     }
 
     public int getRoomID() {
@@ -49,6 +78,15 @@ public class Room {
 
     public Building getBuilding() {
         return this.building;
+    }
+
+    public void setBuilding(Building building) {
+        if(building == null) {
+            logger.error("building is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("building cannot be null");
+        }
+        this.building = building;
+        logger.info("building for {} has been modified to {}", getRoomName(), getBuilding().getBuildingName());
     }
 
     public RoomType getRoomType() {

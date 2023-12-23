@@ -38,17 +38,42 @@ import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.schedule.Schedule;
 import com.school_management.support_entities.schedule.TeacherSchedule;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 public class Teacher {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "teacher_id")
     private int teacherID;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "phone_number")
     private long phoneNumber;
+
+    @Column(name = "email")
     private String email;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
     private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
     // Logger for logging messages related to the Teacher class
     private static final Logger logger = LoggerFactory.getLogger(Teacher.class);
 
+    //default constructor for JPA compliance
+    public Teacher() {}
+    
     /**
      * Constructor to initialize department details.
      *
@@ -80,8 +105,12 @@ public class Teacher {
     }
     
     public void setName(String name) {
+        if(name == null) {
+            logger.error("name is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("name cannot be null");
+        }
         this.name = name;
-        logger.info("Teacher name modified.");
+        logger.info("Teacher name for id {} modified to {}.", this.getTeacherID(), this.getName());
     }
     
     public long getPhoneNumber() {
@@ -90,7 +119,7 @@ public class Teacher {
     
     public void setPhoneNumber(long phoneNumber) {
         this.phoneNumber = phoneNumber;
-        logger.info("Teacher phoneNumber modified.");
+        logger.info("Teacher {} phoneNumber modified to {}.", this.getTeacherID(), this.getPhoneNumber());
     }
     
     public String getEmail() {
@@ -98,8 +127,12 @@ public class Teacher {
     }
     
     public void setEmail(String email) {
+        if(email == null) {
+            logger.error("email is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("email cannot be null");
+        }
         this.email = email;
-        logger.info("Teacher email modified.");
+        logger.info("Teacher {} email modified.", this.getTeacherID());
     }   
 
 
@@ -113,21 +146,36 @@ public class Teacher {
      * @param department The department to be associated with the teacher (must not be null).
      * @throws IllegalArgumentException if the department provided is null.
      */
-    public boolean setDepartment(Department department) {
+    public void setDepartment(Department department) {
         if(department == null) {
-            logger.error("department cannot be null.", new IllegalArgumentException());
-            return false;
-        } else {
-            this.department = department;
-            logger.info("Teacher deparment modified.");
-            return true;
+            logger.error("department is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("department cannot be null");
         }
+        this.department = department;
+        logger.info("Teacher {} deparment modified to {}.", getTeacherID(), getDepartment().getDepartmentName());
+        
     }
 
     public Schedule getSchedule() {
         return this.schedule;
     }
 
+    public void setSchedule(Schedule schedule) {
+        if(schedule == null) {
+            logger.error("schedule is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("schedule cannot be null");
+        }
+        this.schedule = schedule;
+        logger.info("Schedule set for Teacher {}", this.getTeacherID() );
+    }
+
+    /**
+     * Adds a CourseSectionSchedule to the schedule list.
+     *
+     * @param sectionSchedule The CourseSectionSchedule to be added (must not be null).
+     * @return True if the CourseSectionSchedule is successfully added; otherwise, false.
+     * @throws IllegalArgumentException If the section schedule is null.
+     */
     public boolean addCourseSectionSchedule(CourseSectionSchedule schedule) {
         if(schedule==null){
             logger.error("schedule cannot be null", new IllegalArgumentException());
@@ -141,28 +189,7 @@ public class Teacher {
         return false;
 
     }
-
-    /**
-     * Adds a CourseSectionSchedule to the schedule list.
-     *
-     * @param sectionSchedule The CourseSectionSchedule to be added (must not be null).
-     * @return True if the CourseSectionSchedule is successfully added; otherwise, false.
-     * @throws IllegalArgumentException If the section schedule is null.
-     */
-    public boolean addSchedule(CourseSectionSchedule sectionSchedule) {
-        if (sectionSchedule != null) {
-            try {
-                schedule.addCourseSectionSchedule(sectionSchedule);
-                logger.info("Schedule added to the list.");
-                return true;
-            } catch (Exception e) {
-                logger.error("Failed to add schedule: " + e.getMessage(), e);
-            }
-        } else {
-            logger.error("Section schedule cannot be null", new IllegalArgumentException());
-        }
-        return false;
-    }
+    
 
     /**
      * Removes a course section schedule.

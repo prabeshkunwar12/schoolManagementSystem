@@ -20,8 +20,10 @@ package com.school_management.support_entities.grade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class FinalCourseGrade extends Grades {
     private Logger logger = LoggerFactory.getLogger(FinalCourseGrade.class);
+
     /**
      * Constructor for FinalCourseGrade.
      *
@@ -40,9 +42,8 @@ public class FinalCourseGrade extends Grades {
      * @throws IllegalArgumentException Throws an exception when trying to change the total grade.
      */
     @Override
-    public boolean setTotalGrade(float totalGrade) {
+    public void setTotalGrade(float totalGrade) {
         logger.error("The total grade of final course grade is always 100.", new IllegalArgumentException());
-        return false;
     }
 
     @Override

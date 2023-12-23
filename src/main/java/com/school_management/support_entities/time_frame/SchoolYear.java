@@ -27,13 +27,38 @@ import org.slf4j.LoggerFactory;
 
 import com.school_management.support_entities.school.School;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "School_year")
 public class SchoolYear {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "school_year_id")
     private int schoolYearID;
-    private  final School school;
-    private final LocalDate startDate;
-    private final LocalDate endDate;
+    
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
+    
+    @Column(name = "start_date")
+    private LocalDate startDate;
+    
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     private Logger logger = LoggerFactory.getLogger(SchoolYear.class);
+
+    // default constructor for JPA compliance
+    public SchoolYear() {}
 
     /**
      * Constructor to initialize a SchoolYear with the specified year and an empty session list.
@@ -67,6 +92,16 @@ public class SchoolYear {
         return school;
     }
 
+    //JPA compliance
+    public void setSchool(School school) {
+        if(school == null) {
+            logger.error("school is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("school cannot be null");
+        }
+        this.school = school;
+        logger.info("school for {} has been modified to {}", getSchoolYearID(), getSchool().getSchoolName());
+    }
+
     /**
      * Get the academic year.
      *
@@ -80,9 +115,27 @@ public class SchoolYear {
         return this.startDate;
     }
 
+    public void setStartDate(LocalDate startDate) {
+        if(startDate == null) {
+            logger.error("startDate is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("startDate cannot be null");
+        }
+        this.startDate = startDate;
+        logger.info("startDate for {} has been modified to {}", getSchoolYearID(), getStartDate());
+    } 
+
     public LocalDate getEndDate() {
         return this.endDate;
     }
+
+    public void setEndDate(LocalDate endDate) {
+        if(endDate == null) {
+            logger.error("endDate is null", new IllegalArgumentException());
+            throw new IllegalArgumentException("endDate cannot be null");
+        }
+        this.endDate = endDate;
+        logger.info("endDate for {} has been modified to {}", getSchoolYearID(), getEndDate());
+    } 
 
     // Overridden equals, hashCode, and toString methods
 

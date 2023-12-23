@@ -29,13 +29,35 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "Grades")
 public abstract class Grades {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "grades_id")
     private int gradesID;
+    
+    @Column(name = "scored_grade")
     private float scoredGrade;
+    
+    @Column(name = "total_grade")
     private float totalGrade;
+    
+    @Column(name = "passing_grade")
     private float passingGrade;
 
     private Logger logger =  LoggerFactory.getLogger(Grades.class);
+
+    // default construtor for JPA compliance
+    protected Grades() {}
 
     /**
      * Constructor for Grades.
@@ -70,14 +92,13 @@ public abstract class Grades {
      * @param scoredGrade The scored grade to set.
      * @throws IllegalArgumentException if scoredGrade is less than 0 or exceeds totalGrade.
      */
-    public boolean setScoredGrade(float scoredGrade) {
+    public void setScoredGrade(float scoredGrade) {
         if(scoredGrade > getTotalGrade() && scoredGrade < 0) {
             logger.error("scored grade should be in between 0 and {}", getTotalGrade(), new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("scored grade should be in between 0 and {}");
         } 
         this.scoredGrade = scoredGrade;
-        logger.info("Scored grade changed to {}", this.scoredGrade);
-        return true;
+        logger.info("Scored grade for {} changed to {}", getGradesID(), this.scoredGrade);
     }
 
     public float getTotalGrade() {
@@ -90,14 +111,13 @@ public abstract class Grades {
      * @param totalGrade The total grade to set.
      * @throws IllegalArgumentException if totalGrade is less than 0.
      */
-    public boolean setTotalGrade(float totalGrade) {
+    public void setTotalGrade(float totalGrade) {
         if (totalGrade<0) {
             logger.error("total grade should be greater than 0", new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("Total grade must ne greater than 0");
         }
         this.totalGrade = totalGrade;
         logger.info("Total grade changed to {}", this.totalGrade);
-        return true;
     }
 
     public float getPassingGrade() {
@@ -110,14 +130,13 @@ public abstract class Grades {
      * @param passingGrade The passing grade to set.
      * @throws IllegalArgumentException if passingGrade is less than 0 or exceeds totalGrade.
      */
-    public boolean setPassingGrade(float passingGrade) {
+    public void setPassingGrade(float passingGrade) {
         if(passingGrade>getTotalGrade() && passingGrade<0) {
             logger.error("passing grade should be in between 0 and {} ", getTotalGrade(), new IllegalArgumentException());
-            return false;
+            throw new IllegalArgumentException("passing grade should be in between 0 and " + getTotalGrade());
         } 
         this.passingGrade = passingGrade;
         logger.info("Passing grade changed to {}", this.passingGrade);
-        return true;
     }
 
     // Overridden equals, hashCode, and toString methods for Grades
