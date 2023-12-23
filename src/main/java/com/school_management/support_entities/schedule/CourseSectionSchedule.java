@@ -24,11 +24,14 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -40,19 +43,19 @@ public class CourseSectionSchedule{
     @Column(name = "course_section_schedule_id")
     private int courseSectionScheduleID;
     
-    @Column(name = "")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "course_section_schedule_id")
     private List<DayOfAWeekSchedule> weeklySchedule;
     
-    @Column(name = "")
+    @Column(name = "duration")
     private Duration duration;
     
-    @Column(name = "")
+    @Column(name = "start_date")
     private LocalDate startDate;
     
-    @Column(name = "")
+    @Column(name = "end_date")
     private LocalDate endDate;
     
-    @Column(name = "")
     private List<LocalDate> dateList;
 
     private Logger logger = LoggerFactory.getLogger(CourseSectionSchedule.class);
