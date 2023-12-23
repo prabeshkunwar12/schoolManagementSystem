@@ -18,25 +18,46 @@ import java.time.LocalTime;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "Course_section_schedule")
 public class CourseSectionSchedule{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "course_section_schedule_id")
     private int courseSectionScheduleID;
-    private EnumMap<DayOfWeek, LocalTime> weeklySchedule;
+    
+    @Column(name = "")
+    private List<DayOfAWeekSchedule> weeklySchedule;
+    
+    @Column(name = "")
     private Duration duration;
+    
+    @Column(name = "")
     private LocalDate startDate;
+    
+    @Column(name = "")
     private LocalDate endDate;
+    
+    @Column(name = "")
     private List<LocalDate> dateList;
 
     private Logger logger = LoggerFactory.getLogger(CourseSectionSchedule.class);
     
-    public CourseSectionSchedule(Map<DayOfWeek, LocalTime> weeklySchedule, Duration duration, LocalDate startDate, LocalDate endDate) {
+    public CourseSectionSchedule(List<DayOfAWeekSchedule> weeklySchedule, Duration duration, LocalDate startDate, LocalDate endDate) {
         if(weeklySchedule == null || duration==null || startDate ==null || endDate == null) {
             logger.error("paramenteres cannot be null!", new IllegalArgumentException());  
             throw new IllegalArgumentException(); 
@@ -45,7 +66,7 @@ public class CourseSectionSchedule{
             logger.error("startDate must be before endDate", new IllegalArgumentException());
             throw new IllegalArgumentException();
         }
-        this.weeklySchedule = new EnumMap<>(weeklySchedule);
+        this.weeklySchedule = new ArrayList<>(weeklySchedule);
         this.startDate = startDate;
         this.endDate = endDate;
         dateGenerator(); 
@@ -60,8 +81,8 @@ public class CourseSectionSchedule{
      *
      * @return An unmodifiable map containing the weekly schedule.
      */
-    public Map<DayOfWeek,LocalTime> getWeeklySchedule() {
-        return Collections.unmodifiableMap(weeklySchedule);
+    public List<DayOfAWeekSchedule> getWeeklySchedule() {
+        return Collections.unmodifiableList(weeklySchedule);
     }
 
     /**
@@ -71,11 +92,12 @@ public class CourseSectionSchedule{
      * Sets the weekly schedule and generates the date list accordingly.
      * @throws IllegalArgumentException If the provided schedule is null.
      */
-    public void setWeeklySchedule(Map<DayOfWeek,LocalTime> weeklySchedule) {
+    public void setWeeklySchedule(List<DayOfAWeekSchedule> weeklySchedule) {
         if(weeklySchedule == null) {
             logger.error("Schedule cannot be null!", new IllegalArgumentException());
+            throw new IllegalArgumentException("Schedule cannot be null");
         }
-        this.weeklySchedule = new EnumMap<>(weeklySchedule);
+        this.weeklySchedule = new ArrayList<>(weeklySchedule);
         logger.info("new Weekly schedule set.");
         dateGenerator();
     }
@@ -135,28 +157,42 @@ public class CourseSectionSchedule{
      * @param time      The time for the specified day (must not be null).
      * @throws IllegalArgumentException If either dayOfWeek or time is null.
      */
-    public void addDay(DayOfWeek dayOfWeek, LocalTime time) {
+    public boolean addDay(DayOfWeek dayOfWeek, LocalTime time) {
         if(dayOfWeek==null || time==null) {
             logger.error("paramenteres cannot be null!", new IllegalArgumentException());
+            return false;
         }
-        weeklySchedule.put(dayOfWeek, time);
+        for(DayOfAWeekSchedule s: weeklySchedule) {
+            if(dayOfWeek.equals(s.getDayOfWeek())) {
+                s.setStartTime(time);
+                logger.info("Start time for {} changed to {}", dayOfWeek, time);
+                return true;
+            }
+        }
+        DayOfAWeekSchedule s = new DayOfAWeekSchedule(this, dayOfWeek, time);
+        weeklySchedule.add(s);
         dateGenerator();
-        logger.info("Day of the week and its respective tile added.");
+        logger.info("Day of the week and its respective time added.");
+        return true;
     }
 
     /**
      * Removes a day from the weekly schedule for this course section.
      *
      * @param dayOfWeek The day of the week to be removed (must not be null).
-     * @param time      The time for the specified day (must not be null).
      * @throws IllegalArgumentException If the specified day and time do not exist in the schedule.
      */
-    public void removeDay(DayOfWeek dayOfWeek, LocalTime time) {
-        boolean removed = weeklySchedule.remove(dayOfWeek, time);
-        if(!removed) {
-            logger.error("Cannot find dayOfWeek and time in map", new IllegalArgumentException()); 
+    public boolean removeDay(DayOfWeek dayOfWeek) {
+        for(DayOfAWeekSchedule s: weeklySchedule) {
+            if(s.getDayOfWeek().equals(dayOfWeek)) {
+                weeklySchedule.remove(s);
+                dateGenerator();
+                logger.info("{} removed form the schedule", dayOfWeek);
+                return true;
+            }
         }
-        dateGenerator();
+        logger.error("{} not found on the list", dayOfWeek, new IllegalArgumentException());
+        return false;
     }
 
     /**
@@ -201,20 +237,18 @@ public class CourseSectionSchedule{
             return false;
         }
 
-        Map<DayOfWeek, LocalTime> ws1 = schedule.getWeeklySchedule();
-        Map<DayOfWeek, LocalTime> ws2 = getWeeklySchedule();
+        List<DayOfAWeekSchedule> ws1 = schedule.getWeeklySchedule();
+        List<DayOfAWeekSchedule> ws2 = getWeeklySchedule();
         Duration d1 = schedule.getDuration();
         Duration d2 = getDuration();
     
-        for (Map.Entry<DayOfWeek, LocalTime> entry : ws1.entrySet()) {
-            DayOfWeek key = entry.getKey();
-            LocalTime value = entry.getValue();
-    
-            if (ws2.containsKey(key) && hasConflict(value, d1, ws2.get(key), d2)) {
-                logger.warn("The given schedule conflicts with this schedule.");
-                return true;
+        for(DayOfAWeekSchedule dayOfAWeekSchedule1: ws1) {
+            for(DayOfAWeekSchedule dayOfAWeekSchedule2: ws2) {
+                if(dayOfAWeekSchedule1.getDayOfWeek().equals(dayOfAWeekSchedule2.getDayOfWeek()) && hasConflict(dayOfAWeekSchedule1.getStartTime(), d1, dayOfAWeekSchedule2.getStartTime(), d2)) {
+                    return true;
+                }
             }
-        }
+        } 
     
         return false; // No conflict found
     }
@@ -235,8 +269,10 @@ public class CourseSectionSchedule{
     private void dateGenerator() {
         dateList = new ArrayList<>();
         LocalDate date = startDate;
+
         while (!date.isAfter(endDate)) {
-            if(weeklySchedule.containsKey(date.getDayOfWeek())) {
+            final LocalDate currenDate = date;
+            if(weeklySchedule.stream().anyMatch(daySchedule -> daySchedule.getDayOfWeek().equals(currenDate.getDayOfWeek()))) {
                 dateList.add(date);
             }
             date = date.plusDays(1); // Move to the next day
