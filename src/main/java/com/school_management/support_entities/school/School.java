@@ -52,7 +52,7 @@ public class School {
         }
         this.schoolName = schoolName;
         this.schoolType = schoolType;
-        logger.info("School is initialized");
+        logger.info("School {} is initialized", getSchoolID());
     }
      
     public int getSchoolID() {

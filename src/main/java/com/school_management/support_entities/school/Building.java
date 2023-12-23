@@ -56,13 +56,9 @@ public class Building {
      * @param buildingName       The name of the building.
      */
     public Building(String buildingName, School school) {
-        if(buildingName==null || school==null){
-            logger.error("parameters cannot be null", new IllegalArgumentException());
-            throw new IllegalArgumentException();
-        }
-        this.buildingName = buildingName;
-        this.school = school;
-        logger.info("New building initialized");
+        setBuildingName(buildingName);
+        setSchool(school);
+        logger.info("New building {} initialized", getBuildingID());
     }
 
     public int getBuildingID() {
@@ -92,6 +88,10 @@ public class Building {
         if(buildingName == null) {
             logger.error("buildingName is null", new IllegalArgumentException());
             throw new IllegalArgumentException("buildingName cannot be null");
+        }
+        if(buildingName.length() < 1 || buildingName.length() > 100) {
+            logger.error("buildingName should be between 1 and 100 characters.", new IllegalArgumentException());
+            throw new IllegalArgumentException("buildingName is too short(<1) or too long(>100)");
         }
         this.buildingName = buildingName;
         logger.info("buildingName for {} has been modified to {}", getBuildingID(), getBuildingName());

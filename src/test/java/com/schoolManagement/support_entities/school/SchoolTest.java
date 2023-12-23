@@ -47,13 +47,13 @@ class SchoolTest {
     @Test
     void testInvalidSchoolConstructorTestSchool() {
         // school name is null
-        assertThrows(IllegalArgumentException.class, ()->{School school = new School(null, SchoolType.PRIMARY);});
+        assertThrows(IllegalArgumentException.class, ()-> new School(null, SchoolType.PRIMARY));
         // school type is null
-        assertThrows(IllegalArgumentException.class, ()->{School school = new School("Diamond HS", null);});
+        assertThrows(IllegalArgumentException.class, ()-> new School("Diamond HS", null));
         // school name is an empty string
-        assertThrows(IllegalArgumentException.class, ()->{School school = new School("", SchoolType.HIGH);});
+        assertThrows(IllegalArgumentException.class, ()-> new School("", SchoolType.HIGH));
         // school name is too long >100
-        assertThrows(IllegalArgumentException.class, ()->{School school = new School("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasasasasasasasasasasasasasaasasa", SchoolType.HIGH);});
+        assertThrows(IllegalArgumentException.class, ()-> new School("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasasasasasasasasasasasasasaasasa", SchoolType.HIGH));
 
     }
 
