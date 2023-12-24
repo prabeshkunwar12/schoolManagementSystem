@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.school_management.core_entities.Department;
-import com.school_management.core_entities.Teacher;
-import com.school_management.support_entities.school.School;
+import com.school_management.model.core_entities.Department;
+import com.school_management.model.core_entities.Teacher;
+import com.school_management.model.support_entities.school.School;
 
 class DepartmentTest {
 

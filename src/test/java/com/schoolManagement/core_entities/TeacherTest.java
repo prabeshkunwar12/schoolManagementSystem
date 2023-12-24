@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.school_management.core_entities.Department;
-import com.school_management.core_entities.Teacher;
-import com.school_management.support_entities.schedule.Schedule;
+import com.school_management.model.core_entities.Department;
+import com.school_management.model.core_entities.Teacher;
+import com.school_management.model.support_entities.schedule.Schedule;
 
 class TeacherTest {
     @Mock
@@ -91,4 +91,30 @@ class TeacherTest {
         assertThrows(IllegalArgumentException.class, () -> teacher.setName("aaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
     }
 
+    @Test
+    void testValidSetterAndGetterForPhoneNumber() {
+        assertEquals("+19999999999", teacher.getPhoneNumber());
+        
+        teacher.setPhoneNumber("US", "1919191919");
+        assertEquals("+11919191919", teacher.getPhoneNumber());
+
+        teacher.setPhoneNumber("+9779999999999");
+        assertEquals("+9779999999999", teacher.getPhoneNumber());
+    }
+
+    @Test
+    void testInvalidSetterAndGetterForPhoneNumber() {
+        assertThrows(IllegalArgumentException.class,() -> teacher.setPhoneNumber(null, "9999999999"));
+        assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("sdevas", "9999999999"));
+        assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("CA", null));
+        assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("CA","1919191919191999"));
+        assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("CA","1"));
+        assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("CA","1has2had3"));
+    }
+
+    @Test
+    void testValidSetterAndGetterForEmail() {
+        assertEquals("aaa@aaa.aaa", teacher.getEmail());
+        teacher.setEmail("bbb@bbb.bbb");
+    }
 }

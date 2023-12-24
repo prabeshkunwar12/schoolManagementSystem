@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.school_management.support_entities.school.School;
-import com.school_management.support_entities.school.SchoolType;
+import com.school_management.model.support_entities.school.School;
+import com.school_management.model.support_entities.school.SchoolType;
 
 class SchoolTest {
     // Testing the default constructor of the School class

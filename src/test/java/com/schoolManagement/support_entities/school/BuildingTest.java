@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.school_management.support_entities.school.Building;
-import com.school_management.support_entities.school.School;
+import com.school_management.model.support_entities.school.Building;
+import com.school_management.model.support_entities.school.School;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
