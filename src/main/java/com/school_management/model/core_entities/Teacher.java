@@ -38,6 +38,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.school_management.model.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.model.support_entities.schedule.Schedule;
 import com.school_management.model.support_entities.schedule.TeacherSchedule;
+import com.school_management.model.validators.EmailValidator;
 import com.school_management.model.validators.PhoneNumberValidator;
 
 import jakarta.persistence.Column;
@@ -149,16 +150,12 @@ public class Teacher {
     }
     
     public void setEmail(String email) {
-        if(email == null) {
-            logger.error("email is null", new IllegalArgumentException());
-            throw new IllegalArgumentException("email cannot be null");
-        }
-        if(email.length()<1 || email.length()>100) {
-            logger.error("Length of email should be in between 1 and 100 characters.", new IllegalArgumentException());
-            throw new IllegalArgumentException("Length of email should be in between 1 and 100 characters.");
+        if(!EmailValidator.isValidEmail(email)) {
+            logger.error("{} is not a valid email", email);
+            throw new IllegalArgumentException(email + " is not a valid email");
         }
         this.email = email;
-        logger.info("Teacher {} email modified.", this.getTeacherID());
+        logger.info("Teacher {} email modified to {}.", this.getTeacherID(), email);
     }   
 
 
@@ -175,7 +172,7 @@ public class Teacher {
     public void setDepartment(Department department) {
         if(department == null) {
             logger.error("department is null", new IllegalArgumentException());
-            throw new IllegalArgumentException("department cannot be null");
+            throw new NullPointerException("department cannot be null");
         }
         this.department = department;
         logger.info("Teacher {} deparment modified to {}.", getTeacherID(), getDepartment().getDepartmentName());
@@ -189,7 +186,7 @@ public class Teacher {
     public void setSchedule(Schedule schedule) {
         if(schedule == null) {
             logger.error("schedule is null", new IllegalArgumentException());
-            throw new IllegalArgumentException("schedule cannot be null");
+            throw new NullPointerException("schedule cannot be null");
         }
         this.schedule = schedule;
         logger.info("Schedule set for Teacher {}", this.getTeacherID() );
@@ -208,7 +205,7 @@ public class Teacher {
             return false;
         }
         if(this.schedule.addCourseSectionSchedule(schedule)) {
-            logger.info("course section schedule added to teacher's schedule");
+            logger.info("course section schedule added to teacher {} schedule", getTeacherID());
             return true;
         }
         logger.error("failed to add the course section schedule", new IllegalArgumentException());

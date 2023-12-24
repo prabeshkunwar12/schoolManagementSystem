@@ -12,8 +12,15 @@ public class EmailValidator {
     private EmailValidator() {}
 
     public static boolean isValidEmail(String email) {
+        return isValidFormat(email) && isLengthValid(email);
+    }
+
+    private static boolean isValidFormat(String email) {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
-}
 
+    private static boolean isLengthValid(String email) {
+        return email.length() < 100;
+    }
+}
