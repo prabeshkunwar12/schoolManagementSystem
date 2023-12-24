@@ -1,4 +1,4 @@
-package com.schoolManagement.support_entities.school;
+package com.schoolManagement.model.support_entities.school;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.schoolManagement.core_entities;
+package com.schoolManagement.model.core_entities;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -104,11 +104,19 @@ class TeacherTest {
 
     @Test
     void testInvalidSetterAndGetterForPhoneNumber() {
+        // country code is null
         assertThrows(IllegalArgumentException.class,() -> teacher.setPhoneNumber(null, "9999999999"));
+        // country code is invalid
         assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("sdevas", "9999999999"));
+        // phone number is null
         assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("CA", null));
+        // phone number is too long >15 if country code matches with first digit 
         assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("CA","1919191919191999"));
+        // phone number is too long >14 if country code doesn't match with first digit
+        assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("CA","1919191919191999"));
+        // phone number is too short <2
         assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("CA","1"));
+        // phone number is invalid
         assertThrows(IllegalArgumentException.class, () -> teacher.setPhoneNumber("CA","1has2had3"));
     }
 

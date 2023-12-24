@@ -1,4 +1,4 @@
-package com.schoolManagement.support_entities.school;
+package com.schoolManagement.model.support_entities.school;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;

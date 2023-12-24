@@ -1,4 +1,4 @@
-package com.schoolManagement.core_entities.enrollment;
+package com.schoolManagement.model.core_entities.enrollment;
 
 import org.junit.jupiter.api.Test;
 
