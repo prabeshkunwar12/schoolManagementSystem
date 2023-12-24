@@ -34,6 +34,8 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.school_management.support_entities.PhoneNumberValidator;
 import com.school_management.support_entities.schedule.CourseSectionSchedule;
 import com.school_management.support_entities.schedule.Schedule;
 import com.school_management.support_entities.schedule.TeacherSchedule;
@@ -55,7 +57,7 @@ public class Teacher {
     private String name;
 
     @Column(name = "phone_number")
-    private long phoneNumber;
+    private String phoneNumber;
 
     @Column(name = "email")
     private String email;
@@ -77,17 +79,15 @@ public class Teacher {
     /**
      * Constructor to initialize department details.
      *
-     * @param teacherID The unique identifier for the teacher.
      * @param Name The name of the teacher
      * @param phoneNumber The phoneNumber of the teacher
      * @param email The email of the teacher
      * @param department department of teacher
      */
-    public Teacher(int teacherID, String name, long phoneNumber, String email, Department department) {
-        this.teacherID = teacherID;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
+    public Teacher(String name, String countryCode, String phoneNumber, String email, Department department) {
+        setName(name);
+        setPhoneNumber(countryCode, phoneNumber);
+        setEmail(email);
         setDepartment(department);
         schedule = new TeacherSchedule();
         logger.info("New Teacher initialized.");
@@ -111,18 +111,38 @@ public class Teacher {
             logger.error("name is null", new IllegalArgumentException());
             throw new IllegalArgumentException("name cannot be null");
         }
+        if(name.length()<1 || name.length()>100) {
+            logger.error("Length of name should be in between 1 and 100 characters.", new IllegalArgumentException());
+            throw new IllegalArgumentException("Length of name should be in between 1 and 100 characters.");
+        }
         this.name = name;
         logger.info("Teacher name for id {} modified to {}.", this.getTeacherID(), this.getName());
     }
     
-    public long getPhoneNumber() {
+    public String getPhoneNumber() {
         return this.phoneNumber;
     }
     
-    public void setPhoneNumber(long phoneNumber) {
+    //JPA complaince
+    public void setPhoneNumber(String phoneNumber) {
+        if(!PhoneNumberValidator.isValidPhoneNumber(phoneNumber)) {
+            logger.error("{} is not in E.164 format", phoneNumber, new IllegalArgumentException());
+            throw new IllegalArgumentException("phone number must be in E.164 format");
+        }
         this.phoneNumber = phoneNumber;
-        logger.info("Teacher {} phoneNumber modified to {}.", this.getTeacherID(), this.getPhoneNumber());
+        logger.info("phone number of  teacher {} changed to {}", getTeacherID(), phoneNumber);
     }
+
+    public void setPhoneNumber(String countryCode, String phoneNumber) {
+        try {
+            setPhoneNumber(PhoneNumberValidator.formatToE164(phoneNumber, countryCode));
+            logger.info("Teacher {} phone number changed to {}", getTeacherID(), getPhoneNumber());
+        } catch (NumberParseException e) {
+            logger.error("failed to change the phone number", new IllegalArgumentException());
+            throw new IllegalArgumentException("failed to change the phone number.");
+        }
+    }
+
     
     public String getEmail() {
         return this.email;
@@ -132,6 +152,10 @@ public class Teacher {
         if(email == null) {
             logger.error("email is null", new IllegalArgumentException());
             throw new IllegalArgumentException("email cannot be null");
+        }
+        if(email.length()<1 || email.length()>100) {
+            logger.error("Length of email should be in between 1 and 100 characters.", new IllegalArgumentException());
+            throw new IllegalArgumentException("Length of email should be in between 1 and 100 characters.");
         }
         this.email = email;
         logger.info("Teacher {} email modified.", this.getTeacherID());
@@ -212,8 +236,6 @@ public class Teacher {
             return false;
         }
     }
-    
-      
 
     // Overridden equals, hashCode, and toString methods
     @Override

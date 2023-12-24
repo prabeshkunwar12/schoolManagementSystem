@@ -20,6 +20,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa' 	
+	implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.27' 
+
 }
 
 
