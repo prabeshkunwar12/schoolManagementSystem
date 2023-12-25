@@ -90,21 +90,9 @@ public class CourseSection  {
      * @param schedule      The schedule of the course
      */
     public CourseSection(Course course, Room room, Teacher teacher, Session session, CourseSectionSchedule schedule) {
-        if(course==null || room==null || teacher==null || session==null || schedule==null) {
-            logger.error("parameters cannot be null", new IllegalArgumentException());
-            throw new IllegalArgumentException();
-        }
-
-        // Validate and set room and teacher if the schedule allows it
-        if(schedule.getStartDate().isBefore(session.getStartDate()) || schedule.getEndDate().isAfter(session.getEndDate())){
-            logger.error("schedule's startDate must not be before and endDate must not be after session's startdate and endDate respectively", new IllegalArgumentException());
-            throw new IllegalArgumentException();
-        }
-        this.schedule = schedule;
-        this.session = session;
-        if(setRoomCheck(room) && setTeacherCheck(teacher)) {
-            this.course = course;
-            this.passingGrade = 0;
+        if(setSessionAndSchedule(session, schedule) && setRoomCheck(room) && setTeacherCheck(teacher)) {
+            setCourse(course);
+            setPassingGrade(40); //passing grade by default 40
             logger.info("New Course section for {} Initialized", this.course);
         } else {
             logger.error("failed to initialize course Section", new IllegalArgumentException());
@@ -126,10 +114,10 @@ public class CourseSection  {
     public void setCourse(Course course) {
         if(course == null) {
             logger.error("course is null", new IllegalArgumentException());
-            throw new IllegalArgumentException("course cannot be null");
+            throw new NullPointerException("course cannot be null");
         }
         this.course = course; 
-        logger.info("course for course {} has been changed to {}", getSectionID(), getCourse().getCourseName());
+        logger.info("course for courseSection {} has been changed to {}", getSectionID(), getCourse().getCourseName());
     }
 
     public Room getRoom() {
@@ -139,8 +127,8 @@ public class CourseSection  {
     //setter for Room for JPA compliance
     public void setRoom(Room room) {
         if(room == null) {
-            logger.error("room is null", new IllegalArgumentException());
-            throw new IllegalArgumentException("room cannot be null");
+            logger.error("room is null", new NullPointerException());
+            throw new NullPointerException("room cannot be null");
         }
         this.room = room; 
         logger.info("room for course {} has been changed to {}", getSectionID(), getRoom().getRoomName());
@@ -155,8 +143,8 @@ public class CourseSection  {
      */
     public boolean setRoomCheck(Room room) {
         if(room == null) {
-            logger.error("Room is null", new IllegalArgumentException());
-            return false;
+            logger.error("Room is null", new NullPointerException());
+            throw new NullPointerException();
         }
         if(room.bookRoom(this.schedule)){
             this.room = room;
@@ -174,8 +162,8 @@ public class CourseSection  {
     //setter for Room for JPA compliance
     public void setTeacher(Teacher teacher) {
         if(teacher == null) {
-            logger.error("teacher is null", new IllegalArgumentException());
-            throw new IllegalArgumentException("teacher cannot be null");
+            logger.error("teacher is null", new NullPointerException());
+            throw new NullPointerException("teacher cannot be null");
         }
         this.teacher = teacher; 
         logger.info("teacher for course {} has been changed to {}", getSectionID(), getTeacher().getName());
@@ -190,7 +178,11 @@ public class CourseSection  {
      * @return True if the teacher is successfully assigned; otherwise, false.
      */
     public boolean setTeacherCheck(Teacher teacher) {
-        if(teacher != null && teacher.addCourseSectionSchedule(this.schedule)) { 
+        if(teacher == null) {
+            logger.error("Teacher cannot be null", new NullPointerException());
+            throw new NullPointerException();
+        }
+        if(teacher.addCourseSectionSchedule(this.schedule)) { 
             this.teacher = teacher;
             logger.info("New teacher {} set for the course section", this.teacher.getName());
             return true;  
@@ -206,8 +198,8 @@ public class CourseSection  {
     //setter for Room for JPA compliance
     public void setSession(Session session) {
         if(session == null) {
-            logger.error("session is null", new IllegalArgumentException());
-            throw new IllegalArgumentException("session cannot be null");
+            logger.error("session is null", new NullPointerException());
+            throw new NullPointerException("session cannot be null");
         }
         this.session = session; 
         logger.info("session for course {} has been changed to {}", getSectionID(), getSession().getSessionID());
@@ -233,14 +225,30 @@ public class CourseSection  {
     
     public void setSchedule(CourseSectionSchedule schedule) {
         if(schedule == null) {
-            logger.error("schedule is null", new IllegalArgumentException());
-            throw new IllegalArgumentException("schedule cannot be null");
+            logger.error("schedule is null", new NullPointerException());
+            throw new NullPointerException("schedule cannot be null");
         }
         this.schedule = schedule;
         logger.info("schedule for {} has been modified to {}", getSectionID(), getSchedule().getCourseSectionScheduleID());
     }
-    //hash, equals and toString
 
+    public boolean setSessionAndSchedule(Session session, CourseSectionSchedule schedule) {
+        if(session==null || schedule==null) {
+            logger.error("Session and Schedule cannot be null", new IllegalArgumentException());
+            throw new NullPointerException();
+        }
+
+        // Validate and set room and teacher if the schedule allows it
+        if(schedule.getStartDate().isBefore(session.getStartDate()) || schedule.getEndDate().isAfter(session.getEndDate())){
+            logger.error("schedule's startDate must not be before and endDate must not be after session's startdate and endDate respectively", new IllegalArgumentException());
+            return false;
+        }
+
+        setSession(session);
+        setSchedule(schedule);
+        return true;
+    }
+    //hash, equals and toString
 
     @Override
     public boolean equals(Object o) {
